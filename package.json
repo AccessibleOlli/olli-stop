@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "mapbox-gl": "^0.41.0",
+    "pouchdb": "^6.3.4",
+    "pouchdb-find": "^6.3.4",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.6",
