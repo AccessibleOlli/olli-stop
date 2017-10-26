@@ -4,7 +4,7 @@ import routeData from './route2.json';
 import stopData from './stops2.json';
 
 let routeCoordinates = null;
-if (routeData.features.length == 1) {
+if (routeData.features.length === 1) {
   routeCoordinates = routeData.features[0].geometry.coordinates.map(coords => {
     return [coords[0], coords[1]];
   });
@@ -40,7 +40,7 @@ export function buildRoute(routeCoordinates, stopData) {
       }
     }
   }
-  if (stops.length == 0) {
+  if (stops.length === 0) {
     stops.push({
       name: 'NO STOPS',
       description: 'No matching stops',

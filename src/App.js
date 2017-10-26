@@ -29,13 +29,18 @@ class App extends Component {
           if (change.doc.type === 'route_info') {
             store.dispatch(setOlliRoute(buildRoute(change.doc.coordinates, change.doc.stops)));
           }
-          else if (change.doc.type == 'geo_position') {
+          else if (change.doc.type === 'geo_position') {
             if (! store.getState().ollieRoute) {
-              console.log("GETTING ROUTE");
-              this.db.find({
-                selector: { "type": "route_info"},
-                sort: [{"type": "desc"}, {"ts": "desc"}],
-                limit: 1
+              this.db.createIndex({
+                index: {
+                  fields: [{'type': 'desc'},{'ts': 'desc'}]
+                }
+              }).then(() => {
+                return this.db.find({
+                  selector: { "type": "route_info"},
+                  sort: [{"type": "desc"}, {"ts": "desc"}],
+                  limit: 1
+                });
               }).then((result) => {
                 if (result.docs && result.docs.length > 0) {
                   store.dispatch(setOlliRoute(buildRoute(result.docs[0].coordinates, result.docs[0].stops)));
@@ -51,9 +56,7 @@ class App extends Component {
           }
         }
       }).on('complete', info => {
-        
       }).on('paused', () => {
-        
       }).on('error', err => {
         console.log(err);
     });

@@ -16,7 +16,7 @@ export default function (state = null, action) {
             if (! lastPoint) {
               lastPoint = point;
             }
-            if (point.coordinates[0] == coordinates[0] && point.coordinates[1] == coordinates[1]) {
+            if (point.coordinates[0] === coordinates[0] && point.coordinates[1] === coordinates[1]) {
               lastPoint = point;
               break;
             }
