@@ -1,21 +1,13 @@
 import { SET_OLLI_POSITION } from '../actions/index'
+import route from '../route'
 
-let initialPosition = {
-	'type': 'FeatureCollection',
-	'features': [{
-		'type': 'Feature',
-		'geometry': {
-			'type': 'Point',
-			'coordinates': [-92.467044, 44.022365]
-		}
-	}]
-};
+let initialPosition = route.points[0];
 
 export default function (state = initialPosition, action) {
   if (action) {
     switch (action.type) {
       case SET_OLLI_POSITION:
-        state = action.position;
+        state = action.point;
         break;
       default:
         break;

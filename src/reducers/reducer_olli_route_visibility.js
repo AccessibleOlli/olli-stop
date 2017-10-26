@@ -1,6 +1,6 @@
 import { SET_OLLI_ROUTE_VISIBILITY } from '../actions/index'
 
-let initialVisibility = 'visible'
+let initialVisibility = 'visible';
 
 export default function (state = initialVisibility, action) {
   if (action) {

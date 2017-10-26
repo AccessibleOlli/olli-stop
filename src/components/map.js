@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import mapboxgl from 'mapbox-gl'
 import { connect } from 'react-redux'
+import route from '../route';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -10,7 +11,6 @@ let Map = class Map extends React.Component {
 
   static propTypes = {
     olliPosition: PropTypes.object.isRequired,
-    olliRoute: PropTypes.object.isRequired,
     olliRouteVisibility: PropTypes.string.isRequired
   };
 
@@ -19,7 +19,17 @@ let Map = class Map extends React.Component {
       this.map.setLayoutProperty('olli-route', 'visibility', nextProps.olliRouteVisibility);
     }
     if (nextProps.olliPosition !== this.props.olliPosition) {
-      this.map.getSource('olli-bus').setData(nextProps.olliPosition);
+      const data = {
+        'type': 'FeatureCollection',
+        'features': [{
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': nextProps.olliPosition.coordinates
+          }
+        }]
+      };
+      this.map.getSource('olli-bus').setData(data);
     }
   }
 
@@ -50,16 +60,34 @@ let Map = class Map extends React.Component {
       }
     });
     this.map.on('load', () => {
-      this.map.fitBounds(this.props.mapBounds, {
+      // set bounds
+      const coordinates = route.points.map(point => {
+        return point.coordinates;
+      });
+      console.log(coordinates);
+      const initalBounds = coordinates.reduce((bounds, coord) => {
+        return bounds.extend(coord)
+      }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+      this.map.fitBounds(initalBounds, {
         padding: 100
       });
       // add route layer
+      let initalRoute = {
+        'type': 'FeatureCollection',
+        'features': [{
+          'type': 'Feature',
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': coordinates
+          }
+        }]
+      };
       this.map.addLayer({
         'id': 'olli-route',
         'type': 'line',
         'source': {
           'type': 'geojson',
-          'data': this.props.olliRoute
+          'data': initalRoute
         },
         'layout': {
           'line-cap': 'round',
@@ -73,11 +101,21 @@ let Map = class Map extends React.Component {
         }
       });
       // add olli position layer
+      const data = {
+        'type': 'FeatureCollection',
+        'features': [{
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': this.props.olliPosition.coordinates
+          }
+        }]
+      };
       this.map.addLayer({
         'id': 'olli-bus',
         'source': {
           'type': 'geojson',
-          'data': this.props.olliPosition
+          'data': data
         },
         'type': 'symbol',
         'layout': {
@@ -97,8 +135,6 @@ let Map = class Map extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    mapBounds: state.mapBounds,
-    olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
     olliPosition: state.olliPosition
   };

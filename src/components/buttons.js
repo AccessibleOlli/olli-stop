@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setOlliPosition, setOlliRouteVisibility } from '../actions/index'
-import route from '../route.json'
-
-const coordinates = route.features[0].geometry.coordinates.map(coords => {
-  return [coords[0], coords[1]]
-});
+import route from '../route'
 
 class Buttons extends Component {
 
@@ -35,19 +31,13 @@ class Buttons extends Component {
 
   drive() {
     this.routeIndex = this.routeIndex + 1;
-    if (this.routeIndex < coordinates.length) {
-      let position = {
-        'type': 'FeatureCollection',
-        'features': [{
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': coordinates[this.routeIndex]
-          }
-        }]
-      };
-      this.props.setOlliPosition(position);
-      setTimeout(() => this.drive(), 100);
+    if (this.routeIndex < route.points.length) {
+      this.props.setOlliPosition(route.points[this.routeIndex]);
+      let timeout = 500;
+      if (route.points[this.routeIndex].currentStop) {
+        timeout = 2500;
+      }
+      setTimeout(() => this.drive(), timeout);
     }
     else {
       this.driving = false;
@@ -62,7 +52,7 @@ class Buttons extends Component {
       text = 'Hide';
     }
     return (
-      <div style={{margin: 10}} className="absolute top left">
+      <div style={{margin: 10}} className="absolute top left pill">
         <button className='button' onClick={() => this.toggleRoute(hide)}>{text} Route</button>
         <button className='button' onClick={() => this.driveRoute()}>Drive Route</button>
       </div>
