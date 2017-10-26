@@ -15,44 +15,60 @@ let Map = class Map extends React.Component {
     olliRouteVisibility: PropTypes.string.isRequired
   };
 
+  updateMapBounds(coordinates) {
+    const initalBounds = coordinates.reduce((bounds, coord) => {
+      return bounds.extend(coord)
+    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    this.map.fitBounds(initalBounds, {
+      padding: 100
+    });
+  }
+
+  updateOlliRoute(coordinates) {
+    const data = {
+      'type': 'FeatureCollection',
+      'features': [{
+        'type': 'Feature',
+        'geometry': {
+          'type': 'LineString',
+          'coordinates': coordinates
+        }
+      }]
+    };
+    this.map.getSource('olli-route').setData(data);
+  }
+
+  updateOlliRouteVisibility(visibility) {
+    this.map.setLayoutProperty('olli-route', 'visibility', visibility);
+  }
+
+  updateOlliPosition(coordinates) {
+    const data = {
+      'type': 'FeatureCollection',
+      'features': [{
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': coordinates
+        }
+      }]
+    };
+    this.map.getSource('olli-bus').setData(data);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.points.map(point => {
         return point.coordinates;
       });
-      const initalBounds = coordinates.reduce((bounds, coord) => {
-        return bounds.extend(coord)
-      }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-      this.map.fitBounds(initalBounds, {
-        padding: 100
-      });
-      const data = {
-        'type': 'FeatureCollection',
-        'features': [{
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': coordinates
-          }
-        }]
-      };
-      this.map.getSource('olli-route').setData(data);
+      this.updateMapBounds(coordinates);
+      this.updateOlliRoute(coordinates);
     }
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
-      this.map.setLayoutProperty('olli-route', 'visibility', nextProps.olliRouteVisibility);
+      this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
     }
     if (nextProps.olliPosition !== this.props.olliPosition) {
-      const data = {
-        'type': 'FeatureCollection',
-        'features': [{
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': nextProps.olliPosition.coordinates
-          }
-        }]
-      };
-      this.map.getSource('olli-bus').setData(data);
+      this.updateOlliPosition(nextProps.olliPosition.coordinates);
     }
   }
 

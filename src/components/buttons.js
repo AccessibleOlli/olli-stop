@@ -58,7 +58,6 @@ class Buttons extends Component {
       hide = true;
       text = 'Hide';
     }
-    console.log(this.props.olliRoute);
     if (! this.props.olliRoute) {
       return (
         <div style={{margin: 10}} className="absolute top left pill">
