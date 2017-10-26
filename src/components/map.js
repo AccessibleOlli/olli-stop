@@ -64,7 +64,6 @@ let Map = class Map extends React.Component {
       const coordinates = route.points.map(point => {
         return point.coordinates;
       });
-      console.log(coordinates);
       const initalBounds = coordinates.reduce((bounds, coord) => {
         return bounds.extend(coord)
       }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));

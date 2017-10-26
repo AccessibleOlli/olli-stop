@@ -23,17 +23,25 @@ class Buttons extends Component {
 
   driveRoute() {
     if (this.driving) {
-      return;
+      this.driving = false;
     }
-    this.routeIndex = -1;
-    this.drive();
+    else {
+      this.driving = true;
+      if (this.routeIndex <= 0 || this.routeIndex >= route.points.length) {
+        this.routeIndex = -1;
+      }
+      this.drive();
+    }
   }
 
   drive() {
+    if (! this.driving) {
+      return;
+    }
     this.routeIndex = this.routeIndex + 1;
     if (this.routeIndex < route.points.length) {
       this.props.setOlliPosition(route.points[this.routeIndex]);
-      let timeout = 500;
+      let timeout = 10;
       if (route.points[this.routeIndex].currentStop) {
         timeout = 2500;
       }
