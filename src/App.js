@@ -7,8 +7,7 @@ import Map from './components/map';
 import Progress from './components/progress';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import { buildRoute } from './route';
-import { setOlliRoute, setOlliPosition } from './actions/index'
+import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index'
 
 PouchDB.plugin(PouchDBFind  );
 
@@ -27,7 +26,13 @@ class App extends Component {
       .on('change', change => {
         if (store.getState().mapReady && change && change.doc && change.doc.type) {
           if (change.doc.type === 'route_info') {
-            store.dispatch(setOlliRoute(buildRoute(change.doc.coordinates, change.doc.stops)));
+            store.dispatch(setOlliRoute(change.doc));
+          }
+          else if (change.doc.type === 'trip_start') {
+            store.dispatch(startOlliTrip(change.doc));
+          }
+          else if (change.doc.type === 'trip_end') {
+            store.dispatch(endOlliTrip(change.doc));
           }
           else if (change.doc.type === 'geo_position') {
             if (! store.getState().ollieRoute) {
@@ -43,15 +48,15 @@ class App extends Component {
                 });
               }).then((result) => {
                 if (result.docs && result.docs.length > 0) {
-                  store.dispatch(setOlliRoute(buildRoute(result.docs[0].coordinates, result.docs[0].stops)));
-                  store.dispatch(setOlliPosition(change.doc.coordinates));
+                  store.dispatch(setOlliRoute(result.docs[0]));
+                  store.dispatch(setOlliPosition(change.doc));
                 }
               }).catch((err) => {
                 console.log(err);
               });
             }
             else {
-              store.dispatch(setOlliPosition(change.doc.coordinates));
+              store.dispatch(setOlliPosition(change.doc));
             }
           }
         }

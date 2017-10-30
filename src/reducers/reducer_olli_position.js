@@ -1,7 +1,6 @@
-import { SET_OLLI_POSITION, SET_OLLI_ROUTE } from '../actions/index'
+import { SET_OLLI_POSITION, SET_OLLI_ROUTE, START_OLLI_TRIP, END_OLLI_TRIP } from '../actions/index'
 
 let ollieRoute = null;
-let lastPoint = null;
 
 export default function (state = null, action) {
   if (action) {
@@ -9,24 +8,36 @@ export default function (state = null, action) {
       case SET_OLLI_ROUTE:
         ollieRoute = action.route;
         break;
-      case SET_OLLI_POSITION:
+      case START_OLLI_TRIP:
         if (ollieRoute) {
-          let coordinates = action.point;
-          for (let point of ollieRoute.points) {
-            if (! lastPoint) {
-              lastPoint = point;
-            }
-            if (point.coordinates[0] === coordinates[0] && point.coordinates[1] === coordinates[1]) {
-              lastPoint = point;
-              break;
-            }
-          }
           state = {
-            coordinates: coordinates,
-            currentStop: lastPoint.currentStop,
-            previousStop: lastPoint.previousStop,
-            nextStop: lastPoint.nextStop,
-            nextStopProgress: lastPoint.nextStopProgress
+            coordinates: action.coordinates,
+            currentStop: null,
+            previousStop: action.fromStop,
+            nextStop: action.toStop,
+            nextStopProgress: 0.0
+          };
+        }
+        break;
+      case END_OLLI_TRIP:
+        if (ollieRoute) {
+          state = {
+            coordinates: action.coordinates,
+            currentStop: action.toStop,
+            previousStop: action.fromStop,
+            nextStop: null,
+            nextStopProgress: 1.0
+          };
+        }
+        break;
+      case SET_OLLI_POSITION:
+        if (ollieRoute && state) {
+          state = {
+            coordinates: action.coordinates,
+            currentStop: state.currentStop,
+            previousStop: state.previousStop,
+            nextStop: state.nextStop,
+            nextStopProgress: action.progress
           }
         }
         break;

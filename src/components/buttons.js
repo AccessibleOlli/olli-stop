@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setOlliPosition, setOlliRouteVisibility } from '../actions/index'
+import { setOlliRouteVisibility } from '../actions/index'
 
 class Buttons extends Component {
-
-  constructor() {
-    super();
-    this.driving = false;
-    this.routeIndex = 0;
-  }
 
   toggleRoute(hide) {
     if (hide) {
@@ -17,37 +11,6 @@ class Buttons extends Component {
     }
     else {
       this.props.setOlliRouteVisibility('visible');
-    }
-  }
-
-  driveRoute() {
-    if (this.driving) {
-      this.driving = false;
-    }
-    else {
-      this.driving = true;
-      if (this.routeIndex <= 0 || this.routeIndex >= this.props.olliRoute.points.length) {
-        this.routeIndex = -1;
-      }
-      this.drive();
-    }
-  }
-
-  drive() {
-    if (! this.driving) {
-      return;
-    }
-    this.routeIndex = this.routeIndex + 1;
-    if (this.routeIndex < this.props.olliRoute.points.length) {
-      this.props.setOlliPosition(this.props.olliRoute.points[this.routeIndex].coordinates);
-      let timeout = 10;
-      if (this.props.olliRoute.points[this.routeIndex].currentStop) {
-        timeout = 2500;
-      }
-      setTimeout(() => this.drive(), timeout);
-    }
-    else {
-      this.driving = false;
     }
   }
 
@@ -68,7 +31,6 @@ class Buttons extends Component {
       return (
         <div style={{margin: 10}} className="absolute top left pill">
           <button className='button' onClick={() => this.toggleRoute(hide)}>{text} Route</button>
-          <button className='button' onClick={() => this.driveRoute()}>Drive Route</button>
         </div>
       );
     }
@@ -84,7 +46,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    setOlliPosition: setOlliPosition,
     setOlliRouteVisibility: setOlliRouteVisibility
   }, dispatch);
 }

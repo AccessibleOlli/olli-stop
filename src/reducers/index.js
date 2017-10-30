@@ -8,8 +8,7 @@ const rootReducer = combineReducers({
   mapReady: MapReadyReducer,
   olliPosition: OlliPositionReducer,
   olliRoute: OlliRouteReducer,
-  olliRouteVisibility: OlliRouteVisibilityReducer,
-  
+  olliRouteVisibility: OlliRouteVisibilityReducer
 });
 
 export default rootReducer;

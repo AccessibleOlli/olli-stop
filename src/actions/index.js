@@ -2,6 +2,8 @@ export const SET_MAP_READY = 'SET_MAP_READY';
 export const SET_OLLI_POSITION = 'SET_OLLI_POSITION';
 export const SET_OLLI_ROUTE = 'SET_OLLI_ROUTE';
 export const SET_OLLI_ROUTE_VISIBILITY = 'SET_OLLI_ROUTE_VISIBILITY';
+export const START_OLLI_TRIP = 'START_OLLI_TRIP';
+export const END_OLLI_TRIP = 'END_OLLI_TRIP';
 
 export function setMapReady(ready) {
   return {
@@ -10,17 +12,10 @@ export function setMapReady(ready) {
   };
 }
 
-export function setOlliPosition(point) {
-  return {
-    type: SET_OLLI_POSITION,
-    point: point
-  };
-}
-
-export function setOlliRoute(route) {
+export function setOlliRoute(routeInfo) {
   return {
     type: SET_OLLI_ROUTE,
-    route: route
+    route: routeInfo
   };
 }
 
@@ -28,5 +23,31 @@ export function setOlliRouteVisibility(visibility) {
   return {
     type: SET_OLLI_ROUTE_VISIBILITY,
     visibility: visibility
+  };
+}
+
+export function setOlliPosition(geoPosition) {
+  return {
+    type: SET_OLLI_POSITION,
+    coordinates: geoPosition.coordinates,
+    progress: geoPosition.distance_travelled / (geoPosition.distance_travelled + geoPosition.distance_remaining)
+  };
+}
+
+export function startOlliTrip(tripStart) {
+  return {
+    type: START_OLLI_TRIP,
+    coordinates: tripStart.from_coordinates,
+    fromStop: tripStart.from_stop,
+    toStop: tripStart.to_stop
+  };
+}
+
+export function endOlliTrip(tripEnd) {
+  return {
+    type: END_OLLI_TRIP,
+    coordinates: tripEnd.to_coordinates,
+    fromStop: tripEnd.from_stop,
+    toStop: tripEnd.to_stop
   };
 }

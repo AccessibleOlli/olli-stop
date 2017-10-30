@@ -49,7 +49,7 @@ let Map = class Map extends React.Component {
         'type': 'Feature',
         'geometry': {
           'type': 'Point',
-          'coordinates': coordinates
+          'coordinates': [coordinates[0], coordinates[1]]
         }
       }]
     };
@@ -58,8 +58,8 @@ let Map = class Map extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
-      const coordinates = nextProps.olliRoute.points.map(point => {
-        return point.coordinates;
+      const coordinates = nextProps.olliRoute.coordinates.map(coord => {
+        return [coord[0], coord[1]];
       });
       this.updateMapBounds(coordinates);
       this.updateOlliRoute(coordinates);
