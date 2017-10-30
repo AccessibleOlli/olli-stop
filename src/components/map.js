@@ -59,7 +59,7 @@ let Map = class Map extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
-        return [coord[0], coord[1]];
+        return [coord.coordinates[0], coord.coordinates[1]];
       });
       this.updateMapBounds(coordinates);
       this.updateOlliRoute(coordinates);
@@ -79,8 +79,8 @@ let Map = class Map extends React.Component {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [-97.380979, 42.877742],
-      zoom: 4
+      center: [-92.466, 44.022],
+      zoom: 17
     });
     this.map.loadImage('/img/olli-icon-svg.png', (error, image) => {
       if (error) {
