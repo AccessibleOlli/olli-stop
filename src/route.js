@@ -33,7 +33,7 @@ export function buildRoute(routeCoordinates, stopData) {
           name: stop.name,
           description: stop.description,
           poi: stop.poi,
-          coordinates: stop.coordinates,
+          coordinates: [stop.coordinates[0],stop.coordinates[1]],
           routeIndex: i
         });
         break;
@@ -44,7 +44,7 @@ export function buildRoute(routeCoordinates, stopData) {
     stops.push({
       name: 'NO STOPS',
       description: 'No matching stops',
-      coordinates: routeCoordinates[0],
+      coordinates: [routeCoordinates[0][0], routeCoordinates[0][1]],
       routeIndex: 0
     });
   }
@@ -90,7 +90,7 @@ export function buildRoute(routeCoordinates, stopData) {
       }
     }
     points.push({
-      coordinates: routeCoordinates[i],
+      coordinates: [routeCoordinates[i][0], routeCoordinates[i][1]],
       currentStop: currentStop,
       previousStop: previousStop,
       nextStop: nextStop,
