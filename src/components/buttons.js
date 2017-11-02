@@ -36,6 +36,7 @@ class Buttons extends Component {
           outputElement: null
         });
         this.stream.promise().then((sttResponse) => {
+          console.log('User: ' + sttResponse);
           var responseObject = {
             text: sttResponse
           };
@@ -45,6 +46,7 @@ class Buttons extends Component {
             data: responseObject
           });
         }).then((converationResponse) => {
+          console.log('Olli: ' + converationResponse.data.response);
           var byteString = atob(converationResponse.data.voice);
           // write the bytes of the string to an ArrayBuffer
           var ab = new ArrayBuffer(byteString.length);
