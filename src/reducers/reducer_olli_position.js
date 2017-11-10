@@ -33,6 +33,7 @@ export default function (state = null, action) {
       case SET_OLLI_POSITION:
         if (ollieRoute && state) {
           state = {
+            position: action.position, 
             coordinates: action.coordinates,
             currentStop: state.currentStop,
             previousStop: state.previousStop,

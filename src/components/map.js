@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import mapboxgl from 'mapbox-gl'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
+import OLLI_STOPS from '../data/stops.json'
+import OLLI_ROUTE from '../data/route.json'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -24,35 +26,46 @@ let Map = class Map extends React.Component {
     });
   }
 
-  updateOlliRoute(coordinates) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': [{
-        'type': 'Feature',
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': coordinates
-        }
-      }]
-    };
-    this.map.getSource('olli-route').setData(data);
-  }
+  // updateOlliRoute(coordinates) {
+  //   const data = {
+  //     'type': 'FeatureCollection',
+  //     'features': [{
+  //       'type': 'Feature',
+  //       'geometry': {
+  //         'type': 'LineString',
+  //         'coordinates': coordinates
+  //       }
+  //     }]
+  //   };
+  //   this.map.getSource('olli-route').setData(data);
+  // }
 
   updateOlliRouteVisibility(visibility) {
     this.map.setLayoutProperty('olli-route', 'visibility', visibility);
   }
 
-  updateOlliPosition(coordinates) {
+  updateOlliPosition(positionObj) {
     const data = {
       'type': 'FeatureCollection',
       'features': [{
         'type': 'Feature',
         'geometry': {
           'type': 'Point',
-          'coordinates': [coordinates[0], coordinates[1]]
+          'coordinates': []
         }
       }]
     };
+    let cs = null;
+    if (positionObj.position) {
+      cs = positionObj.position.coordinates;
+      // this.map.jumpTo({
+      //   center: [cs[0], cs[1]]
+        // bearing: positionObj.position.properties.heading
+      // });
+    } else {
+      cs = positionObj.coordinates.coordinates;
+    }
+    data.features[0].geometry.coordinates = [cs[0], cs[1]];
     this.map.getSource('olli-bus').setData(data);
   }
 
@@ -62,13 +75,13 @@ let Map = class Map extends React.Component {
         return [coord.coordinates[0], coord.coordinates[1]];
       });
       this.updateMapBounds(coordinates);
-      this.updateOlliRoute(coordinates);
+      // this.updateOlliRoute(coordinates);
     }
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
     }
     if (nextProps.olliPosition !== this.props.olliPosition) {
-      this.updateOlliPosition(nextProps.olliPosition.coordinates);
+      this.updateOlliPosition(nextProps.olliPosition);
     }
   }
 
@@ -80,7 +93,7 @@ let Map = class Map extends React.Component {
       container: this.mapContainer,
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [-92.466, 44.022],
-      zoom: 17
+      zoom: 16
     });
     this.map.loadImage('/img/olli-icon-svg.png', (error, image) => {
       if (error) {
@@ -90,7 +103,7 @@ let Map = class Map extends React.Component {
         this.map.addImage('olli', image)
       }
     });
-    this.map.loadImage('/img/olli-stop.png', (error, image) => {
+    this.map.loadImage('/img/olli-stop-color.png', (error, image) => {
       if (error) {
         throw error
       }
@@ -105,7 +118,7 @@ let Map = class Map extends React.Component {
         'type': 'line',
         'source': {
           'type': 'geojson',
-          'data': null
+          'data': OLLI_ROUTE
         },
         'layout': {
           'line-cap': 'round',
@@ -113,9 +126,30 @@ let Map = class Map extends React.Component {
           'visibility': this.props.olliRouteVisibility
         },
         'paint': {
-          'line-color': '#888888',
-          'line-width': 8,
-          'line-opacity': 0.6
+          'line-color': '#0087bd',
+          'line-width': 10,
+          'line-opacity': 0.4
+        }
+      });
+      this.map.addLayer({
+        'id': 'olli-stops',
+        'source': {
+          'type': 'geojson',
+          'data': OLLI_STOPS
+        },
+        'type': 'symbol',
+        'paint': {
+          'text-halo-color': "#fff", //"#0087bd",
+          'text-halo-width': 4, 
+          'text-halo-blur': 1
+        },
+        'layout': {
+          'icon-image': 'olli-stop',
+          'icon-size': 0.35, 
+          'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
+          'text-field': '{name}', 
+          'text-size': 14, 
+          'text-offset': [0, -2]
         }
       });
       this.map.addLayer({
