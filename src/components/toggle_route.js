@@ -15,7 +15,8 @@ class ToggleRoute extends Component {
   }
 
   render() {
-    const visibility = this.props.olliRoute ? 'visible' : 'hidden';
+    // const visibility = this.props.olliRoute ? 'visible' : 'hidden';
+    const visibility = 'hidden';
     let hide = false;
     let text = 'Show';
     if (this.props.olliRouteVisibility === 'visible') {
