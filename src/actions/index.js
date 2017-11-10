@@ -29,6 +29,7 @@ export function setOlliRouteVisibility(visibility) {
 export function setOlliPosition(geoPosition) {
   return {
     type: SET_OLLI_POSITION,
+    position: geoPosition, 
     coordinates: geoPosition.coordinates,
     progress: geoPosition.distance_travelled / (geoPosition.distance_travelled + geoPosition.distance_remaining)
   };
