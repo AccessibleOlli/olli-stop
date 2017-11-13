@@ -60,6 +60,15 @@ let Map = class Map extends React.Component {
     this.map.getSource('olli-bus').setData(data);
   }
 
+  updatePOICategory(category) {
+    if (! category) {
+      console.log('POI Category is null.');
+    }
+    else {
+      console.log(`POI Category is ${category}. Do something with it...`);
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
@@ -74,6 +83,9 @@ let Map = class Map extends React.Component {
     }
     if (nextProps.olliPosition !== this.props.olliPosition) {
       this.updateOlliPosition(nextProps.olliPosition);
+    }
+    if (nextProps.poiCategory !== this.props.poiCategory) {
+      this.updatePOICategory(nextProps.poiCategory);
     }
   }
 
@@ -183,7 +195,8 @@ function mapStateToProps(state) {
   return {
     olliPosition: state.olliPosition,
     olliRoute: state.olliRoute,
-    olliRouteVisibility: state.olliRouteVisibility
+    olliRouteVisibility: state.olliRouteVisibility,
+    poiCategory: state.poiCategory
   };
 }
 

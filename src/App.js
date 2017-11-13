@@ -5,6 +5,7 @@ import reducers from './reducers';
 import Buttons from './components/buttons';
 import Map from './components/map';
 import Progress from './components/progress';
+import TogglePOICategory from './components/toggle_poi_category';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index'
@@ -72,12 +73,12 @@ class App extends Component {
       <Provider store={store}>
         <div>
           <div className="stopplacard col12 clearfix round-bold center">
-            <div class='col8 pad2 margin2'>
+            <div className='col8 pad2 margin2'>
               <h1 className="stopname fancy">Peace Plaza</h1>
               </div>
           </div>
           <div className="col4 row2 round-bold border border--gray">
-            <button className='button' onClick={() => this.toggleTalking()}>Health</button>
+            <TogglePOICategory />
           </div>
           <div className="col4 row2 round-bold border border--gray">UI is fun</div>
           <div className="col4 row2 round-bold border border--gray">UI is fun</div>

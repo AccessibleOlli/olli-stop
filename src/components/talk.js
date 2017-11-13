@@ -58,11 +58,9 @@ class Talk extends Component {
           var audioElement = new Audio(url);
           audioElement.play();
         }).catch(err => {
-          console.log("ERROR");
           console.log(err);
         });
         this.stream.on('error', (err) => {
-          console.log("we are in error function: i.e. error is produced when calling STT");
           console.log(err);
         });
       });

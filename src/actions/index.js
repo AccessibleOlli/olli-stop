@@ -4,6 +4,7 @@ export const SET_OLLI_ROUTE = 'SET_OLLI_ROUTE';
 export const SET_OLLI_ROUTE_VISIBILITY = 'SET_OLLI_ROUTE_VISIBILITY';
 export const START_OLLI_TRIP = 'START_OLLI_TRIP';
 export const END_OLLI_TRIP = 'END_OLLI_TRIP';
+export const SET_POI_CATEGORY = 'SET_POI_CATEGORY';
 
 export function setMapReady(ready) {
   return {
@@ -50,5 +51,12 @@ export function endOlliTrip(tripEnd) {
     coordinates: tripEnd.to_coordinates,
     fromStop: tripEnd.from_stop,
     toStop: tripEnd.to_stop
+  };
+}
+
+export function setPOICategory(category) {
+  return {
+    type: SET_POI_CATEGORY,
+    category: category
   };
 }
