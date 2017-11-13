@@ -71,9 +71,14 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div>
+          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
+          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
+          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
           <Map />
-          <Buttons />
-          <Progress />
+          <div className="col4 round-bold border border--gray-dark fakebg">
+            <Buttons />
+            <Progress />
+          </div>
         </div>
       </Provider>
     );

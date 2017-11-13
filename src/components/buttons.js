@@ -6,7 +6,7 @@ export default class Buttons extends Component {
 
   render() {
     return (
-      <div style={{ margin: 10 }} className="absolute top left pill">
+      <div style={{ margin: 10 }} className="pill">
         <Talk />
         <ToggleRoute />
       </div>

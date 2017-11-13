@@ -170,7 +170,7 @@ let Map = class Map extends React.Component {
 
   render() {
     return (
-      <div ref={el => this.mapContainer = el} className="absolute top right left bottom" />
+      <div ref={el => this.mapContainer = el} className="col8 row10 round-bold border border--gray-dark" />
     );
   }
 }
