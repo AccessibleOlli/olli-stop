@@ -71,9 +71,17 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div>
-          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
-          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
-          <div className="col4 row2 round-bold border border--gray pad1">UI is fun</div>
+          <div className="stopplacard col12 clearfix round-bold center">
+            <div class='col8 pad2 margin2'>
+              <h1 className="stopname fancy">Peace Plaza</h1>
+              </div>
+          </div>
+          <div className="col4 row2 round-bold border border--gray">
+            <button className='button' onClick={() => this.toggleTalking()}>Health</button>
+          </div>
+          <div className="col4 row2 round-bold border border--gray">UI is fun</div>
+          <div className="col4 row2 round-bold border border--gray">UI is fun</div>
+          <div className="instructions col12 row1 round-bold border border--gray">Instructional messages go here...</div>
           <Map />
           <div className="col4 round-bold border border--gray-dark fakebg">
             <Buttons />

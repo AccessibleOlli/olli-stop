@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
+import POIS from '../data/pois.json'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -17,6 +18,10 @@ let Map = class Map extends React.Component {
     olliRouteVisibility: PropTypes.string.isRequired
   };
 
+  getPOIPrimaryCategory(prim_cat) {
+    this.map.getSource('olli-pois').setData(POIS);
+  }
+
   updateMapBounds(coordinates) {
     const initalBounds = coordinates.reduce((bounds, coord) => {
       return bounds.extend(coord)
@@ -25,20 +30,6 @@ let Map = class Map extends React.Component {
       padding: 100
     });
   }
-
-  // updateOlliRoute(coordinates) {
-  //   const data = {
-  //     'type': 'FeatureCollection',
-  //     'features': [{
-  //       'type': 'Feature',
-  //       'geometry': {
-  //         'type': 'LineString',
-  //         'coordinates': coordinates
-  //       }
-  //     }]
-  //   };
-  //   this.map.getSource('olli-route').setData(data);
-  // }
 
   updateOlliRouteVisibility(visibility) {
     this.map.setLayoutProperty('olli-route', 'visibility', visibility);
@@ -76,6 +67,7 @@ let Map = class Map extends React.Component {
       });
       this.updateMapBounds(coordinates);
       // this.updateOlliRoute(coordinates);
+      this.getPOIPrimaryCategory();
     }
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
@@ -164,13 +156,25 @@ let Map = class Map extends React.Component {
           'icon-size': 0.75
         }
       });
+      this.map.addLayer({
+        'id': 'olli-pois',
+        'source': {
+          'type': 'geojson',
+          'data': null
+        },
+        'type': 'circle',
+        'paint': {
+          'circle-color': '#ff0000',
+          'circle-radius': 2
+        }
+      });
       this.props.setMapReady(true);
     });
   }
 
   render() {
     return (
-      <div ref={el => this.mapContainer = el} className="col8 row10 round-bold border border--gray-dark" />
+      <div ref={el => this.mapContainer = el} className="col8 row8 round-bold border border--gray-dark" />
     );
   }
 }

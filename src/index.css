@@ -2,4 +2,25 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-color: #333;
+}
+
+.stopplacard {
+  border: 12px solid #fff;
+  background-color: #0087bd;
+}
+
+h1.stopname {
+  font-size: 36pt;
+  color: #fff;
+}
+
+.instructions {
+  font-weight: 300;
+  font-size: 10pt;
+  font-style: italic;
+  float: left;
+  color: white;
+  padding: 12px;
+  vertical-align: middle;
 }
