@@ -71,22 +71,29 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div>
-          <div className="stopplacard col12 clearfix round-bold center">
-            <div className='col8 pad2 margin2'>
-              <h1 className="stopname fancy">Peace Plaza</h1>
-              </div>
+        <div className="bx--grid top-level-container">
+          <div className="bx--row protoui">
+            <div className="stopplacard bx--col-xs-12">
+                <h1 className="stopname">Peace Plaza</h1>
+            </div>
           </div>
-          <div className="col4 row2 round-bold border border--gray">
-            <TogglePOICategory />
+
+
+          <div className="bx--row protoui">
+            <div className="bx--col-xs-4 protoui">
+              <TogglePOICategory />
+            </div>
+            <div className="bx--col-xs-4 protoui">UI is fun</div>
+            <div className="bx--col-xs-4 protoui">UI is fun</div>
           </div>
-          <div className="col4 row2 round-bold border border--gray">UI is fun</div>
-          <div className="col4 row2 round-bold border border--gray">UI is fun</div>
-          <div className="instructions col12 row1 round-bold border border--gray">Instructional messages go here...</div>
-          <Map />
-          <div className="col4 round-bold border border--gray-dark fakebg">
-            <Buttons />
-            <Progress />
+
+          <div className="bx--row protoui">
+            <div className="instructions bx--col-xs-8 protoui">Instructional messages go here...</div>
+            <Map />
+            <div className="bx--col-xs-4 fakebg protoui">
+              <Buttons />
+              <Progress />
+            </div>
           </div>
         </div>
       </Provider>

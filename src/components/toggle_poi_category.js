@@ -19,7 +19,11 @@ class TogglePOICategory extends Component {
     if (category === this.props.poiCategory) {
       style = { backgroundColor: '#FF0000' };
     }
-    return <button className='button' style={style} onClick={() => this.selectCategory(category)}>{category}</button>
+    return (
+      <button className='bx--btn bx--btn--secondary' style={style} 
+        onClick={() => this.selectCategory(category)}>{category}
+      </button>
+    )
   }
 
   render() {

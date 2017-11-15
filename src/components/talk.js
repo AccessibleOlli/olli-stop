@@ -70,7 +70,7 @@ class Talk extends Component {
   render() {
     const text = this.state.talking ? "Stop" : "Talk";
     return (
-      <button className='button' onClick={() => this.toggleTalking()}>{text}</button>
+      <button className='bx--btn bx--btn--secondary' onClick={() => this.toggleTalking()}>{text}</button>
     );
   }
 }

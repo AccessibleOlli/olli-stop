@@ -1,17 +1,23 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #333;
+  background-color: #888;
+}
+
+.mapboxgl-map {
+  min-height: 500px;
+  padding: 0px;
 }
 
 .stopplacard {
-  border: 12px solid #fff;
+  border: 6px solid #fff;
   background-color: #0087bd;
 }
 
 h1.stopname {
   font-size: 36pt;
+  font-weight: 700;
+  text-align: center;
   color: #fff;
 }
 
@@ -23,4 +29,8 @@ h1.stopname {
   color: white;
   padding: 12px;
   vertical-align: middle;
+}
+
+.protoui {
+  border: 1px solid white;
 }
