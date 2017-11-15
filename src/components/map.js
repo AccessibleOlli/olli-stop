@@ -57,7 +57,9 @@ let Map = class Map extends React.Component {
   }
 
   updatePOICategory(category) {
-    category = category.toLowerCase();
+    let categories = [category.toLowerCase()];
+    if ( categories[0] === 'attractions' ) 
+      categories = categories.concat(['arts', 'publicservicesgovt']);
     let showpois = {"type":"FeatureCollection","features":[]};
     if (! category) {
       console.log('POI Category is null.');
@@ -65,12 +67,11 @@ let Map = class Map extends React.Component {
     else {
       POIS.features.forEach(poi => {
         poi.properties.category.forEach(cat => {
-          if (cat.term === category) {
+          if ( categories.includes(cat.term) ) {
             showpois.features.push(poi);
           }
         }, this);
       }, this);
-      // console.log(`POI Category is ${category}. Do something with it...`);
       switch (category) {
         case 'food':
           this.map.setLayoutProperty('olli-pois', 'icon-image', 'restaurant-noun');
@@ -131,6 +132,14 @@ let Map = class Map extends React.Component {
     for (var idx = 0; idx < imagenames.length; idx++) {
       this.loadImage(imagenames[idx], imageids[idx]);
     }
+    
+    this.map.on('click', evt => {
+      // set bbox as 5px rectangle area around clicked point
+      let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]];
+      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
+      console.log("Got clicked features: ");
+      console.log(features);
+    });
 
     this.map.on('load', () => {
       // add route layer
@@ -208,7 +217,7 @@ let Map = class Map extends React.Component {
           'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
           'text-size': 12, 
           'text-offset': [0, 2],
-          'text-field': '{label}'
+          'text-field': '{name}'
         }
       });
       this.props.setMapReady(true);
@@ -217,7 +226,7 @@ let Map = class Map extends React.Component {
 
   render() {
     return (
-      <div ref={el => this.mapContainer = el} className="bx--col-xs-8" />
+      <div ref={el => this.mapContainer = el} />
     );
   }
 }

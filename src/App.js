@@ -2,9 +2,13 @@ import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 import reducers from './reducers';
-import Buttons from './components/buttons';
+import Clock from './components/clock';
+import Talk from './components/talk';
 import Map from './components/map';
 import Progress from './components/progress';
+import Info from './components/info';
+import Arrival from './components/arrival';
+import CallBus from './components/callbus';
 import TogglePOICategory from './components/toggle_poi_category';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
@@ -72,27 +76,49 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div className="bx--grid top-level-container">
-          <div className="bx--row protoui">
+          <div className="bx--row">
             <div className="stopplacard bx--col-xs-12">
                 <h1 className="stopname">Peace Plaza</h1>
             </div>
           </div>
 
-
-          <div className="bx--row protoui">
-            <div className="bx--col-xs-4 protoui">
-              <TogglePOICategory />
-            </div>
-            <div className="bx--col-xs-4 protoui">UI is fun</div>
-            <div className="bx--col-xs-4 protoui">UI is fun</div>
+          <div className="bx--row">
+            <div className="instructions bx--col-xs-12"></div>
           </div>
 
-          <div className="bx--row protoui">
-            <div className="instructions bx--col-xs-8 protoui">Instructional messages go here...</div>
-            <Map />
-            <div className="bx--col-xs-4 fakebg protoui">
-              <Buttons />
-              <Progress />
+          <div className="bx--row">
+            <div className="bx--col-xs-8">
+              <TogglePOICategory />
+            </div>
+            <div className="bx--col-xs-2">
+              <Arrival />
+            </div>
+            <div className="bx--col-xs-2">
+              <Clock />
+            </div>
+          </div>
+
+          <div className="bx--row">
+            <div className="bx--col-xs-8">
+              <Map />
+            </div>
+            <div className="bx--col-xs-4">
+              <div className="bx--row">
+                <div className="bx--col-xs-6">
+                  <Talk />
+                </div>
+                <div className="bx--col-xs-6">
+                  <CallBus />
+                </div>
+              </div>
+              <div className="bx--row">
+                <div className="bx--col-xs-12">
+                  <div className="stop-panel" style={{height:'450px'}}>
+                    <Info />
+                    <Progress />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

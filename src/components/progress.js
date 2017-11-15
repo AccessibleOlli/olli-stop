@@ -25,11 +25,11 @@ class Progress extends Component {
       }
       let coords = `${(this.props.olliPosition.coordinates[0]+" ").slice(0,6)}, ${(this.props.olliPosition.coordinates[1]+" ").slice(0,6)}`;
       return (
-        <div style={{margin: 10}} className="absolute bottom right">
-          <h3>Coords: {coords}</h3>
-          <h3>{stop1String}</h3>
-          <h3>{stop2String}</h3>
-          <h3>progress: {Math.round(this.props.olliPosition.nextStopProgress * 100)}%</h3>
+        <div>
+          <p>Coords: {coords}</p>
+          <p>{stop1String}</p>
+          <p>{stop2String}</p>
+          <p>progress: {Math.round(this.props.olliPosition.nextStopProgress * 100)}%</p>
         </div>
       );
     }

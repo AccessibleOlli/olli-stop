@@ -14,23 +14,22 @@ class TogglePOICategory extends Component {
     }
   }
 
-  renderButton(category) {
-    let style = {};
-    if (category === this.props.poiCategory) {
-      style = { backgroundColor: '#FF0000' };
-    }
+  renderButton(category, imgpath) {
     return (
-      <button className='bx--btn bx--btn--secondary' style={style} 
-        onClick={() => this.selectCategory(category)}>{category}
+      <button className='bx--btn bx--btn--secondary' 
+        onClick={() => this.selectCategory(category)}>{category} 
+        <img src={imgpath} height="24" alt={category}/>
       </button>
     )
   }
 
   render() {
     return (
-      <div>
-        {this.renderButton('Health')}
-        {this.renderButton('Food')}
+      <div className="stop-panel">
+        <h2>Points of Interest</h2>
+        {this.renderButton('Health', '/img/noun_854071_cc.png')}
+        {this.renderButton('Food', '/img/noun_1012350_cc.png')}
+        {this.renderButton('Attractions', '/img/noun_1012350_cc.png')}
       </div>
     );
   }

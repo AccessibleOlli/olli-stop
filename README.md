@@ -2166,6 +2166,7 @@ If you have ideas for more “How To” recipes that should be on this page, [le
 
 ## Icon credits
 
-- Restaurant by Gregor Cresnar from the Noun Project
+- Restaurant by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)
 - medical by W. X. Chee from the Noun Project
-- Museum by Gregor Cresnar from the Noun Project
+- Museum by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)
+- Microphone by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)

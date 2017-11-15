@@ -68,9 +68,15 @@ class Talk extends Component {
   }
 
   render() {
-    const text = this.state.talking ? "Stop" : "Talk";
+    const text = this.state.talking ? "Press to Send" : "Ask Olli";
     return (
-      <button className='bx--btn bx--btn--secondary' onClick={() => this.toggleTalking()}>{text}</button>
+      <div className="stop-panel">
+        <h2>{text}</h2>
+        <button className='bx--btn bx--btn--secondary btn--bigaction' 
+          onClick={() => this.toggleTalking()}>
+          <img src="/img/noun_1012333_cc.png" alt="Press to talk to Olli" height="48px" />
+      </button>
+      </div>
     );
   }
 }
