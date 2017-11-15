@@ -18,10 +18,6 @@ let Map = class Map extends React.Component {
     olliRouteVisibility: PropTypes.string.isRequired
   };
 
-  getPOIPrimaryCategory(prim_cat) {
-    this.map.getSource('olli-pois').setData(POIS);
-  }
-
   updateMapBounds(coordinates) {
     const initalBounds = coordinates.reduce((bounds, coord) => {
       return bounds.extend(coord)
@@ -61,11 +57,32 @@ let Map = class Map extends React.Component {
   }
 
   updatePOICategory(category) {
+    category = category.toLowerCase();
+    let showpois = {"type":"FeatureCollection","features":[]};
     if (! category) {
       console.log('POI Category is null.');
     }
     else {
-      console.log(`POI Category is ${category}. Do something with it...`);
+      POIS.features.forEach(poi => {
+        poi.properties.category.forEach(cat => {
+          if (cat.term === category) {
+            showpois.features.push(poi);
+          }
+        }, this);
+      }, this);
+      // console.log(`POI Category is ${category}. Do something with it...`);
+      switch (category) {
+        case 'food':
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'restaurant-noun');
+          break;
+        case 'health':
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'medical-noun');
+          break;
+        default: 
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'circle-15');
+      }
+      this.map.getSource('olli-pois').setData(showpois);
+      this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
     }
   }
 
@@ -76,7 +93,6 @@ let Map = class Map extends React.Component {
       });
       this.updateMapBounds(coordinates);
       // this.updateOlliRoute(coordinates);
-      this.getPOIPrimaryCategory();
     }
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
@@ -92,6 +108,16 @@ let Map = class Map extends React.Component {
   componentDidUpdate() {
   }
 
+  loadImage(imagename, imageid) {
+    this.map.loadImage('/img/'+imagename, (error, image) => {
+      if (error) {
+        throw error
+      } else {
+        this.map.addImage(imageid, image);
+      }
+    });
+}
+
   componentDidMount() {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
@@ -99,22 +125,13 @@ let Map = class Map extends React.Component {
       center: [-92.466, 44.022],
       zoom: 16
     });
-    this.map.loadImage('/img/olli-icon-svg.png', (error, image) => {
-      if (error) {
-        throw error
-      }
-      else {
-        this.map.addImage('olli', image)
-      }
-    });
-    this.map.loadImage('/img/olli-stop-color.png', (error, image) => {
-      if (error) {
-        throw error
-      }
-      else {
-        this.map.addImage('olli-stop', image)
-      }
-    });
+
+    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png'];
+    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun'];
+    for (var idx = 0; idx < imagenames.length; idx++) {
+      this.loadImage(imagenames[idx], imageids[idx]);
+    }
+
     this.map.on('load', () => {
       // add route layer
       this.map.addLayer({
@@ -172,12 +189,26 @@ let Map = class Map extends React.Component {
         'id': 'olli-pois',
         'source': {
           'type': 'geojson',
-          'data': null
+          'data': POIS
         },
-        'type': 'circle',
+        'type': 'symbol',
         'paint': {
-          'circle-color': '#ff0000',
-          'circle-radius': 2
+          'text-color': '#0087bd',
+          'text-halo-color': "#fff",
+          'text-halo-width': 4, 
+          'text-halo-blur': 1,
+          'icon-halo-color': "#fff",
+          'icon-halo-width': 4, 
+          'icon-halo-blur': 1
+        },
+        'layout': {
+          'visibility': 'none',
+          'icon-image': 'circle-15',
+          'icon-size': 0.5, 
+          'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
+          'text-size': 12, 
+          'text-offset': [0, 2],
+          'text-field': '{label}'
         }
       });
       this.props.setMapReady(true);
@@ -186,7 +217,7 @@ let Map = class Map extends React.Component {
 
   render() {
     return (
-      <div ref={el => this.mapContainer = el} className="col8 row8 round-bold border border--gray-dark" />
+      <div ref={el => this.mapContainer = el} className="bx--col-xs-8" />
     );
   }
 }
