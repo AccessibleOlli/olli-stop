@@ -2162,3 +2162,11 @@ To resolve this:
 ## Something Missing?
 
 If you have ideas for more “How To” recipes that should be on this page, [let us know](https://github.com/facebookincubator/create-react-app/issues) or [contribute some!](https://github.com/facebookincubator/create-react-app/edit/master/packages/react-scripts/template/README.md)
+
+
+## Icon credits
+
+- Restaurant by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)
+- medical by W. X. Chee from the Noun Project
+- Museum by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)
+- Microphone by Gregor Cresnar from the Noun Project [Simple Icons collection](https://thenounproject.com/grega.cresnar/collection/simple-icons/)

@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
+import POIS from '../data/pois.json'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
@@ -25,20 +26,6 @@ let Map = class Map extends React.Component {
       padding: 100
     });
   }
-
-  // updateOlliRoute(coordinates) {
-  //   const data = {
-  //     'type': 'FeatureCollection',
-  //     'features': [{
-  //       'type': 'Feature',
-  //       'geometry': {
-  //         'type': 'LineString',
-  //         'coordinates': coordinates
-  //       }
-  //     }]
-  //   };
-  //   this.map.getSource('olli-route').setData(data);
-  // }
 
   updateOlliRouteVisibility(visibility) {
     this.map.setLayoutProperty('olli-route', 'visibility', visibility);
@@ -69,6 +56,37 @@ let Map = class Map extends React.Component {
     this.map.getSource('olli-bus').setData(data);
   }
 
+  updatePOICategory(category) {
+    let categories = [category.toLowerCase()];
+    if ( categories[0] === 'attractions' ) 
+      categories = categories.concat(['arts', 'publicservicesgovt']);
+    let showpois = {"type":"FeatureCollection","features":[]};
+    if (! category) {
+      console.log('POI Category is null.');
+    }
+    else {
+      POIS.features.forEach(poi => {
+        poi.properties.category.forEach(cat => {
+          if ( categories.includes(cat.term) ) {
+            showpois.features.push(poi);
+          }
+        }, this);
+      }, this);
+      switch (category) {
+        case 'food':
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'restaurant-noun');
+          break;
+        case 'health':
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'medical-noun');
+          break;
+        default: 
+          this.map.setLayoutProperty('olli-pois', 'icon-image', 'circle-15');
+      }
+      this.map.getSource('olli-pois').setData(showpois);
+      this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
@@ -83,10 +101,23 @@ let Map = class Map extends React.Component {
     if (nextProps.olliPosition !== this.props.olliPosition) {
       this.updateOlliPosition(nextProps.olliPosition);
     }
+    if (nextProps.poiCategory !== this.props.poiCategory) {
+      this.updatePOICategory(nextProps.poiCategory);
+    }
   }
 
   componentDidUpdate() {
   }
+
+  loadImage(imagename, imageid) {
+    this.map.loadImage('/img/'+imagename, (error, image) => {
+      if (error) {
+        throw error
+      } else {
+        this.map.addImage(imageid, image);
+      }
+    });
+}
 
   componentDidMount() {
     this.map = new mapboxgl.Map({
@@ -95,22 +126,21 @@ let Map = class Map extends React.Component {
       center: [-92.466, 44.022],
       zoom: 16
     });
-    this.map.loadImage('/img/olli-icon-svg.png', (error, image) => {
-      if (error) {
-        throw error
-      }
-      else {
-        this.map.addImage('olli', image)
-      }
+
+    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png'];
+    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun'];
+    for (var idx = 0; idx < imagenames.length; idx++) {
+      this.loadImage(imagenames[idx], imageids[idx]);
+    }
+    
+    this.map.on('click', evt => {
+      // set bbox as 5px rectangle area around clicked point
+      let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]];
+      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
+      console.log("Got clicked features: ");
+      console.log(features);
     });
-    this.map.loadImage('/img/olli-stop-color.png', (error, image) => {
-      if (error) {
-        throw error
-      }
-      else {
-        this.map.addImage('olli-stop', image)
-      }
-    });
+
     this.map.on('load', () => {
       // add route layer
       this.map.addLayer({
@@ -164,13 +194,39 @@ let Map = class Map extends React.Component {
           'icon-size': 0.75
         }
       });
+      this.map.addLayer({
+        'id': 'olli-pois',
+        'source': {
+          'type': 'geojson',
+          'data': POIS
+        },
+        'type': 'symbol',
+        'paint': {
+          'text-color': '#0087bd',
+          'text-halo-color': "#fff",
+          'text-halo-width': 4, 
+          'text-halo-blur': 1,
+          'icon-halo-color': "#fff",
+          'icon-halo-width': 4, 
+          'icon-halo-blur': 1
+        },
+        'layout': {
+          'visibility': 'none',
+          'icon-image': 'circle-15',
+          'icon-size': 0.5, 
+          'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
+          'text-size': 12, 
+          'text-offset': [0, 2],
+          'text-field': '{name}'
+        }
+      });
       this.props.setMapReady(true);
     });
   }
 
   render() {
     return (
-      <div ref={el => this.mapContainer = el} className="absolute top right left bottom" />
+      <div ref={el => this.mapContainer = el} />
     );
   }
 }
@@ -179,7 +235,8 @@ function mapStateToProps(state) {
   return {
     olliPosition: state.olliPosition,
     olliRoute: state.olliRoute,
-    olliRouteVisibility: state.olliRouteVisibility
+    olliRouteVisibility: state.olliRouteVisibility,
+    poiCategory: state.poiCategory
   };
 }
 
