@@ -78,7 +78,7 @@ class App extends Component {
         <div className="bx--grid top-level-container">
           <div className="bx--row">
             <div className="stopplacard bx--col-xs-12">
-                <h1 className="stopname">Peace Plaza</h1>
+                <h1 className="stopname">Mayo Gonda</h1>
             </div>
           </div>
 
@@ -114,8 +114,8 @@ class App extends Component {
               <div className="bx--row">
                 <div className="bx--col-xs-12">
                   <div className="stop-panel" style={{height:'450px'}}>
-                    <Info />
                     <Progress />
+                    <Info />
                   </div>
                 </div>
               </div>

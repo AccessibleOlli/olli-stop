@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
+import { foundPOIs } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
@@ -57,14 +58,12 @@ let Map = class Map extends React.Component {
   }
 
   updatePOICategory(category) {
-    let categories = [category.toLowerCase()];
-    if ( categories[0] === 'attractions' ) 
-      categories = categories.concat(['arts', 'publicservicesgovt']);
-    let showpois = {"type":"FeatureCollection","features":[]};
-    if (! category) {
-      console.log('POI Category is null.');
-    }
-    else {
+    let showpois = POIS;
+    if (category) {
+      let categories = [category.toLowerCase()];
+      if ( categories[0] === 'attractions' ) 
+        categories = categories.concat(['arts', 'publicservicesgovt']);
+      showpois = {"type":"FeatureCollection","features":[]};
       POIS.features.forEach(poi => {
         poi.properties.category.forEach(cat => {
           if ( categories.includes(cat.term) ) {
@@ -82,10 +81,10 @@ let Map = class Map extends React.Component {
         default: 
           this.map.setLayoutProperty('olli-pois', 'icon-image', 'circle-15');
       }
-      this.map.getSource('olli-pois').setData(showpois);
-      this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
     }
-  }
+    this.map.getSource('olli-pois').setData(showpois);
+    this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
+}
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
@@ -137,8 +136,10 @@ let Map = class Map extends React.Component {
       // set bbox as 5px rectangle area around clicked point
       let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]];
       let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
-      console.log("Got clicked features: ");
-      console.log(features);
+      // console.log("Got clicked features: ");
+      // console.log(features);
+      if (features.length>0)
+        this.props.foundPOIs(features[0]);
     });
 
     this.map.on('load', () => {
@@ -242,7 +243,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    setMapReady: setMapReady
+    setMapReady: setMapReady, 
+    foundPOIs: foundPOIs
   }, dispatch);
 }
 

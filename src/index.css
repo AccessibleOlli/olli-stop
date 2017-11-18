@@ -75,6 +75,20 @@ button.btn--bigaction:focus {
   height: 100%;
 }
 
+.infowin, .progresswin {
+  text-align: left;
+}
+
+.infowin>h3 {
+  color: #444;
+  font-weight: 700;
+  font-size: 12pt;
+  line-height: 24pt;
+}
+.infowin ol {
+  list-style: decimal inside;
+  line-height: normal;
+}
 
 .instructions {
   font-weight: 300;
