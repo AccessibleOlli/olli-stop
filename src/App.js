@@ -14,15 +14,17 @@ import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index'
 
-PouchDB.plugin(PouchDBFind  );
+require('dotenv').config()
+PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
+const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'http://localhost:5984/ollilocation';
 
 class App extends Component {
 
   constructor() {
     super();
-    this.db = new PouchDB('https://9f61849d-2884-4463-8888-56344789b05c-bluemix:3f660ce74468abc372307569838d83d10ac1cff70dea31d5f1499e284e98795a@9f61849d-2884-4463-8888-56344789b05c-bluemix.cloudant.com/ollilocation', {});
+    this.db = new PouchDB(REMOTE_DB, {});
     this.changes = this.db.changes({
       since: 'now',
       live: true,
