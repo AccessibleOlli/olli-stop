@@ -74,7 +74,7 @@ class Talk extends Component {
         <h2>{text}</h2>
         <button className='bx--btn bx--btn--secondary btn--bigaction' 
           onClick={() => this.toggleTalking()}>
-          <img src="/img/noun_1012333_cc.png" alt="Press to talk to Olli" height="48px" />
+          <img src="./img/noun_1012333_cc.png" alt="Press to talk to Olli" height="48px" />
       </button>
       </div>
     );

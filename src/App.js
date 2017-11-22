@@ -18,7 +18,7 @@ require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
-const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'http://localhost:5984/ollilocation';
+const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 
 class App extends Component {
 

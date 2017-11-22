@@ -27,9 +27,9 @@ class TogglePOICategory extends Component {
     return (
       <div className="stop-panel">
         <h2>Points of Interest</h2>
-        {this.renderButton('Health', '/img/noun_854071_cc.png')}
-        {this.renderButton('Food', '/img/noun_1012350_cc.png')}
-        {this.renderButton('Attractions', '/img/noun_1012350_cc.png')}
+        {this.renderButton('Health', './img/noun_854071_cc.png')}
+        {this.renderButton('Food', './img/noun_1012350_cc.png')}
+        {this.renderButton('Attractions', './img/noun_1012350_cc.png')}
       </div>
     );
   }

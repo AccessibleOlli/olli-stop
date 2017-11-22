@@ -109,7 +109,7 @@ let Map = class Map extends React.Component {
   }
 
   loadImage(imagename, imageid) {
-    this.map.loadImage('/img/'+imagename, (error, image) => {
+    this.map.loadImage('./img/'+imagename, (error, image) => {
       if (error) {
         throw error
       } else {
