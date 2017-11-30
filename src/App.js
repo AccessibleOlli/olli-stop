@@ -9,6 +9,7 @@ import Progress from './components/progress';
 import Info from './components/info';
 import Arrival from './components/arrival';
 import CallBus from './components/callbus';
+import StopHeader from './components/stop_header';
 import TogglePOICategory from './components/toggle_poi_category';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
@@ -80,7 +81,7 @@ class App extends Component {
         <div className="bx--grid top-level-container">
           <div className="bx--row">
             <div className="stopplacard bx--col-xs-12">
-                <h1 className="stopname">Mayo Gonda</h1>
+                <StopHeader />
             </div>
           </div>
 

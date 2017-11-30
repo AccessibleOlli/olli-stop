@@ -51,7 +51,7 @@ let Map = class Map extends React.Component {
         // bearing: positionObj.position.properties.heading
       // });
     } else {
-      cs = positionObj.coordinates.coordinates;
+      cs = positionObj.coordinates;
     }
     data.features[0].geometry.coordinates = [cs[0], cs[1]];
     this.map.getSource('olli-bus').setData(data);
