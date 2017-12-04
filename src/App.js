@@ -78,12 +78,18 @@ class App extends Component {
   }
 
   render() {
+    let op = {
+      currentStop: {
+        name: "Mayo Gonda"
+      }
+    };
+
     return (
       <Provider store={store}>
         <div className="bx--grid top-level-container">
           <div className="bx--row">
             <div className="stop-placard bx--col-xs-12">
-                <StopHeader />
+                <StopHeader olliPosition={op} />
             </div>
           </div>
 

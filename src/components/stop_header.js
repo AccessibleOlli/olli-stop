@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class StopHeader extends Component {
+export default class StopHeader extends Component {
 
   render() {
     let stopName = 'TBD';
@@ -21,10 +21,10 @@ class StopHeader extends Component {
 
 }
 
-function mapStateToProps(state) {
-  return {
-    olliPosition: state.olliPosition
-  }
-}
+// function mapStateToProps(state) {
+//   return {
+//     olliPosition: state.olliPosition
+//   }
+// }
 
-export default connect(mapStateToProps)(StopHeader);
+// export default connect(mapStateToProps)(StopHeader);
