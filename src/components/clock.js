@@ -24,10 +24,7 @@ export default class Clock extends Component {
 
     render() {
         return (
-            <div className="stop-panel">
-                <h2>Time</h2>
-                <div className="clock">{this.state.date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</div>
-            </div>
+            <span className="clock">{this.state.date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</span>
         );
     }
 }
