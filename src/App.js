@@ -11,6 +11,8 @@ import Arrival from './components/arrival';
 import CallBus from './components/callbus';
 import StopHeader from './components/stop_header';
 import TogglePOICategory from './components/toggle_poi_category';
+import Weather from './components/weather';
+import Credits from './components/credits';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index'
@@ -80,48 +82,40 @@ class App extends Component {
       <Provider store={store}>
         <div className="bx--grid top-level-container">
           <div className="bx--row">
-            <div className="stopplacard bx--col-xs-12">
+            <div className="stop-placard bx--col-xs-12">
                 <StopHeader />
             </div>
           </div>
 
-          <div className="bx--row">
-            <div className="instructions bx--col-xs-12"></div>
+          <div className="bx--row stop-info">
+            <div className="bx--col-xs-4 stop-panel"><Arrival /></div>
+            <div className="bx--col-xs-4 stop-panel">optimized for sight/hearing</div>
+            <div className="bx--col-xs-4 stop-panel" style={{textAlign:'right'}}><Clock /></div>
           </div>
 
           <div className="bx--row">
-            <div className="bx--col-xs-8">
-              <TogglePOICategory />
-            </div>
-            <div className="bx--col-xs-2">
-              <Arrival />
-            </div>
-            <div className="bx--col-xs-2">
-              <Clock />
-            </div>
-          </div>
-
-          <div className="bx--row">
-            <div className="bx--col-xs-8">
+            <div className="bx--col-xs-6 stop-panel">
               <Map />
             </div>
-            <div className="bx--col-xs-4">
+            <div className="bx--col-xs-6 stop-panel">
               <div className="bx--row">
-                <div className="bx--col-xs-6">
-                  <Talk />
+                <div className="bx--col-xs-12" style={{textAlign:'center'}}>
+                  <img src="./img/signing.png" alt="Sign language interpreter" height="96px" width="100%" />
                 </div>
-                <div className="bx--col-xs-6">
-                  <CallBus />
+                <div className="bx--col-xs-12" style={{height:'450px'}}>
+                  <Progress />
+                  <Info />
                 </div>
               </div>
-              <div className="bx--row">
-                <div className="bx--col-xs-12">
-                  <div className="stop-panel" style={{height:'450px'}}>
-                    <Progress />
-                    <Info />
-                  </div>
-                </div>
-              </div>
+            </div>
+          </div>
+
+          <div className="bx--row">
+            <div className="bx--col-xs-6 stop-panel">
+              <Weather />
+            </div>
+            <div className="bx--col-xs-6 stop-panel">
+              <Credits />
             </div>
           </div>
         </div>

@@ -60,13 +60,13 @@ class Info extends Component {
     // }
 
     render() {
-        if (!this.props.poi) { return (<div className="infowin"></div>)}
+        if (!this.props.poi) { return (<div className="convo"></div>)}
         // console.log(JSON.stringify(this.props.poi));
         const steps = this.state.directions.map((step, index) =>
             <li key={index}>{step}</li>
         );
         return (
-            <div className="infowin">
+            <div className="convo">
                 <h3 key={this.props.poi.properties.name}>{this.props.poi.properties.name}</h3>
                 <button className="bx--btn bx--btn--secondary" 
                         onClick={() => this.updateDirections()}>Get Directions</button>

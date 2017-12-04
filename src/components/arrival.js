@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 class Arrival extends Component {
     render() {
         return (
-            <div className="stop-panel">
-                <h2>Arriving</h2>
-                <div className="clock">4 minutes{this.props.arrivaltime}</div>
+            <div>
+                <span>next Olli in: </span>
+                <span className="clock">4 minutes{this.props.arrivaltime}</span>
             </div>
         );
     }
