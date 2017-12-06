@@ -43,13 +43,7 @@ class App extends Component {
     }
     else {
       console.log('Trying to connect to websocket...');
-      try {
-        this.websocket = new WebSocket(REMOTE_WS);
-      }
-      catch(e) {
-        setTimeout(() => {this.connectWebsocket()}, 5000);
-        return;
-      }
+      this.websocket = new WebSocket(REMOTE_WS);
       this.websocket.onopen = () => {
         this.websocketConnected = true;
         console.log('Socket opened');
