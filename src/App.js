@@ -25,6 +25,11 @@ const store = createStore(reducers);
 const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 
+// REACT_APP_WEATHER_URL should be in the format similar to: http://host.domain.com/weather/{lat}/{lon}
+// {lat} and {lon} will be replaced with actual latitude and longitude later by the Weather component
+const WEATHER_URL = process.env['REACT_APP_WEATHER_URL'] || (REMOTE_WS ? REMOTE_WS.replace('ws', 'http') + '/weather/{lat}/{lon}' : '')
+const WEATHER_REFRESH_MIN = 10
+
 class App extends Component {
 
   constructor() {
@@ -197,7 +202,7 @@ class App extends Component {
 
           <div className="bx--row">
             <div className="bx--col-xs-6 stop-panel">
-              <Weather />
+              <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
             </div>
             <div className="bx--col-xs-6 stop-panel">
               <Credits />
