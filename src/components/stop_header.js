@@ -5,7 +5,6 @@ class StopHeader extends Component {
 
   render() {
     let stopName = 'TBD';
-    console.log(this.props.olliPosition);
     if (this.props.olliPosition) {
       if (this.props.olliPosition.currentStop) {
         stopName = this.props.olliPosition.currentStop.name;

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
@@ -21,12 +22,98 @@ require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
+const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 
 class App extends Component {
 
   constructor() {
     super();
+    if (REMOTE_WS) {
+      this.subscribeWebsocket();
+    }
+    else {
+      this.subscribePouchDB();
+    }
+  }
+
+  connectWebsocket() {
+    if (this.websocketConnected) {
+      console.log('Websocket already connected...');
+    }
+    else {
+      console.log('Trying to connect to websocket...');
+      try {
+        this.websocket = new WebSocket(REMOTE_WS);
+      }
+      catch(e) {
+        setTimeout(() => {this.connectWebsocket()}, 5000);
+        return;
+      }
+      this.websocket.onopen = () => {
+        this.websocketConnected = true;
+        console.log('Socket opened');
+      }
+      this.websocket.onclose = () => {
+        console.log('Socket closed');
+        this.websocket = null;
+        this.websocketConnected = false;
+        setTimeout(() => {this.connectWebsocket()}, 5000);
+      }
+      this.websocket.onerror = (err) => {
+        console.log('Socket error', err);
+        this.websocket = null;
+        this.websocketConnected = false;
+        setTimeout(() => {this.connectWebsocket()}, 5000);
+      }
+      this.websocket.onmessage = (message) => {
+        try {
+          let doc = JSON.parse(message.data);
+          if (doc.type === 'route_info') {
+            store.dispatch(setOlliRoute(doc));
+          }
+          else if (doc.type === 'trip_start') {
+            store.dispatch(startOlliTrip(doc));
+          }
+          else if (doc.type === 'trip_end') {
+            store.dispatch(endOlliTrip(doc));
+          }
+          else if (doc.type === 'geo_position') {
+            store.dispatch(setOlliPosition(doc));
+          }
+        }
+        catch(e) {
+          console.log(message.data);
+        }
+      }
+    }
+  }
+
+  subscribeWebsocket() {
+    let remoteUrl = REMOTE_WS.replace('ws','http');
+    axios.get(remoteUrl + '/info')
+    .then(response => {
+      console.log(response);
+      if (response.data.started) {
+        console.log('Simulator already running...');
+        store.dispatch(setOlliRoute(response.data.route));
+        return Promise.resolve(response);
+      }
+      else {
+        console.log('Starting simulator...');
+        return axios.get(remoteUrl + '/start');
+      }
+    })
+    .then(response => {
+      return axios.get(remoteUrl + '/info');
+    })
+    .then(response => {
+      store.dispatch(setOlliRoute(response.data.route));
+      this.connectWebsocket();
+    });
+  }
+
+  subscribePouchDB() {
     this.db = new PouchDB(REMOTE_DB, {});
     this.changes = this.db.changes({
       since: 'now',
