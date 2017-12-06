@@ -30,10 +30,10 @@ class App extends Component {
   constructor() {
     super();
     if (REMOTE_WS) {
-      this.subscribeWebsocket();
+      this.startWebsocket();
     }
     else {
-      this.subscribePouchDB();
+      this.startPouchDB();
     }
   }
 
@@ -43,6 +43,7 @@ class App extends Component {
     }
     else {
       console.log('Trying to connect to websocket...');
+      this.websocketConnected = true;
       this.websocket = new WebSocket(REMOTE_WS);
       this.websocket.onopen = () => {
         this.websocketConnected = true;
@@ -83,7 +84,7 @@ class App extends Component {
     }
   }
 
-  subscribeWebsocket() {
+  startWebsocket() {
     let remoteUrl = REMOTE_WS.replace('ws','http');
     axios.get(remoteUrl + '/info')
     .then(response => {
@@ -104,10 +105,13 @@ class App extends Component {
     .then(response => {
       store.dispatch(setOlliRoute(response.data.route));
       this.connectWebsocket();
+    })
+    .catch(() => {
+      setTimeout(() => {this.startWebsocket()}, 5000);
     });
   }
 
-  subscribePouchDB() {
+  startPouchDB() {
     this.db = new PouchDB(REMOTE_DB, {});
     this.changes = this.db.changes({
       since: 'now',
