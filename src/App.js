@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
@@ -22,8 +23,14 @@ require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
+const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
+
+// REACT_APP_WEATHER_URL should be in the format similar to: http://host.domain.com/weather/{lat}/{lon}
+// {lat} and {lon} will be replaced with actual latitude and longitude later by the Weather component
+const WEATHER_URL = process.env['REACT_APP_WEATHER_URL'] || (REMOTE_WS ? REMOTE_WS.replace('ws', 'http') + '/weather/{lat}/{lon}' : '')
+const WEATHER_REFRESH_MIN = 10
 
 class App extends Component {
 
@@ -32,6 +39,89 @@ class App extends Component {
     this.state = {
       stop: Stops.features[OLLI_STOP_IDX]
     }
+    if (REMOTE_WS) {
+      this.startWebsocket();
+    }
+    else {
+      this.startPouchDB();
+    }
+  }
+
+  connectWebsocket() {
+    if (this.websocketConnected) {
+      console.log('Websocket already connected...');
+    }
+    else {
+      console.log('Trying to connect to websocket...');
+      this.websocketConnected = true;
+      this.websocket = new WebSocket(REMOTE_WS);
+      this.websocket.onopen = () => {
+        this.websocketConnected = true;
+        console.log('Socket opened');
+      }
+      this.websocket.onclose = () => {
+        console.log('Socket closed');
+        this.websocket = null;
+        this.websocketConnected = false;
+        setTimeout(() => {this.connectWebsocket()}, 5000);
+      }
+      this.websocket.onerror = (err) => {
+        console.log('Socket error', err);
+        this.websocket = null;
+        this.websocketConnected = false;
+        setTimeout(() => {this.connectWebsocket()}, 5000);
+      }
+      this.websocket.onmessage = (message) => {
+        try {
+          let doc = JSON.parse(message.data);
+          if (doc.type === 'route_info') {
+            store.dispatch(setOlliRoute(doc));
+          }
+          else if (doc.type === 'trip_start') {
+            store.dispatch(startOlliTrip(doc));
+          }
+          else if (doc.type === 'trip_end') {
+            store.dispatch(endOlliTrip(doc));
+          }
+          else if (doc.type === 'geo_position') {
+            store.dispatch(setOlliPosition(doc));
+          }
+        }
+        catch(e) {
+          console.log(message.data);
+        }
+      }
+    }
+  }
+
+  startWebsocket() {
+    let remoteUrl = REMOTE_WS.replace('ws','http');
+    axios.get(remoteUrl + '/info')
+    .then(response => {
+      console.log(response);
+      if (response.data.started) {
+        console.log('Simulator already running...');
+        store.dispatch(setOlliRoute(response.data.route));
+        return Promise.resolve(response);
+      }
+      else {
+        console.log('Starting simulator...');
+        return axios.get(remoteUrl + '/start');
+      }
+    })
+    .then(response => {
+      return axios.get(remoteUrl + '/info');
+    })
+    .then(response => {
+      store.dispatch(setOlliRoute(response.data.route));
+      this.connectWebsocket();
+    })
+    .catch(() => {
+      setTimeout(() => {this.startWebsocket()}, 5000);
+    });
+  }
+
+  startPouchDB() {
     this.db = new PouchDB(REMOTE_DB, {});
     this.changes = this.db.changes({
       since: 'now',
@@ -125,7 +215,7 @@ class App extends Component {
 
           <div className="bx--row">
             <div className="bx--col-xs-6 stop-panel">
-              <Weather />
+              <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
             </div>
             <div className="bx--col-xs-6 stop-panel">
               <Credits />
