@@ -60,7 +60,14 @@ class Info extends Component {
     // }
 
     render() {
-        if (!this.props.messageHtml) { return (<div className="convo"></div>)}
+        if (!this.props.message || !this.props.message.messageHtml) {
+            let msg = {__html: "<h2>Welcome to the Olli stop.</h2><h2>Where would you like to go?</h2><p>Select a stop on the map.</p>"};
+            return (
+                <div className="convo">
+                    <div dangerouslySetInnerHTML={msg} />
+                </div>
+            );
+        }
         // console.log(JSON.stringify(this.props.poi));
         // const steps = this.state.directions.map((step, index) =>
         //     <li key={index}>{step}</li>
@@ -71,7 +78,8 @@ class Info extends Component {
                 <button className="bx--btn bx--btn--secondary" 
                         onClick={() => this.updateDirections()}>Get Directions</button>
                 <ol>{steps}</ol> */}
-                <div dangerouslySetInnerHTML={this.props.messageHtml} />
+                <div dangerouslySetInnerHTML={this.props.message.messageHtml} />
+                <div>{this.props.message.poiNames.length}</div>
             </div>
         );
     }
@@ -79,7 +87,7 @@ class Info extends Component {
 
 function mapStateToProps(state) {
     return {
-        messageHtml: state.mapMsg
+        message: state.mapMsg
     };
   }
   

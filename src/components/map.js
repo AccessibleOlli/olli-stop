@@ -187,7 +187,7 @@ let Map = class Map extends React.Component {
           this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
           // quick hack to give a relevant message to those near a medical center
           if ( ['Mayo Guggenheim', 'Mayo Gonda', 'Peace Plaza'].includes(features[0].properties.name)) {
-            this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"});
+            this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"}, []);
           }
           this.setState({destination: features[0], stopSelected: true});
         } else {
