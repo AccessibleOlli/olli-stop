@@ -1,10 +1,10 @@
-import { FOUND_POIS } from '../actions/index'
+import { MAP_MSG } from '../actions/index'
 
 export default function (state = false, action) {
   if (action) {
     switch (action.type) {
-      case FOUND_POIS:
-        state = action.pois;
+      case MAP_MSG:
+        state = action.messageHtml;
         break;
       default:
         break;

@@ -60,17 +60,18 @@ class Info extends Component {
     // }
 
     render() {
-        if (!this.props.poi) { return (<div className="convo"></div>)}
+        if (!this.props.messageHtml) { return (<div className="convo"></div>)}
         // console.log(JSON.stringify(this.props.poi));
-        const steps = this.state.directions.map((step, index) =>
-            <li key={index}>{step}</li>
-        );
+        // const steps = this.state.directions.map((step, index) =>
+        //     <li key={index}>{step}</li>
+        // );
         return (
             <div className="convo">
-                <h3 key={this.props.poi.properties.name}>{this.props.poi.properties.name}</h3>
+                {/* <h3 key={this.props.poi.properties.name}>{this.props.poi.properties.name}</h3>
                 <button className="bx--btn bx--btn--secondary" 
                         onClick={() => this.updateDirections()}>Get Directions</button>
-                <ol>{steps}</ol>
+                <ol>{steps}</ol> */}
+                <div dangerouslySetInnerHTML={this.props.messageHtml} />
             </div>
         );
     }
@@ -78,7 +79,7 @@ class Info extends Component {
 
 function mapStateToProps(state) {
     return {
-      poi: state.poiShow
+        messageHtml: state.mapMsg
     };
   }
   
