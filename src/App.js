@@ -3,30 +3,35 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 import reducers from './reducers';
 import Clock from './components/clock';
-import Talk from './components/talk';
+// import Talk from './components/talk';
 import Map from './components/map';
 import Progress from './components/progress';
 import Info from './components/info';
 import Arrival from './components/arrival';
-import CallBus from './components/callbus';
+// import CallBus from './components/callbus';
 import StopHeader from './components/stop_header';
-import TogglePOICategory from './components/toggle_poi_category';
+// import TogglePOICategory from './components/toggle_poi_category';
 import Weather from './components/weather';
 import Credits from './components/credits';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index'
+import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index';
+import Stops from './data/stops.json';
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
+const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
 
 class App extends Component {
 
   constructor() {
     super();
+    this.state = {
+      stop: Stops.features[OLLI_STOP_IDX]
+    }
     this.db = new PouchDB(REMOTE_DB, {});
     this.changes = this.db.changes({
       since: 'now',
@@ -78,18 +83,18 @@ class App extends Component {
   }
 
   render() {
-    let op = {
-      currentStop: {
-        name: "Mayo Gonda"
-      }
-    };
+    // let op = {
+    //   currentStop: {
+    //     name: "Mayo Gonda"
+    //   }
+    // };
 
     return (
       <Provider store={store}>
         <div className="bx--grid top-level-container">
           <div className="bx--row">
             <div className="stop-placard bx--col-xs-12">
-                <StopHeader olliPosition={op} />
+                <StopHeader stop={this.state.stop} />
             </div>
           </div>
 
@@ -100,15 +105,17 @@ class App extends Component {
           </div>
 
           <div className="bx--row">
-            <div className="bx--col-xs-6 stop-panel">
-              <Map />
+            <div className="bx--col-xs-7 stop-panel">
+              <Map stop={this.state.stop} />
             </div>
-            <div className="bx--col-xs-6 stop-panel">
+            <div className="bx--col-xs-5 stop-panel">
               <div className="bx--row">
                 <div className="bx--col-xs-12" style={{textAlign:'center'}}>
                   <img src="./img/signing.png" alt="Sign language interpreter" height="96px" width="100%" />
                 </div>
-                <div className="bx--col-xs-12" style={{height:'450px'}}>
+              </div>
+              <div className="bx--row" style={{minHeight:'100%'}}>
+                <div className="bx--col-xs-12">
                   <Progress />
                   <Info />
                 </div>

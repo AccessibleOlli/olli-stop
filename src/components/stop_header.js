@@ -5,13 +5,13 @@ export default class StopHeader extends Component {
 
   render() {
     let stopName = 'TBD';
-    console.log(this.props.olliPosition);
-    if (this.props.olliPosition) {
-      if (this.props.olliPosition.currentStop) {
-        stopName = this.props.olliPosition.currentStop.name;
+    // console.log(this.props.stop);
+    if (this.props.stop) {
+      if (this.props.stop.properties) {
+        stopName = this.props.stop.properties.name;
       }
-      else if (this.props.olliPosition.nextStop) {
-        stopName = this.props.olliPosition.nextStop.name;
+      else if (this.props.stop.nextStop) {
+        stopName = this.props.stop.nextStop.name;
       }
     }
     return (
