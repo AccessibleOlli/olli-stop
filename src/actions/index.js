@@ -62,9 +62,10 @@ export function setPOICategory(category) {
   };
 }
 
-export function mapMessage(html) {
+export function mapMessage(html, poiNames) {
   return {
     type: MAP_MSG,
-    messageHtml: html
+    messageHtml: html, 
+    poiNames: poiNames
   };
 }

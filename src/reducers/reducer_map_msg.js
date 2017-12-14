@@ -4,7 +4,10 @@ export default function (state = false, action) {
   if (action) {
     switch (action.type) {
       case MAP_MSG:
-        state = action.messageHtml;
+        state = {
+          messageHtml: action.messageHtml,
+          poiNames: action.poiNames
+        };
         break;
       default:
         break;

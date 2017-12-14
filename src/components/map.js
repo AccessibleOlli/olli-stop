@@ -91,6 +91,16 @@ let Map = class Map extends React.Component {
     this.map.getSource('olli-bus').setData(data);
   }
 
+  // THIS IS ALL MOCKUP. REPLACE WITH WATSON ASSISTANT YELP SKILL
+  getNearbyPOIs(stopfeature) {
+    // quick hack to give a relevant message to those near a medical center
+    if ( ['Mayo Guggenheim', 'Mayo Gonda', 'Peace Plaza'].includes(stopfeature.properties.name)) {
+      this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"}, []);
+    }
+
+    this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
+}
+
   updatePOICategory(category) {
     let showpois = POIS;
     if (category) {
@@ -171,6 +181,7 @@ let Map = class Map extends React.Component {
       if (this.state.stopSelected && features.length>0) {
         if (this.state.destination && this.state.destination.properties.name === features[0].properties.name) {
           // reset the destination stop and leave map in a clean state
+          this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
           this.map.getSource('olli-destination').setData({'type': 'FeatureCollection', 'features': []});
           this.setState({destination: null, stopSelected: false});
           return;
@@ -182,14 +193,9 @@ let Map = class Map extends React.Component {
 
       if (!this.state.stopSelected) {
         if (features.length>0) {
-          // let newdest = {'type': 'FeatureCollection', 'features': features};
           this.map.getSource('olli-destination').setData(features[0]);
-          this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
-          // quick hack to give a relevant message to those near a medical center
-          if ( ['Mayo Guggenheim', 'Mayo Gonda', 'Peace Plaza'].includes(features[0].properties.name)) {
-            this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"});
-          }
           this.setState({destination: features[0], stopSelected: true});
+          this.getNearbyPOIs(features[0]);
         } else {
           this.beep(300, 300);
           var warningpopup = new mapboxgl.Popup({closeButton: false})
@@ -316,7 +322,7 @@ let Map = class Map extends React.Component {
           'icon-size': 0.5, 
           'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
           'text-size': 12, 
-          'text-offset': [0, 2],
+          // 'text-offset': [0, 2],
           'text-field': '{name}'
         }
       });
