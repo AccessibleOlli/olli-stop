@@ -173,12 +173,6 @@ class App extends Component {
   }
 
   render() {
-    // let op = {
-    //   currentStop: {
-    //     name: "Mayo Gonda"
-    //   }
-    // };
-
     return (
       <Provider store={store}>
         <div className="bx--grid top-level-container">
@@ -206,7 +200,7 @@ class App extends Component {
               </div>
               <div className="bx--row" style={{minHeight:'100%'}}>
                 <div className="bx--col-xs-12">
-                  <Progress />
+                  {/* <Progress /> */}
                   <Info />
                 </div>
               </div>
