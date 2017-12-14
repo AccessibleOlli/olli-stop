@@ -101,6 +101,40 @@ let Map = class Map extends React.Component {
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
 }
 
+  updatePOIs(pois) {
+    console.log('UPDATING POIS!!!');
+    console.log(pois);
+    let showpois = {"type":"FeatureCollection","features":[]};
+    pois.forEach(p => {
+      let poi = {
+        type: 'Feature',
+        _id: p.id,
+        properties: {
+          name: p.name,
+          label: [{value: p.name}],    
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [p.coordinates.longitude, p.coordinates.latitude]
+        }
+      };
+      console.log(JSON.stringify(poi));
+      showpois.features.push(poi);
+      // switch (category) {
+      //   case 'food':
+      //     this.map.setLayoutProperty('olli-pois', 'icon-image', 'restaurant-noun');
+      //     break;
+      //   case 'health':
+      //     this.map.setLayoutProperty('olli-pois', 'icon-image', 'medical-noun');
+      //     break;
+      //   default: 
+      //     this.map.setLayoutProperty('olli-pois', 'icon-image', 'circle-15');
+      // }
+    });
+    this.map.getSource('olli-pois').setData(showpois);
+    this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
+  }
+
   updatePOICategory(category) {
     let showpois = POIS;
     if (category) {
@@ -146,6 +180,9 @@ let Map = class Map extends React.Component {
     }
     if (nextProps.poiCategory !== this.props.poiCategory) {
       this.updatePOICategory(nextProps.poiCategory);
+    }
+    if (nextProps.pois !== this.props.pois) {
+      this.updatePOIs(nextProps.pois);
     }
   }
 
@@ -340,7 +377,8 @@ function mapStateToProps(state) {
     olliPosition: state.olliPosition,
     olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
-    poiCategory: state.poiCategory
+    poiCategory: state.poiCategory,
+    pois: state.pois
   };
 }
 

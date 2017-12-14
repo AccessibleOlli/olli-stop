@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { setPOIs } from '../actions/index'
 import axios from 'axios';
 import watsonSpeech from 'watson-speech';
 
@@ -44,6 +45,11 @@ class Talk extends Component {
             data: responseObject
           });
         }).then((converationResponse) => {
+          let pois = [];
+          if (converationResponse.data.card) {
+            pois = converationResponse.data.card.content;
+          }
+          this.props.setPOIs(converationResponse.data.card.content);
           console.log('Olli: ' + converationResponse.data.response);
           var byteString = atob(converationResponse.data.voice);
           // write the bytes of the string to an ArrayBuffer
@@ -89,7 +95,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    //
+    setPOIs: setPOIs
   }, dispatch);
 }
 

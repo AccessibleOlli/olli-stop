@@ -12,6 +12,8 @@ import Arrival from './components/arrival';
 // import CallBus from './components/callbus';
 import StopHeader from './components/stop_header';
 // import TogglePOICategory from './components/toggle_poi_category';
+import Talk from './components/talk';
+import Chat from './components/chat';
 import Weather from './components/weather';
 import Credits from './components/credits';
 import PouchDB from 'pouchdb';
@@ -201,6 +203,7 @@ class App extends Component {
               <div className="bx--row" style={{minHeight:'100%'}}>
                 <div className="bx--col-xs-12">
                   {/* <Progress /> */}
+                  <Chat />
                   <Info />
                 </div>
               </div>

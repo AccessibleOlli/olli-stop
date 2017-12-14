@@ -5,6 +5,7 @@ export const SET_OLLI_ROUTE_VISIBILITY = 'SET_OLLI_ROUTE_VISIBILITY';
 export const START_OLLI_TRIP = 'START_OLLI_TRIP';
 export const END_OLLI_TRIP = 'END_OLLI_TRIP';
 export const SET_POI_CATEGORY = 'SET_POI_CATEGORY';
+export const SET_POIS = 'SET_POIS';
 export const MAP_MSG = 'MAP_MSG';
 
 export function setMapReady(ready) {
@@ -59,6 +60,13 @@ export function setPOICategory(category) {
   return {
     type: SET_POI_CATEGORY,
     category: category
+  };
+}
+
+export function setPOIs(pois) {
+  return {
+    type: SET_POIS,
+    pois: pois
   };
 }
 

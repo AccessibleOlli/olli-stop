@@ -4,6 +4,7 @@ import OlliPositionReducer from './reducer_olli_position';
 import OlliRouteReducer from './reducer_olli_route';
 import OlliRouteVisibilityReducer from './reducer_olli_route_visibility';
 import POICategoryReducer from './reducer_poi_category';
+import POIsReducer from './reducer_pois';
 import MapMsgReducer from './reducer_map_msg';
 
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   olliPosition: OlliPositionReducer,
   olliRoute: OlliRouteReducer,
   olliRouteVisibility: OlliRouteVisibilityReducer,
+  pois: POIsReducer,
   poiCategory: POICategoryReducer, 
   mapMsg: MapMsgReducer
 });
