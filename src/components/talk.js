@@ -49,7 +49,7 @@ class Talk extends Component {
           if (converationResponse.data.card) {
             pois = converationResponse.data.card.content;
           }
-          this.props.setPOIs(converationResponse.data.card.content);
+          this.props.setPOIs(pois);
           console.log('Olli: ' + converationResponse.data.response);
           var byteString = atob(converationResponse.data.voice);
           // write the bytes of the string to an ArrayBuffer

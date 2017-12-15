@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setPOIs } from '../actions/index'
+import POIList from '../components/poi_list';
+import POISelectedList from '../components/poi_selected_list'
+import POIDirections from '../components/poi_directions'
 import axios from 'axios';
 
-class Talk extends Component {
-
-  constructor() {
-    super();
-  }
+class Chat extends Component {
 
   converse(text) {
     console.log('User/Button: ' + text);
@@ -38,6 +37,9 @@ class Talk extends Component {
       <div className="stop-panel">
         <button className='bx--btn bx--btn--secondary btn--bigaction' onClick={() => this.converse('show me restaurants near peace plaza')}>Restaurants</button>
         <button className='bx--btn bx--btn--secondary btn--bigaction' onClick={() => this.converse('show me pharmacies near peace plaza')}>Pharmacies</button>
+        <POISelectedList />
+        <POIDirections />
+        <POIList />
       </div>
     );
   }
@@ -55,4 +57,4 @@ function mapDispatchToProps(dispatch) {
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Talk);
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
