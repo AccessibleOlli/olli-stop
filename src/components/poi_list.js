@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { selectPOI } from '../actions/index'
+import POIListItem from './poi_list_item';
 
 class POIList extends Component {
 
@@ -14,9 +15,7 @@ class POIList extends Component {
     if (this.props.pois) {
       this.props.pois.forEach((poi) => {
         pois.push(
-          <div>
-            <a onClick={(e) => this.selectPOI(poi)}>{poi.name}</a>
-          </div>
+          <POIListItem poi={poi} onSelect={(poi) => this.selectPOI(poi)} />
         );
       })
     }
