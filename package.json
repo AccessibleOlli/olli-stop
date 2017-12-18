@@ -24,7 +24,7 @@
     "eject": "react-scripts eject"
   },
   "homepage": "https://accessibleolli.github.io/olli-stop",
-  "proxy": "http://localhost:3001",
+  "proxy": "https://olli-stop-backend.mybluemix.net",
   "devDependencies": {
     "gh-pages": "^1.1.0"
   }

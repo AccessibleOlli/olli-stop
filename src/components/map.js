@@ -117,9 +117,30 @@ let Map = class Map extends React.Component {
     if ( ['Mayo Guggenheim', 'Mayo Gonda', 'Peace Plaza'].includes(stopfeature.properties.name)) {
       this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"}, []);
     }
-
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
 }
+
+  updatePOIs(pois) {
+    let showpois = {"type":"FeatureCollection","features":[]};
+    pois.forEach(p => {
+      let poi = {
+        type: 'Feature',
+        _id: p.id,
+        properties: {
+          name: p.name,
+          label: [{value: p.name}],
+          image_url: p.image_url
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [p.coordinates.longitude, p.coordinates.latitude]
+        }
+      };
+      showpois.features.push(poi);
+    });
+    this.map.getSource('olli-pois').setData(showpois);
+    this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
+  }
 
   updatePOICategory(category) {
     let showpois = POIS;
@@ -170,6 +191,9 @@ let Map = class Map extends React.Component {
     if (nextProps.destinationStopName && nextProps.destinationStopName !== this.props.destinationStopName) {
       this.setNewDestination(nextProps.destinationStopName);
     }
+    if (nextProps.pois !== this.props.pois) {
+      this.updatePOIs(nextProps.pois);
+    }
   }
 
   loadImage(imagename, imageid) {
@@ -197,42 +221,55 @@ let Map = class Map extends React.Component {
     }
     
     this.map.on('click', evt => {
-      if (warningpopup) warningpopup.remove();
-
       let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
-      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-stops']});
-      if (this.state.stopSelected && features.length>0) {
-        if (this.state.destination && this.state.destination.properties.name === features[0].properties.name) {
-          // reset the destination stop and leave map in a clean state
-          this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
-          this.map.getSource('olli-destination').setData({'type': 'FeatureCollection', 'features': []});
-          this.setState({destination: null, stopSelected: false});
-          return;
-        }
+      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
+      if (!features.length) {
+        return;
       }
+      let feature = features[0];
+      console.log(feature);
+      let popup = new mapboxgl.Popup({ offset: [0, -15] })
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML('<h3>' + feature.properties.name + '</h3><p><img src="' + feature.properties.image_url + '" style="height: 40px;"></p>')
+        .setLngLat(feature.geometry.coordinates)
+        .addTo(this.map);
+      
+      // if (warningpopup) warningpopup.remove();
+        
+      // let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
+      // let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-stops']});
+      // if (this.state.stopSelected && features.length>0) {
+      //   if (this.state.destination && this.state.destination.properties.name === features[0].properties.name) {
+      //     // reset the destination stop and leave map in a clean state
+      //     this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
+      //     this.map.getSource('olli-destination').setData({'type': 'FeatureCollection', 'features': []});
+      //     this.setState({destination: null, stopSelected: false});
+      //     return;
+      //   }
+      // }
 
-      let layerid = this.state.stopSelected ? 'olli-pois' : 'olli-stops';
-      features = this.map.queryRenderedFeatures(bbox, {layers: [layerid]});
+      // let layerid = this.state.stopSelected ? 'olli-pois' : 'olli-stops';
+      // features = this.map.queryRenderedFeatures(bbox, {layers: [layerid]});
 
-      if (!this.state.stopSelected) {
-        if (features.length>0) {
-          this.map.getSource('olli-destination').setData(features[0]);
-          this.setState({destination: features[0], stopSelected: true});
-          this.getNearbyPOIs(features[0]);
-        } else {
-          this.beep(300, 300);
-          var warningpopup = new mapboxgl.Popup({closeButton: false})
-            .setLngLat([CENTER_LON, CENTER_LAT])
-            .setHTML('Please press on a bus stop')
-            .addTo(this.map);
-        }
+      // if (!this.state.stopSelected) {
+      //   if (features.length>0) {
+      //     this.map.getSource('olli-destination').setData(features[0]);
+      //     this.setState({destination: features[0], stopSelected: true});
+      //     this.getNearbyPOIs(features[0]);
+      //   } else {
+      //     this.beep(300, 300);
+      //     var warningpopup = new mapboxgl.Popup({closeButton: false})
+      //       .setLngLat([CENTER_LON, CENTER_LAT])
+      //       .setHTML('Please press on a bus stop')
+      //       .addTo(this.map);
+      //   }
 
-      } else {
-        if (features.length>0) {
-          // there's a stop selected, and the click has found some features from the POIs layer
-          this.props.mapMessage({__html: "<h3>"+features[0].properties.name+"</h3>"});
-        }
-      }
+      // } else {
+      //   if (features.length>0) {
+      //     // there's a stop selected, and the click has found some features from the POIs layer
+      //     this.props.mapMessage({__html: "<h3>"+features[0].properties.name+"</h3>"});
+      //   }
+      // }
     });
 
     this.map.on('load', () => {
@@ -365,7 +402,8 @@ function mapStateToProps(state) {
     olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
     poiCategory: state.poiCategory,
-    destinationStopName: state.destinationStopName
+    destinationStopName: state.destinationStopName,
+    pois: state.pois
   };
 }
 

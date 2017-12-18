@@ -13,6 +13,8 @@ import OlliLogo from './components/olli_logo';
 import StopHeader from './components/stop_header';
 import StopGraph from './components/stop_graph';
 import PoisNearby from './components/pois_nearby';
+import Talk from './components/talk';
+import Chat from './components/chat';
 import Weather from './components/weather';
 import Credits from './components/credits';
 import PouchDB from 'pouchdb';
@@ -182,7 +184,6 @@ class App extends Component {
           {/* <div className="stop-placard"></div> */}
           <OlliLogo />
           <StopHeader stop={this.state.stop} />
-
           <div className="clock-weather">
             <Clock />
             <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
@@ -191,6 +192,7 @@ class App extends Component {
             <img src="./img/signing.png" alt="Sign language interpreter" width="100%" />
           </div>
           <Info />
+          <Chat />
 
           <StopGraph />
           <Map stop={this.state.stop} />
