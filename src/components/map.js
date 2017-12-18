@@ -80,25 +80,22 @@ let Map = class Map extends React.Component {
 
 
   findStopFeatureByName(stopname) {
-    OLLI_STOPS.features.forEach(stop => {
-      if (stop.properties.name.toLowerCase() === stopname.toLowerCase()) {
-        return(stop);
+    var foundstop = false;
+    for (let i=0; i<OLLI_STOPS.features.length; i++) {
+      let stop = OLLI_STOPS.features[i];
+      if (stop.properties.name.toString().toLowerCase() === stopname.toLowerCase()) {
+        return stop;
       }
-    });
+    }
     return false;
   }
 
   setNewDestination(stopname) {
-    // this.converse("show me restaurants near "+stopname);
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
-      this.map.getSource('olli-destination').setData(stop);
       this.setState({destination: stop, stopSelected: true});
-      // this.getNearbyPOIs(features[0]);
-
-      // this.converse("show me pharmacies near "+stopname);
     }
-}
+  }
 
   updateMapBounds(coordinates) {
     const initalBounds = coordinates.reduce((bounds, coord) => {
@@ -197,6 +194,17 @@ let Map = class Map extends React.Component {
     this.map.getSource('olli-pois').setData(showpois);
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
 }
+
+  // handle state changes to destination stop
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.stopSelected) {
+      console.log("got new destination");
+      this.map.getSource('olli-destination').setData(this.state.destination);
+      // this.getNearbyPOIs(features[0]);
+      // this.converse("show me restaurants near "+stopname);
+      // this.converse("show me pharmacies near "+stopname);
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
