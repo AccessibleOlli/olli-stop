@@ -9,9 +9,9 @@ import Map from './components/map';
 import Progress from './components/progress';
 import Info from './components/info';
 import Arrival from './components/arrival';
-// import CallBus from './components/callbus';
+import OlliLogo from './components/olli_logo';
 import StopHeader from './components/stop_header';
-// import TogglePOICategory from './components/toggle_poi_category';
+import PoisNearby from './components/pois_nearby';
 import Weather from './components/weather';
 import Credits from './components/credits';
 import PouchDB from 'pouchdb';
@@ -175,47 +175,30 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div className="bx--grid top-level-container">
-          <div className="bx--row">
-            <div className="stop-placard bx--col-xs-12">
-                <StopHeader stop={this.state.stop} />
-            </div>
+
+        <div className="cssgrid">
+
+          <div className="stop-placard"></div>
+          <OlliLogo />
+          <StopHeader stop={this.state.stop} />
+
+          <div className="clock-weather">
+            <h2><Clock /></h2>
+            <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
           </div>
 
-          <div className="bx--row stop-info">
-            <div className="bx--col-xs-4 stop-panel"><Arrival /></div>
-            <div className="bx--col-xs-4 stop-panel">optimized for sight/hearing</div>
-            <div className="bx--col-xs-4 stop-panel" style={{textAlign:'right'}}><Clock /></div>
+          <div className="asl-screen">
+            <img src="./img/signing.png" alt="Sign language interpreter" width="100%" />
           </div>
 
-          <div className="bx--row">
-            <div className="bx--col-xs-7 stop-panel">
-              <Map stop={this.state.stop} />
-            </div>
-            <div className="bx--col-xs-5 stop-panel">
-              <div className="bx--row">
-                <div className="bx--col-xs-12" style={{textAlign:'center'}}>
-                  <img src="./img/signing.png" alt="Sign language interpreter" height="96px" width="100%" />
-                </div>
-              </div>
-              <div className="bx--row" style={{minHeight:'100%'}}>
-                <div className="bx--col-xs-12">
-                  {/* <Progress /> */}
-                  <Info />
-                </div>
-              </div>
-            </div>
-          </div>
+          <Info />
 
-          <div className="bx--row">
-            <div className="bx--col-xs-6 stop-panel">
-              <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
-            </div>
-            <div className="bx--col-xs-6 stop-panel">
-              <Credits />
-            </div>
-          </div>
+          <Map stop={this.state.stop} />
+
+          <PoisNearby />
+
         </div>
+
       </Provider>
     );
   }
