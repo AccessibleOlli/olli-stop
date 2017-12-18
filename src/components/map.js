@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
 import { mapMessage } from '../actions/index'
+import { setDestination } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
@@ -52,6 +53,25 @@ let Map = class Map extends React.Component {
     oscillator.start();
     setTimeout(function(){oscillator.stop()}, (duration ? duration : 500));
 };
+
+  findStopFeatureByName(stopname) {
+    OLLI_STOPS.features.forEach(stop => {
+      if (stop.properties.name == stopname) {
+        return stop;
+      }
+    });
+    return false;
+  }
+
+  setNewDestination(stopname) {
+    console.log('IN setDestination with stopname: '+stopname);
+    let stop = this.findStopFeatureByName(stopname);
+    if (stop) {
+      this.map.getSource('olli-destination').setData(stop);
+      this.setState({destination: stop, stopSelected: true});
+      // this.getNearbyPOIs(features[0]);
+    }
+}
 
   updateMapBounds(coordinates) {
     const initalBounds = coordinates.reduce((bounds, coord) => {
@@ -146,6 +166,9 @@ let Map = class Map extends React.Component {
     }
     if (nextProps.poiCategory !== this.props.poiCategory) {
       this.updatePOICategory(nextProps.poiCategory);
+    }
+    if (nextProps.destinationStopName && nextProps.destinationStopName !== this.props.destinationStopName) {
+      this.setNewDestination(nextProps.destinationStopName);
     }
   }
 
@@ -341,7 +364,8 @@ function mapStateToProps(state) {
     olliPosition: state.olliPosition,
     olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
-    poiCategory: state.poiCategory
+    poiCategory: state.poiCategory,
+    destinationStopName: state.destinationStopName
   };
 }
 

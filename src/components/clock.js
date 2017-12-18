@@ -24,7 +24,9 @@ export default class Clock extends Component {
 
     render() {
         return (
-            <span className="clock">{this.state.date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</span>
+            <h2>
+                <span className="clock">{this.state.date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</span>
+            </h2>
         );
     }
 }

@@ -11,6 +11,7 @@ import Info from './components/info';
 import Arrival from './components/arrival';
 import OlliLogo from './components/olli_logo';
 import StopHeader from './components/stop_header';
+import StopGraph from './components/stop_graph';
 import PoisNearby from './components/pois_nearby';
 import Weather from './components/weather';
 import Credits from './components/credits';
@@ -178,21 +179,20 @@ class App extends Component {
 
         <div className="cssgrid">
 
-          <div className="stop-placard"></div>
+          {/* <div className="stop-placard"></div> */}
           <OlliLogo />
           <StopHeader stop={this.state.stop} />
 
           <div className="clock-weather">
-            <h2><Clock /></h2>
+            <Clock />
             <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
           </div>
-
           <div className="asl-screen">
             <img src="./img/signing.png" alt="Sign language interpreter" width="100%" />
           </div>
-
           <Info />
 
+          <StopGraph />
           <Map stop={this.state.stop} />
 
           <PoisNearby />

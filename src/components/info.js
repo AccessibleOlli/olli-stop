@@ -91,7 +91,8 @@ class Info extends Component {
 
 function mapStateToProps(state) {
     return {
-        message: state.mapMsg
+        message: state.mapMsg, 
+        pois: state.pois
     };
   }
   
