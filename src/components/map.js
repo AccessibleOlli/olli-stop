@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import mapboxgl from 'mapbox-gl'
+import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady } from '../actions/index'
 import { mapMessage } from '../actions/index'
-import { setDestination } from '../actions/index'
+import { setDestination, setPOIs } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
@@ -54,22 +55,48 @@ let Map = class Map extends React.Component {
     setTimeout(function(){oscillator.stop()}, (duration ? duration : 500));
 };
 
+  converse(text) {
+    console.log('User/Button: ' + text);
+    var data = {
+      text: text,
+      skipTTS: true
+    };
+    return axios({
+      method: 'POST',
+      url: '/api/conversation/converse',
+      data: data
+    })
+      .then((converationResponse) => {
+        let pois = [];
+        if (converationResponse.data.card) {
+          pois = converationResponse.data.card.content;
+        }
+        this.props.setPOIs(pois);
+        console.log('Olli: ' + converationResponse.data.response);
+      }).catch(err => {
+        console.log(err);
+      });
+  }
+
+
   findStopFeatureByName(stopname) {
     OLLI_STOPS.features.forEach(stop => {
-      if (stop.properties.name == stopname) {
-        return stop;
+      if (stop.properties.name.toLowerCase() === stopname.toLowerCase()) {
+        return(stop);
       }
     });
     return false;
   }
 
   setNewDestination(stopname) {
-    console.log('IN setDestination with stopname: '+stopname);
+    // this.converse("show me restaurants near "+stopname);
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
       this.map.getSource('olli-destination').setData(stop);
       this.setState({destination: stop, stopSelected: true});
       // this.getNearbyPOIs(features[0]);
+
+      // this.converse("show me pharmacies near "+stopname);
     }
 }
 
@@ -410,7 +437,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     setMapReady: setMapReady, 
-    mapMessage: mapMessage
+    mapMessage: mapMessage, 
+    setPOIs: setPOIs
   }, dispatch);
 }
 
