@@ -8,17 +8,20 @@ import POIDirectionsReducer from './reducer_poi_directions';
 import POIsReducer from './reducer_pois';
 import POIsSelectedReducer from './reducer_pois_selected';
 import MapMsgReducer from './reducer_map_msg';
+import setDestinationReducer from './reducer_set_destination';
 
 const rootReducer = combineReducers({
   mapReady: MapReadyReducer,
   olliPosition: OlliPositionReducer,
   olliRoute: OlliRouteReducer,
   olliRouteVisibility: OlliRouteVisibilityReducer,
+  poiCategory: POICategoryReducer, 
+  mapMsg: MapMsgReducer,
+  destinationStopName: setDestinationReducer,
   pois: POIsReducer,
   poiCategory: POICategoryReducer,
   selectedPOIs: POIsSelectedReducer,
-  poiDirections: POIDirectionsReducer,
-  mapMsg: MapMsgReducer
+  poiDirections: POIDirectionsReducer
 });
 
 export default rootReducer;

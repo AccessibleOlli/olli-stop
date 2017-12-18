@@ -63,7 +63,7 @@ class Info extends Component {
         if (!this.props.message || !this.props.message.messageHtml) {
             let msg = {__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"};
             return (
-                <div className="convo">
+                <div className="info-win">
                     <div dangerouslySetInnerHTML={msg} />
                 </div>
             );
@@ -77,7 +77,7 @@ class Info extends Component {
         if (this.props.message.poiNames) stuff = this.props.message.poiNames.length;
 
         return (
-            <div className="convo">
+            <div className="info-win">
                 {/* <h3 key={this.props.poi.properties.name}>{this.props.poi.properties.name}</h3>
                 <button className="bx--btn bx--btn--secondary" 
                         onClick={() => this.updateDirections()}>Get Directions</button>
@@ -91,7 +91,8 @@ class Info extends Component {
 
 function mapStateToProps(state) {
     return {
-        message: state.mapMsg
+        message: state.mapMsg, 
+        pois: state.pois
     };
   }
   

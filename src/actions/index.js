@@ -10,6 +10,7 @@ export const SELECT_POI = 'SELECT_POI';
 export const DESELECT_POI = 'DESELECT_POI';
 export const SET_POI_DIRECTIONS = 'SET_POI_DIRECTIONS';
 export const MAP_MSG = 'MAP_MSG';
+export const DESTINATION_NAME = 'DESTINATION_NAME';
 
 export function setMapReady(ready) {
   return {
@@ -99,5 +100,12 @@ export function mapMessage(html, poiNames) {
     type: MAP_MSG,
     messageHtml: html, 
     poiNames: poiNames
+  };
+}
+
+export function setDestination(stopname) {
+  return {
+    type: DESTINATION_NAME, 
+    destinationStopName: stopname
   };
 }
