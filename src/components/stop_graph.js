@@ -44,13 +44,18 @@ class StopGraph extends Component {
           <span className="stop-dot">&#x25CF;</span>
           <span className="stop-dot">&#x25CF;</span>
           <span className="stop-dot">&#x25CF;</span>
+          <span className="stop-dot">&#x25CF;</span>
+          <span className="stop-dot">&#x25CF;</span>
         </div>
         <table id="stop-btn-table">
           <tbody>
             <tr>
               <td className="stop-btn"><input type="image" className="stop-btn-img" src="./img/olli-stop.png" alt="stop"  disabled/><br/>Discovery<br/>Square</td>
               {/* <td className="stop-dot-spacer"><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span></td> */}
-              <td className="stop-btn"><input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" /><br/>Mayo<br/>Guggenheim</td>
+              <td className="stop-btn">
+                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Mayo Guggenheim" onClick={this.onStopClick.bind(this)} />
+                <br/>Mayo<br/>Guggenheim
+              </td>
               <td className="stop-btn">
                 <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Mayo Gonda" onClick={this.onStopClick.bind(this)} />
                 <br/>Mayo<br/>Gonda
@@ -59,7 +64,10 @@ class StopGraph extends Component {
                 <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Peace Plaza" onClick={this.onStopClick.bind(this)} />
                 <br/>Peace<br/>Plaza
               </td>
-              <td className="stop-btn"><input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" /><br/>Restaurant<br/>District</td>
+              <td className="stop-btn">
+                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Restaurant District" onClick={this.onStopClick.bind(this)} />
+                <br/>Restaurant<br/>District
+              </td>
             </tr>
           </tbody>
         </table>
