@@ -12,7 +12,7 @@ import Arrival from './components/arrival';
 import OlliLogo from './components/olli_logo';
 import StopHeader from './components/stop_header';
 import StopGraph from './components/stop_graph';
-import PoisNearby from './components/pois_nearby';
+import POISNearby from './components/pois_nearby';
 import Talk from './components/talk';
 import Chat from './components/chat';
 import Weather from './components/weather';
@@ -192,12 +192,12 @@ class App extends Component {
             <img src="./img/signing.png" alt="Sign language interpreter" width="100%" />
           </div>
           <Info />
-          <Chat />
+          {/* <Chat /> */}
 
           <StopGraph />
           <Map stop={this.state.stop} />
 
-          <PoisNearby />
+          <POISNearby />
 
         </div>
 

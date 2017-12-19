@@ -26,11 +26,13 @@ body {
   grid-row: 1 / 3;
 }
 
+.arrival-list, .clock-weather, .asl-screen, .info-win, .pois-nearby {
+  /* border-left: 12px solid #444444; */
+}
+
 .arrival-list, .clock-weather, .asl-screen, .info-win {
   grid-column: 1 / 2;
   padding: 24px 12px 0 12px;
-  border-left: 4px solid #444444;
-  /* border-right: 4px solid #444444; */
 }
 
 .asl-screen {
@@ -44,7 +46,6 @@ body {
 
 .pois-nearby {
   grid-column: 1 / 3;
-  border: 4px solid #444444;
 }
 
 .mapboxgl-map, .stop-graph {
@@ -175,9 +176,39 @@ td.stop-btn {
   /* background-color: #fff; */
 }
 input.stop-btn-img:hover {
-  background-color: #ff8888;
+  background-color: #478e68;
 }
 
 input.stop-btn-img:focus {
-  background-color: #ff0000;
+  background-color: #008e42;
+}
+
+.poi-pill, button.directionsbutton {
+  color: #ffffff;
+  background-color: #444444;
+  font-size: 10pt;
+  font-weight: 300;
+  margin: 4px 8px 4px 0;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+}
+.poi-pill.selected {
+  background-color: #046b99;
+}
+
+img.poi-image {
+  height: 184px;
+  border: 4px solid #444444;
+  margin-right: 8px;
+}
+img.poi-image.selected {
+  border: 6px solid #046b99;
+}
+
+button.directionsbutton {
+  display: block;
+  background-color: #e63022;
+  font-size: 18pt;
+  border-radius: 0px;
 }
