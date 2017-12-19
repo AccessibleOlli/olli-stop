@@ -115,7 +115,6 @@ let Map = class Map extends React.Component {
   setNewDestination(stopname) {
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
-<<<<<<< HEAD
       let dest = this.map.getSource('olli-destination');
       // if same as before, toggle it off
       if (dest._data && dest._data.properties.name === stop.properties.name) {
@@ -125,9 +124,6 @@ let Map = class Map extends React.Component {
       // set destination
       this.map.getSource('olli-destination').setData(stop);
       // load pois
-=======
-      this.setState({destination: stop, stopSelected: true});
->>>>>>> 7f89d1563fd45f14110cd4dbe9230df5adc7cd49
       let pois = [];
       this.getRestaurantPOIs(stopname)
         .then((restaurantPOIs) => {
@@ -243,18 +239,6 @@ let Map = class Map extends React.Component {
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
 }
 
-<<<<<<< HEAD
-=======
-  // handle state changes to destination stop
-  componentWillUpdate(nextProps, nextState) {
-    if (this.state.stopSelected) {
-      console.log("got new destination");
-      this.map.getSource('olli-destination').setData(this.state.destination);
-      // this.getNearbyPOIs(features[0]);
-    }
-  }
-
->>>>>>> 7f89d1563fd45f14110cd4dbe9230df5adc7cd49
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
@@ -483,6 +467,14 @@ let Map = class Map extends React.Component {
   }
 }
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    setMapReady: setMapReady, 
+    mapMessage: mapMessage, 
+    setPOIs: setPOIs
+  }, dispatch);
+}
+
 function mapStateToProps(state) {
   return {
     olliPosition: state.olliPosition,
@@ -492,14 +484,6 @@ function mapStateToProps(state) {
     destinationStopName: state.destinationStopName,
     pois: state.pois
   };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    setMapReady: setMapReady, 
-    mapMessage: mapMessage, 
-    setPOIs: setPOIs
-  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
