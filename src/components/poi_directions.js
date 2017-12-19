@@ -22,18 +22,46 @@ class POIDirections extends Component {
   }
 
   render() {
-    let directions = undefined;
+    console.log('POI DIRECTIONSSSSSSS')
+    let directions = [];
     if (this.props.poiDirections) {
-      console.log(this.props.poiDirections);
-      directions = (
-        <div>
-          {this.props.poiDirections.poi.name} | <a onClick={(e) => this.text()}>Text</a>
-        </div>
-      )
+      directions = this.props.poiDirections.legs.map((leg => {
+        let steps = leg.steps.map((step) => {
+          let iconClassName = "directions-icon";
+          if (step.modifier) {
+            iconClassName += " directions-icon-" + step.modifier;
+          }
+          return (
+            <li class="mapbox-directions-step">
+              <span className={iconClassName}></span>
+              <div class="mapbox-directions-step-maneuver">
+                {step.instruction}
+              </div>
+              <div class="mapbox-directions-step-distance">
+                {step.distance}m
+              </div>
+            </li>
+          );
+        });
+        return (
+          <div>
+            <div class="mapbox-directions-component mapbox-directions-route-summary mapbox-directions-multiple">
+              <h1>{leg.poi.name}</h1>
+            </div>
+            <ol class="mapbox-directions-steps">
+              {steps}
+            </ol>
+          </div>
+        );
+      }))
     }
     return (
-      <div>
-        {directions}
+      <div class="directions-control directions-control-directions">
+        <div class="mapbox-directions-instructions">
+          <div class="mapbox-directions-instructions-wrapper">
+            {directions}
+          </div>
+        </div>
       </div>
     );
   }

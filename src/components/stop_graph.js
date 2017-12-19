@@ -5,69 +5,78 @@ import { setDestination } from '../actions/index'
 
 class StopGraph extends Component {
 
+  constructor() {
+    super();
+    this.stops = [
+      {
+        name: 'Discovery Square',
+        label: 'Discovery\nSquare',
+        disabled: true
+      },
+      {
+        name: 'Mayo Guggenheim',
+        label: 'Mayo\nGuggenheim'
+      },
+      {
+        name: 'Mayo Gonda',
+        label: 'Mayo\nGonda'
+      },
+      {
+        name: 'Peace Plaza',
+        label: 'Peace\nPlaza'
+      },
+      {
+        name: 'Restaurant District',
+        label: 'Restaurant\nDistrict'
+      }
+    ];
+  }
+
   onStopClick(itm) {
-    this.props.setDestination(itm.target.name);
+    if (this.props.destinationStopName == itm.target.name) {
+      // disable for now - causing issues
+      //this.props.setDestination(null);
+    }
+    else {
+      this.props.setDestination(itm.target.name);
+    }
   }
 
   render() {
+    let stopImageRows = this.stops.map((stop) => {
+      let input = undefined;
+      if (stop.disabled) {
+        input = <input type="image" className="stop-btn-img" src="./img/olli-stop.png" alt="stop"  disabled/>;
+      }
+      else {
+        let className = "stop-btn-img";
+        if (this.props.destinationStopName == stop.name) {
+          className += " selected";
+        }
+        input = <input type="image" className={className} src="./img/olli-stop-color.png" alt="stop" name={stop.name} onClick={this.onStopClick.bind(this)} />
+      }
+      return (
+        <td className="stop-btn">
+          {input}
+        </td>
+      );
+    });
+    let stopLabelRows = this.stops.map((stop) => {
+      return (
+        <td className="stop-btn" style={{whiteSpace: 'pre-line'}}>
+          {stop.label}
+        </td>
+      );      
+    });
     return (
       <div className="stop-graph">
-        <div className="stop-dot-spacer">
-        <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-          <span className="stop-dot">&#x25CF;</span>
-        </div>
-        <table id="stop-btn-table">
+        <table id="stop-btn-table" cellspacing="0" style={{backgroundImage: 'url(img/stop-dot.png)', backgroundRepeat: 'repeat-x'}}>
           <tbody>
             <tr>
-              <td className="stop-btn"><input type="image" className="stop-btn-img" src="./img/olli-stop.png" alt="stop"  disabled/><br/>Discovery<br/>Square</td>
-              {/* <td className="stop-dot-spacer"><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span><span className="stop-dot">&#x25CF;</span></td> */}
-              <td className="stop-btn">
-                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Mayo Guggenheim" onClick={this.onStopClick.bind(this)} />
-                <br/>Mayo<br/>Guggenheim
-              </td>
-              <td className="stop-btn">
-                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Mayo Gonda" onClick={this.onStopClick.bind(this)} />
-                <br/>Mayo<br/>Gonda
-              </td>
-              <td className="stop-btn">
-                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Peace Plaza" onClick={this.onStopClick.bind(this)} />
-                <br/>Peace<br/>Plaza
-              </td>
-              <td className="stop-btn">
-                <input type="image" className="stop-btn-img" src="./img/olli-stop-color.png" alt="stop" name="Restaurant District" onClick={this.onStopClick.bind(this)} />
-                <br/>Restaurant<br/>District
-              </td>
+              {stopImageRows}
+            </tr>
+            <tr>
+              {stopLabelRows}
             </tr>
           </tbody>
         </table>
@@ -79,7 +88,7 @@ class StopGraph extends Component {
 
 function mapStateToProps(state) {
   return {
-    //
+    destinationStopName: state.destinationStopName
   };
 }
 

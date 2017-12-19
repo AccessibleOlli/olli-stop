@@ -174,12 +174,12 @@ td.stop-btn {
   padding: 8px;
   border-radius: 50%;
   /* background-color: #fff; */
+  outline: none;
 }
 input.stop-btn-img:hover {
   background-color: #478e68;
 }
-
-input.stop-btn-img:focus {
+.stop-btn-img.selected {
   background-color: #008e42;
 }
 
