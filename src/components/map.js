@@ -189,6 +189,9 @@ let Map = class Map extends React.Component {
 }
 
   updatePOIs(pois) {
+    if (! pois) {
+      pois = [];
+    }
     let showpois = {"type":"FeatureCollection","features":[]};
     pois.forEach(p => {
       let poi = {

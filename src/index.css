@@ -176,11 +176,8 @@ td.stop-btn {
   /* background-color: #fff; */
   outline: none;
 }
-input.stop-btn-img:hover {
-  background-color: #478e68;
-}
-.stop-btn-img.selected {
-  background-color: #008e42;
+input.stop-btn-img.selected {
+  background-color: #00cfff;
 }
 
 .poi-pill, button.directionsbutton {
