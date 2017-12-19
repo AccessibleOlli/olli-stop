@@ -15,7 +15,6 @@ const rootReducer = combineReducers({
   olliPosition: OlliPositionReducer,
   olliRoute: OlliRouteReducer,
   olliRouteVisibility: OlliRouteVisibilityReducer,
-  poiCategory: POICategoryReducer, 
   mapMsg: MapMsgReducer,
   destinationStopName: setDestinationReducer,
   pois: POIsReducer,

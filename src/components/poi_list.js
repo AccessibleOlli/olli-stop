@@ -15,7 +15,7 @@ class POIList extends Component {
     if (this.props.pois) {
       this.props.pois.forEach((poi) => {
         pois.push(
-          <POIListItem poi={poi} onSelect={(poi) => this.selectPOI(poi)} />
+          <POIListItem poi={poi} key={poi.id} onSelect={(poi) => this.selectPOI(poi)} />
         );
       })
     }

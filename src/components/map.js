@@ -71,13 +71,35 @@ let Map = class Map extends React.Component {
         if (converationResponse.data.card) {
           pois = converationResponse.data.card.content;
         }
-        this.props.setPOIs(pois);
+        return pois;
         console.log('Olli: ' + converationResponse.data.response);
       }).catch(err => {
         console.log(err);
       });
   }
 
+  initPOIs(pois) {
+    if (pois) {
+      pois.forEach((poi) => {
+        poi.selected = false;
+      });
+    }
+    return pois;
+  }
+
+  getRestaurantPOIs(stop) {
+    return this.converse(`show me restaurants near ${stop}`)
+      .then((pois) => {
+        return this.initPOIs(pois);
+      });
+  }
+
+  getPharmacyPOIs(stop) {
+    return this.converse(`show me hospitals near ${stop}`)
+      .then((pois) => {
+        return this.initPOIs(pois);
+      });
+  }
 
   findStopFeatureByName(stopname) {
     var foundstop = false;
@@ -94,6 +116,20 @@ let Map = class Map extends React.Component {
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
       this.setState({destination: stop, stopSelected: true});
+      let pois = [];
+      this.getRestaurantPOIs(stopname)
+        .then((restaurantPOIs) => {
+          if (restaurantPOIs && restaurantPOIs.length > 0) {
+            pois = pois.concat(restaurantPOIs);
+          }
+          return this.getPharmacyPOIs(stopname);
+        })
+        .then((pharmacyPOIs) => {
+          if (pharmacyPOIs && pharmacyPOIs.length > 0) {
+            pois = pois.concat(pharmacyPOIs);
+          }
+          this.props.setPOIs(pois);  
+        });
     }
   }
 
@@ -201,8 +237,6 @@ let Map = class Map extends React.Component {
       console.log("got new destination");
       this.map.getSource('olli-destination').setData(this.state.destination);
       // this.getNearbyPOIs(features[0]);
-      // this.converse("show me restaurants near "+stopname);
-      // this.converse("show me pharmacies near "+stopname);
     }
   }
 
