@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import axios from 'axios';
+import { setDestination, selectPOI, deselectPOI } from '../actions/index';
 
 const THIS_STOP = [-92.467148454828,44.022351687354];
 
@@ -55,45 +57,60 @@ class Info extends Component {
             });
     }
 
+    onPOIClick(poiclicked) {
+      console.log(poiclicked.target.name);
+    }
+
     // shouldComponentUpdate(nextProps, nextState) {
     //     return !this.loadingdirections;
     // }
 
     render() {
-        if (!this.props.message || !this.props.message.messageHtml) {
-            let msg = {__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"};
-            return (
-                <div className="info-win">
-                    <div dangerouslySetInnerHTML={msg} />
-                </div>
-            );
-        }
-        // console.log(JSON.stringify(this.props.poi));
-        // const steps = this.state.directions.map((step, index) =>
-        //     <li key={index}>{step}</li>
-        // );
+      let msg = "";
+      if ((!this.props.message || !this.props.message.messageHtml) && !this.props.destinationStopName) {
+          msg = <div><h1>Welcome. Where would you like to go?</h1><h2>Select a stop on the map.</h2></div>;
+          return (
+              <div className="info-win">{msg}</div>
+          );
+      }
+      // console.log(JSON.stringify(this.props.poi));
+      // const steps = this.state.directions.map((step, index) =>
+      //     <li key={index}>{step}</li>
+      // );
 
-        let stuff = 0;
-        if (this.props.message.poiNames) stuff = this.props.message.poiNames.length;
+      if (!this.props.message && this.props.destinationStopName) {
+        msg = <h2>Your destination is {this.props.destinationStopName}</h2>;
+      }
 
-        return (
-            <div className="info-win">
-                {/* <h3 key={this.props.poi.properties.name}>{this.props.poi.properties.name}</h3>
-                <button className="bx--btn bx--btn--secondary" 
-                        onClick={() => this.updateDirections()}>Get Directions</button>
-                <ol>{steps}</ol> */}
-                <div dangerouslySetInnerHTML={this.props.message.messageHtml} />
-                <div>{stuff}</div>
-            </div>
-        );
+      let poipills = null;
+      if (this.props.pois) {
+        poipills = this.props.pois.map((poi, index) => {
+          return <button key={index} name={poi.name} onClick={this.onPOIClick.bind(this)}>{poi.name}</button>
+        })
+      }
+
+      return (
+        <div className="info-win">
+          {msg}
+          <div>{poipills}</div>
+        </div>
+      )
     }
 }
 
-function mapStateToProps(state) {
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+      selectPOI: selectPOI,
+      deselectPOI: deselectPOI
+    }, dispatch);
+  }
+  
+  function mapStateToProps(state) {
     return {
-        message: state.mapMsg, 
-        pois: state.pois
+      destinationStopName: state.destinationStopName,
+      message: state.mapMsg, 
+      pois: state.pois
     };
   }
   
-export default connect(mapStateToProps)(Info);
+export default connect(mapStateToProps, mapDispatchToProps)(Info);
