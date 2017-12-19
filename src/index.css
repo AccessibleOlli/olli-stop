@@ -171,6 +171,7 @@ td.stop-btn {
 .stop-btn-img {
   width: 72px;
   padding: 8px;
+  border-radius: 50%;
   /* background-color: #fff; */
 }
 input.stop-btn-img:hover {

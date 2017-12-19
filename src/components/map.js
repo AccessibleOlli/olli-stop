@@ -78,6 +78,28 @@ let Map = class Map extends React.Component {
       });
   }
 
+  initPOIs(pois) {
+    if (pois) {
+      pois.forEach((poi) => {
+        poi.selected = false;
+      });
+    }
+    return pois;
+  }
+
+  getRestaurantPOIs(stop) {
+    return this.converse(`show me restaurants near ${stop}`)
+      .then((pois) => {
+        return this.initPOIs(pois);
+      });
+  }
+
+  getPharmacyPOIs(stop) {
+    return this.converse(`show me hospitals near ${stop}`)
+      .then((pois) => {
+        return this.initPOIs(pois);
+      });
+  }
 
   findStopFeatureByName(stopname) {
     var foundstop = false;
@@ -93,7 +115,29 @@ let Map = class Map extends React.Component {
   setNewDestination(stopname) {
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
-      this.setState({destination: stop, stopSelected: true});
+      let dest = this.map.getSource('olli-destination');
+      // if same as before, toggle it off
+      if (dest._data && dest._data.properties.name === stop.properties.name) {
+        dest.setData(null);
+        this.props.setPOIs(null);
+      }
+      // set destination
+      this.map.getSource('olli-destination').setData(stop);
+      // load pois
+      let pois = [];
+      this.getRestaurantPOIs(stopname)
+        .then((restaurantPOIs) => {
+          if (restaurantPOIs && restaurantPOIs.length > 0) {
+            pois = pois.concat(restaurantPOIs);
+          }
+          return this.getPharmacyPOIs(stopname);
+        })
+        .then((pharmacyPOIs) => {
+          if (pharmacyPOIs && pharmacyPOIs.length > 0) {
+            pois = pois.concat(pharmacyPOIs);
+          }
+          this.props.setPOIs(pois);  
+        });
     }
   }
 
@@ -195,17 +239,6 @@ let Map = class Map extends React.Component {
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
 }
 
-  // handle state changes to destination stop
-  componentWillUpdate(nextProps, nextState) {
-    if (this.state.stopSelected) {
-      console.log("got new destination");
-      this.map.getSource('olli-destination').setData(this.state.destination);
-      // this.getNearbyPOIs(features[0]);
-      // this.converse("show me restaurants near "+stopname);
-      // this.converse("show me pharmacies near "+stopname);
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
@@ -224,7 +257,7 @@ let Map = class Map extends React.Component {
       this.updatePOICategory(nextProps.poiCategory);
     }
     if (nextProps.destinationStopName && nextProps.destinationStopName !== this.props.destinationStopName) {
-      this.setNewDestination(nextProps.destinationStopName);
+        this.setNewDestination(nextProps.destinationStopName);
     }
     if (nextProps.pois !== this.props.pois) {
       this.updatePOIs(nextProps.pois);
@@ -256,55 +289,58 @@ let Map = class Map extends React.Component {
     }
     
     this.map.on('click', evt => {
-      let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
-      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
-      if (!features.length) {
-        return;
-      }
-      let feature = features[0];
-      console.log(feature);
-      let popup = new mapboxgl.Popup({ offset: [0, -15] })
-        .setLngLat(feature.geometry.coordinates)
-        .setHTML('<h3>' + feature.properties.name + '</h3><p><img src="' + feature.properties.image_url + '" style="height: 40px;"></p>')
-        .setLngLat(feature.geometry.coordinates)
-        .addTo(this.map);
-      
-      // if (warningpopup) warningpopup.remove();
-        
       // let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
-      // let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-stops']});
-      // if (this.state.stopSelected && features.length>0) {
-      //   if (this.state.destination && this.state.destination.properties.name === features[0].properties.name) {
-      //     // reset the destination stop and leave map in a clean state
-      //     this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
-      //     this.map.getSource('olli-destination').setData({'type': 'FeatureCollection', 'features': []});
-      //     this.setState({destination: null, stopSelected: false});
-      //     return;
-      //   }
+      // let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
+      // if (!features.length) {
+      //   return;
       // }
+      // let feature = features[0];
+      // console.log(feature);
+      // let popup = new mapboxgl.Popup({ offset: [0, -15] })
+      //   .setLngLat(feature.geometry.coordinates)
+      //   .setHTML('<h3>' + feature.properties.name + '</h3><p><img src="' + feature.properties.image_url + '" style="height: 40px;"></p>')
+      //   .setLngLat(feature.geometry.coordinates)
+      //   .addTo(this.map);
+      
+      if (this.warningpopup) this.warningpopup.remove();
+        
+      let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
+      let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-stops']});
+      let dest = this.map.getSource('olli-destination');
 
-      // let layerid = this.state.stopSelected ? 'olli-pois' : 'olli-stops';
-      // features = this.map.queryRenderedFeatures(bbox, {layers: [layerid]});
+      if (dest._data && dest._data.properties && features.length>0) {
+        if (dest._data.properties.name === features[0].properties.name) {
+          // reset the destination stop and leave map in a clean state
+          this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
+          dest.setData({'type': 'Feature', 'geometry': {'type':'Point', 'coordinates':[0,0]}});
+          return;
+        } else {
+          dest.setData(features[0]);
+        }
+      }
 
-      // if (!this.state.stopSelected) {
-      //   if (features.length>0) {
-      //     this.map.getSource('olli-destination').setData(features[0]);
-      //     this.setState({destination: features[0], stopSelected: true});
-      //     this.getNearbyPOIs(features[0]);
-      //   } else {
-      //     this.beep(300, 300);
-      //     var warningpopup = new mapboxgl.Popup({closeButton: false})
-      //       .setLngLat([CENTER_LON, CENTER_LAT])
-      //       .setHTML('Please press on a bus stop')
-      //       .addTo(this.map);
-      //   }
+      let layerid = dest._data ? 'olli-pois' : 'olli-stops';
+      features = this.map.queryRenderedFeatures(bbox, {layers: [layerid]});
 
-      // } else {
-      //   if (features.length>0) {
-      //     // there's a stop selected, and the click has found some features from the POIs layer
-      //     this.props.mapMessage({__html: "<h3>"+features[0].properties.name+"</h3>"});
-      //   }
-      // }
+      if (!dest._data || 
+        !dest._data.properties) {
+        if (features.length>0) {
+          dest.setData(features[0]);
+          // this.setState({destination: features[0], stopSelected: true});
+          // this.getNearbyPOIs(features[0]);
+        } else {
+          this.beep(300, 300);
+          var warningpopup = new mapboxgl.Popup({closeButton: false})
+            .setLngLat([CENTER_LON, CENTER_LAT])
+            .setHTML('Please press on a bus stop')
+            .addTo(this.map);
+        }
+      } else {
+        if (features.length>0) {
+          // there's a stop selected, and the click has found some features from the POIs layer
+          this.props.mapMessage({__html: "<h3>"+features[0].properties.name+"</h3>"});
+        }
+      }
     });
 
     this.map.on('load', () => {
