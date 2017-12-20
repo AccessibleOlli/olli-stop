@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import axios from 'axios';
-import { selectPOI, deselectPOI } from '../actions/index';
+import { selectPOI, deselectPOI, setPOIDirections } from '../actions/index';
+import getDirections from '../util/directions'
+import POIDirections from './poi_directions'
 
 const THIS_STOP = [-92.467148454828,44.022351687354];
 
@@ -21,45 +23,13 @@ class Info extends Component {
         }
     }
 
-    updateDirections() {
-        if (!this.props.poi) 
-            this.setState({
-                loadingdirections: false, 
-                directions: []
-            });
-        let lon = this.props.poi.geometry.coordinates[0];
-        let lat = this.props.poi.geometry.coordinates[1];
-        let dirurl = "/"+THIS_STOP[0]+","+THIS_STOP[1]+";"+lon+","+lat; //-92.466,44.024";
-        dirurl += "?access_token="+mapboxglaccessToken+"&overview=false&steps=true&annotations=distance";
-        // pk.eyJ1IjoibWFwb2xsaSIsImEiOiJjajBzd25hZ2EwNTh1MzJvNW56aHkybTN3In0.ZuZ_XILook5zfWBaSFaeqg
-
-        this.setState({loadingdirections: true});
-        mapboxdirections.get(dirurl)
-            .then(response => {
-                // console.log("Got directions!!");
-                let steps = response.data.routes[0].legs[0].steps;
-                let stepdirections = [];
-                for (let i = 0; i < steps.length; i++) {
-                    const step = steps[i];
-                    let d = step.maneuver.instruction;
-                    if ( step.distance > 2 )
-                        d += " and travel "+step.distance+" meters";
-                    stepdirections.push(d);
-                }
-                this.setState({
-                    loadingdirections: false, 
-                    directions: stepdirections
-                })
-            })
-            .catch(error => {
-                this.setState({loadingdirections: false, directions: JSON.stringify(error)});
-                console.log("Error getting directions: "+error);
-            });
-    }
-
     onDirectionsClick() {
-      // MARK this is for you
-      console.log("IN onDirectionsClick");
+      console.log('onDirectionsClick');
+      getDirections(this.props.selectedPOIs)
+        .then((directions) => {
+          console.log(directions);
+          this.props.setPOIDirections(directions);
+        });
     }
 
     onPOIClick(poiclicked) {
@@ -87,7 +57,7 @@ class Info extends Component {
       // if we're showing directions, only show that and nothing else
       // MARK this is for you...
       // end directions
-
+      
 
       if (!this.props.message && this.props.destinationStopName) {
         msgs.push(<h2 key={msgs.length}>Your destination is {this.props.destinationStopName}</h2>);
@@ -111,21 +81,32 @@ class Info extends Component {
           directionsbutton = <button key="directionsbutton" className="directionsbutton" onClick={(e)=>this.onDirectionsClick()}>Get trip directions</button>
       }
 
-      return (
-        <div className="info-win">
-          <hr/>
-          {msgs}
-          {poipills}
-          {directionsbutton}
-        </div>
-      )
+      if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {
+        return (
+          <div className="info-win">
+            <hr/>
+            <POIDirections />
+          </div>
+        )
+      }
+      else {
+        return (
+          <div className="info-win">
+            <hr/>
+            {msgs}
+            {poipills}
+            {directionsbutton}
+          </div>
+        )
+      }
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
       selectPOI: selectPOI,
-      deselectPOI: deselectPOI
+      deselectPOI: deselectPOI,
+      setPOIDirections: setPOIDirections
     }, dispatch);
   }
   
@@ -133,7 +114,9 @@ function mapDispatchToProps(dispatch) {
     return {
       destinationStopName: state.destinationStopName,
       message: state.mapMsg, 
-      pois: state.pois
+      pois: state.pois,
+      selectedPOIs: state.selectedPOIs,
+      poiDirections: state.poiDirections
     };
   }
   

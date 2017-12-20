@@ -1,9 +1,13 @@
-import { SET_POIS, SELECT_POI, DESELECT_POI } from '../actions/index'
+import { DESTINATION_NAME, SET_POIS, SELECT_POI, DESELECT_POI } from '../actions/index'
 
-export default function (state = false, action) {
+export default function (state = null, action) {
   if (action) {
     let matchingPOIs = undefined;
     switch (action.type) {
+      case DESTINATION_NAME:
+        // reset on new destination
+        state = null;
+        break;
       case SET_POIS:
         state = action.pois;
         break;
