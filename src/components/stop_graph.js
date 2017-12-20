@@ -70,7 +70,7 @@ class StopGraph extends Component {
     });
     return (
       <div className="stop-graph">
-        <table id="stop-btn-table" cellspacing="0" style={{backgroundImage: 'url(img/stop-dot.png)', backgroundRepeat: 'repeat-x'}}>
+        <table id="stop-btn-table" style={{backgroundImage: 'url(img/stop-dot.png)', backgroundRepeat: 'repeat-x'}}>
           <tbody>
             <tr>
               {stopImageRows}

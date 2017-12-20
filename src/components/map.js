@@ -155,28 +155,81 @@ let Map = class Map extends React.Component {
   }
 
   updateOlliPosition(positionObj) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': [{
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': []
-        }
-      }]
-    };
     let cs = null;
     if (positionObj.position) {
       cs = positionObj.position.coordinates;
-      // this.map.jumpTo({
-      //   center: [cs[0], cs[1]]
-        // bearing: positionObj.position.properties.heading
-      // });
-    } else {
+    }
+    else {
       cs = positionObj.coordinates;
     }
-    data.features[0].geometry.coordinates = [cs[0], cs[1]];
-    this.map.getSource('olli-bus').setData(data);
+    let coordinates = [cs[0], cs[1]];
+    let firstTime = false;
+    if (! this.olliPositions) {
+      firstTime = true;
+      this.olliPositions = [];
+      this.olliPositionTimes = [];
+      requestAnimationFrame(this.animateOlliPosition.bind(this));
+    }
+    this.olliPositions.push(coordinates);
+    this.olliPositionTimes.push(new Date().getTime());
+    if (firstTime) {
+      requestAnimationFrame(this.animateOlliPosition.bind(this));
+    }
+  }
+
+  calculatePosition(fromPosition, toPosition, progress) {
+    const lat1 = fromPosition[1];
+    const long1 = fromPosition[0];
+    const lat2 = toPosition[1];
+    const long2 = toPosition[0];
+    return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
+  }
+
+  animateOlliPosition(timestamp) {
+    if (this.olliPositions.length > 1) {
+      let fromPosition = this.olliPositions[0];
+      let toPosition = this.olliPositions[1];
+      let duration = this.olliPositionTimes[1] - this.olliPositionTimes[0];
+      let offset = 0;
+      let offsetKey = `${this.olliPositionTimes[0]}`;
+      if (! this.olliPositionTimeOffsets) {
+        this.olliPositionTimeOffsets = {};
+        this.olliPositionTimeOffsets[offsetKey] = timestamp;
+      }
+      else if (! (offsetKey in this.olliPositionTimeOffsets)) {
+        this.olliPositionTimeOffsets[offsetKey] = timestamp;
+      }
+      else {
+        offset = timestamp - this.olliPositionTimeOffsets[offsetKey];
+      }
+      let progress = (duration - (duration-offset))/(duration);
+      if (progress >= 1) {
+        this.olliPositions.splice(0, 1);
+        this.olliPositionTimes.splice(0, 1);
+        delete this.olliPositionTimeOffsets[offsetKey];
+      }
+      else {
+        // calc position here
+        const data = {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': []
+            }
+          }]
+        };
+        let position = fromPosition;
+        if (progress > 0) {
+          position = this.calculatePosition(fromPosition, toPosition, progress);
+        }
+        data.features[0].geometry.coordinates = position;
+        //console.log(`${progress} progress from ${fromPosition} to ${toPosition}`);
+        this.map.getSource('olli-bus').setData(data);
+      }
+    }
+    requestAnimationFrame(this.animateOlliPosition.bind(this));
   }
 
   // THIS IS ALL MOCKUP. REPLACE WITH WATSON ASSISTANT YELP SKILL
