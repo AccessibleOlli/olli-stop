@@ -48,7 +48,7 @@ class Info extends Component {
 
       // if no destination is set just show a welcome message
       if ((!this.props.message || !this.props.message.messageHtml) && !this.props.destinationStopName) {
-          let msg = <div><h1>Welcome. Where would you like to go?</h1><h2>Select a stop on the map.</h2></div>;
+          let msg = <div><h1>Welcome. Where would you like to go?</h1><h2>Select a stop above the map.</h2></div>;
           return (
               <div className="info-win"><hr/>{msg}</div>
           );
