@@ -72,7 +72,6 @@ let Map = class Map extends React.Component {
           pois = converationResponse.data.card.content;
         }
         return pois;
-        console.log('Olli: ' + converationResponse.data.response);
       }).catch(err => {
         console.log(err);
       });
@@ -163,24 +162,31 @@ let Map = class Map extends React.Component {
       cs = positionObj.coordinates;
     }
     let coordinates = [cs[0], cs[1]];
-    let firstPosition = false;
     if (! this.olliPositions) {
-      firstPosition = true;
       this.olliPositions = [];
       this.olliPositionTimes = [];
+      this.totalOlliPositions = 1;
     }
-    // here we ignore duplicates if there is only 1 location in the list
-    // this is a hack, so the very first 2 coordinates we get aren't the same ones
-    // which could cause a lag behind the simulator
+    else {
+      this.totalOlliPositions++;
+    }
+    // here we ignore duplicate positions for the very 1st position recorded
+    // this is a hack because the first two positions we get are when the olli stops
+    // and there is a large gap in those positions
+    // the very first gap dictates the lag for the rest of the session
+    // here we minimize the lag by waiting until there are two different positions
+    // and resetting the time for the first position
     const l = this.olliPositions.length;
-    if (l == 1 && this.olliPositions[0][0] == coordinates[0] && this.olliPositions[0][1] == coordinates[1]) {
+    if (this.totalOlliPositions == 2 && this.olliPositions[0][0] == coordinates[0] && this.olliPositions[0][1] == coordinates[1]) {
+      this.totalOlliPositions = 1;
       this.olliPositionTimes[0] = new Date().getTime();
     }
     else {
       this.olliPositions.push(coordinates);
       this.olliPositionTimes.push(new Date().getTime());
     }
-    if (firstPosition) {
+    if (this.totalOlliPositions == 2) {
+      // start animating on the 2nd position recorded
       requestAnimationFrame(this.animateOlliPosition.bind(this));
     }
   }
@@ -218,7 +224,6 @@ let Map = class Map extends React.Component {
       // if the progress is >= 1 that means we have reached our destination (or enough time has elapsed from the last animation)
       // if that's the case we pop of the first position and then start at the next position
       if (progress >= 1) {
-        console.log('LAG = ' + (new Date().getTime() - this.olliPositionTimes[1]));
         this.olliPositions.splice(0, 1);
         this.olliPositionTimes.splice(0, 1);
         this.olliPositionTimestamps.splice(0, 1);
