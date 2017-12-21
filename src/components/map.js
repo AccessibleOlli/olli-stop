@@ -218,6 +218,7 @@ let Map = class Map extends React.Component {
       // if the progress is >= 1 that means we have reached our destination (or enough time has elapsed from the last animation)
       // if that's the case we pop of the first position and then start at the next position
       if (progress >= 1) {
+        console.log('LAG = ' + (new Date().getTime() - this.olliPositionTimes[1]));
         this.olliPositions.splice(0, 1);
         this.olliPositionTimes.splice(0, 1);
         this.olliPositionTimestamps.splice(0, 1);
