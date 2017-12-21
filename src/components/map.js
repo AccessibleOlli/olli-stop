@@ -163,16 +163,24 @@ let Map = class Map extends React.Component {
       cs = positionObj.coordinates;
     }
     let coordinates = [cs[0], cs[1]];
-    let firstTime = false;
+    let firstPosition = false;
     if (! this.olliPositions) {
-      firstTime = true;
+      firstPosition = true;
       this.olliPositions = [];
       this.olliPositionTimes = [];
-      requestAnimationFrame(this.animateOlliPosition.bind(this));
     }
-    this.olliPositions.push(coordinates);
-    this.olliPositionTimes.push(new Date().getTime());
-    if (firstTime) {
+    // here we ignore duplicates if there is only 1 location in the list
+    // this is a hack, so the very first 2 coordinates we get aren't the same ones
+    // which could cause a lag behind the simulator
+    const l = this.olliPositions.length;
+    if (l == 1 && this.olliPositions[0][0] == coordinates[0] && this.olliPositions[0][1] == coordinates[1]) {
+      this.olliPositionTimes[0] = new Date().getTime();
+    }
+    else {
+      this.olliPositions.push(coordinates);
+      this.olliPositionTimes.push(new Date().getTime());
+    }
+    if (firstPosition) {
       requestAnimationFrame(this.animateOlliPosition.bind(this));
     }
   }
@@ -185,82 +193,39 @@ let Map = class Map extends React.Component {
     return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
   }
 
-  // animateOlliPosition(timestamp) {
-  //   if (this.olliPositions.length > 1) {
-  //     let fromPosition = this.olliPositions[0];
-  //     let toPosition = this.olliPositions[1];
-  //     let duration = this.olliPositionTimes[1] - this.olliPositionTimes[0];
-  //     let offset = 0;
-  //     let offsetKey = `${this.olliPositionTimes[0]}`;
-  //     if (! this.olliPositionTimeOffsets) {
-  //       this.olliPositionTimeOffsets = {};
-  //       this.olliPositionTimeOffsets[offsetKey] = timestamp;
-  //     }
-  //     else if (! (offsetKey in this.olliPositionTimeOffsets)) {
-  //       this.olliPositionTimeOffsets[offsetKey] = timestamp;
-  //     }
-  //     else {
-  //       offset = timestamp - this.olliPositionTimeOffsets[offsetKey];
-  //     }
-  //     let progress = (duration - (duration-offset))/(duration);
-  //     if (progress >= 1 || (progress >= 0.9 && this.olliPositions.length > 2)) {
-  //       // remove all, but the next stop and the last stop
-  //       this.olliPositions.splice(0, 1);
-  //       this.olliPositionTimes.splice(0, 1);
-  //       if (this.olliPositions.length > 2) {
-  //         console.log(`Trimming ${this.olliPositions.length-2} positions...`);
-  //         this.olliPositions.splice(1, this.olliPositions.length-2);
-  //         this.olliPositionTimes[0] = this.olliPositionTimes[this.olliPositionTimes.length-2];
-  //         this.olliPositionTimes.splice(1, this.olliPositionTimes.length-2); 
-  //       }
-  //       delete this.olliPositionTimeOffsets[offsetKey];
-  //     }
-  //     else {
-  //       // calc position here
-  //       const data = {
-  //         'type': 'FeatureCollection',
-  //         'features': [{
-  //           'type': 'Feature',
-  //           'geometry': {
-  //             'type': 'Point',
-  //             'coordinates': []
-  //           }
-  //         }]
-  //       };
-  //       let position = fromPosition;
-  //       if (progress > 0) {
-  //         position = this.calculatePosition(fromPosition, toPosition, progress);
-  //       }
-  //       data.features[0].geometry.coordinates = position;
-  //       //console.log(`${progress} progress from ${fromPosition} to ${toPosition}`);
-  //       this.map.getSource('olli-bus').setData(data);
-  //     }
-  //   }
-  //   requestAnimationFrame(this.animateOlliPosition.bind(this));
-  // }
-
   animateOlliPosition(timestamp) {
     if (this.olliPositions.length > 1) {
-      let fromPosition = this.olliPositions[0];
-      let toPosition = this.olliPositions[1];
+      // map the time the position was recorded (in updateOlliPosition) to the
+      // animation timestamp (passed into this function)
+      // the very first time map it to the current animation timestamp
+      // this is the baseline
       if (! this.olliPositionTimestamps) {
         this.olliPositionTimestamps = [];
         this.olliPositionTimestamps.push(timestamp);
       }
+      // anytime a subsequent position has been recorded (in updateOlliPosition)
+      // we map to an animation timestamp. the value is set to the animation timestamp
+      // for the position recorded right before this one plus the duration between positions
+      // (the time from the previous recorded position to the next recorded position)
       for(let i=1; i<this.olliPositionTimes.length; i++) {
         if (this.olliPositionTimestamps.length < (i+1)) {
           let d = (this.olliPositionTimes[i] - this.olliPositionTimes[i-1]);
           this.olliPositionTimestamps.push(this.olliPositionTimestamps[i-1] + d);
         }
       }
+      // calculate the progress between the first and second stops in our list
       let progress = (timestamp - this.olliPositionTimestamps[0])/(this.olliPositionTimestamps[1] - this.olliPositionTimestamps[0]);
-      // if we have finished this transition then pop it off the stack
+      // if the progress is >= 1 that means we have reached our destination (or enough time has elapsed from the last animation)
+      // if that's the case we pop of the first position and then start at the next position
       if (progress >= 1) {
         this.olliPositions.splice(0, 1);
         this.olliPositionTimes.splice(0, 1);
         this.olliPositionTimestamps.splice(0, 1);
       }
       else {
+        // if progress is < 1 then we calculate the position between the two based on the progress
+        let fromPosition = this.olliPositions[0];
+        let toPosition = this.olliPositions[1];
         let position = fromPosition;
         if (progress > 0) {
           position = this.calculatePosition(fromPosition, toPosition, progress);
@@ -276,6 +241,7 @@ let Map = class Map extends React.Component {
           }]
         };
         data.features[0].geometry.coordinates = position;
+        // update the map
         this.map.getSource('olli-bus').setData(data);
       }
     }
