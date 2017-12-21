@@ -185,31 +185,86 @@ let Map = class Map extends React.Component {
     return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
   }
 
+  // animateOlliPosition(timestamp) {
+  //   if (this.olliPositions.length > 1) {
+  //     let fromPosition = this.olliPositions[0];
+  //     let toPosition = this.olliPositions[1];
+  //     let duration = this.olliPositionTimes[1] - this.olliPositionTimes[0];
+  //     let offset = 0;
+  //     let offsetKey = `${this.olliPositionTimes[0]}`;
+  //     if (! this.olliPositionTimeOffsets) {
+  //       this.olliPositionTimeOffsets = {};
+  //       this.olliPositionTimeOffsets[offsetKey] = timestamp;
+  //     }
+  //     else if (! (offsetKey in this.olliPositionTimeOffsets)) {
+  //       this.olliPositionTimeOffsets[offsetKey] = timestamp;
+  //     }
+  //     else {
+  //       offset = timestamp - this.olliPositionTimeOffsets[offsetKey];
+  //     }
+  //     let progress = (duration - (duration-offset))/(duration);
+  //     if (progress >= 1 || (progress >= 0.9 && this.olliPositions.length > 2)) {
+  //       // remove all, but the next stop and the last stop
+  //       this.olliPositions.splice(0, 1);
+  //       this.olliPositionTimes.splice(0, 1);
+  //       if (this.olliPositions.length > 2) {
+  //         console.log(`Trimming ${this.olliPositions.length-2} positions...`);
+  //         this.olliPositions.splice(1, this.olliPositions.length-2);
+  //         this.olliPositionTimes[0] = this.olliPositionTimes[this.olliPositionTimes.length-2];
+  //         this.olliPositionTimes.splice(1, this.olliPositionTimes.length-2); 
+  //       }
+  //       delete this.olliPositionTimeOffsets[offsetKey];
+  //     }
+  //     else {
+  //       // calc position here
+  //       const data = {
+  //         'type': 'FeatureCollection',
+  //         'features': [{
+  //           'type': 'Feature',
+  //           'geometry': {
+  //             'type': 'Point',
+  //             'coordinates': []
+  //           }
+  //         }]
+  //       };
+  //       let position = fromPosition;
+  //       if (progress > 0) {
+  //         position = this.calculatePosition(fromPosition, toPosition, progress);
+  //       }
+  //       data.features[0].geometry.coordinates = position;
+  //       //console.log(`${progress} progress from ${fromPosition} to ${toPosition}`);
+  //       this.map.getSource('olli-bus').setData(data);
+  //     }
+  //   }
+  //   requestAnimationFrame(this.animateOlliPosition.bind(this));
+  // }
+
   animateOlliPosition(timestamp) {
     if (this.olliPositions.length > 1) {
       let fromPosition = this.olliPositions[0];
       let toPosition = this.olliPositions[1];
-      let duration = this.olliPositionTimes[1] - this.olliPositionTimes[0];
-      let offset = 0;
-      let offsetKey = `${this.olliPositionTimes[0]}`;
-      if (! this.olliPositionTimeOffsets) {
-        this.olliPositionTimeOffsets = {};
-        this.olliPositionTimeOffsets[offsetKey] = timestamp;
+      if (! this.olliPositionTimestamps) {
+        this.olliPositionTimestamps = [];
+        this.olliPositionTimestamps.push(timestamp);
       }
-      else if (! (offsetKey in this.olliPositionTimeOffsets)) {
-        this.olliPositionTimeOffsets[offsetKey] = timestamp;
+      for(let i=1; i<this.olliPositionTimes.length; i++) {
+        if (this.olliPositionTimestamps.length < (i+1)) {
+          let d = (this.olliPositionTimes[i] - this.olliPositionTimes[i-1]);
+          this.olliPositionTimestamps.push(this.olliPositionTimestamps[i-1] + d);
+        }
       }
-      else {
-        offset = timestamp - this.olliPositionTimeOffsets[offsetKey];
-      }
-      let progress = (duration - (duration-offset))/(duration);
+      let progress = (timestamp - this.olliPositionTimestamps[0])/(this.olliPositionTimestamps[1] - this.olliPositionTimestamps[0]);
+      // if we have finished this transition then pop it off the stack
       if (progress >= 1) {
         this.olliPositions.splice(0, 1);
         this.olliPositionTimes.splice(0, 1);
-        delete this.olliPositionTimeOffsets[offsetKey];
+        this.olliPositionTimestamps.splice(0, 1);
       }
       else {
-        // calc position here
+        let position = fromPosition;
+        if (progress > 0) {
+          position = this.calculatePosition(fromPosition, toPosition, progress);
+        }
         const data = {
           'type': 'FeatureCollection',
           'features': [{
@@ -220,12 +275,7 @@ let Map = class Map extends React.Component {
             }
           }]
         };
-        let position = fromPosition;
-        if (progress > 0) {
-          position = this.calculatePosition(fromPosition, toPosition, progress);
-        }
         data.features[0].geometry.coordinates = position;
-        //console.log(`${progress} progress from ${fromPosition} to ${toPosition}`);
         this.map.getSource('olli-bus').setData(data);
       }
     }
