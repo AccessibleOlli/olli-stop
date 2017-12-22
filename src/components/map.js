@@ -72,7 +72,6 @@ let Map = class Map extends React.Component {
           pois = converationResponse.data.card.content;
         }
         return pois;
-        console.log('Olli: ' + converationResponse.data.response);
       }).catch(err => {
         console.log(err);
       });
@@ -155,28 +154,104 @@ let Map = class Map extends React.Component {
   }
 
   updateOlliPosition(positionObj) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': [{
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': []
-        }
-      }]
-    };
     let cs = null;
     if (positionObj.position) {
       cs = positionObj.position.coordinates;
-      // this.map.jumpTo({
-      //   center: [cs[0], cs[1]]
-        // bearing: positionObj.position.properties.heading
-      // });
-    } else {
+    }
+    else {
       cs = positionObj.coordinates;
     }
-    data.features[0].geometry.coordinates = [cs[0], cs[1]];
-    this.map.getSource('olli-bus').setData(data);
+    let coordinates = [cs[0], cs[1]];
+    if (! this.olliPositions) {
+      this.olliPositions = [];
+      this.olliPositionTimes = [];
+      this.totalOlliPositions = 1;
+    }
+    else {
+      this.totalOlliPositions++;
+    }
+    // here we ignore duplicate positions for the very 1st position recorded
+    // this is a hack because the first two positions we get are when the olli stops
+    // and there is a large gap in those positions
+    // the very first gap dictates the lag for the rest of the session
+    // here we minimize the lag by waiting until there are two different positions
+    // and resetting the time for the first position
+    const l = this.olliPositions.length;
+    if (this.totalOlliPositions == 2 && this.olliPositions[0][0] == coordinates[0] && this.olliPositions[0][1] == coordinates[1]) {
+      this.totalOlliPositions = 1;
+      this.olliPositionTimes[0] = new Date().getTime();
+    }
+    else {
+      this.olliPositions.push(coordinates);
+      this.olliPositionTimes.push(new Date().getTime());
+    }
+    if (this.totalOlliPositions == 2) {
+      // start animating on the 2nd position recorded
+      requestAnimationFrame(this.animateOlliPosition.bind(this));
+    }
+  }
+
+  calculatePosition(fromPosition, toPosition, progress) {
+    const lat1 = fromPosition[1];
+    const long1 = fromPosition[0];
+    const lat2 = toPosition[1];
+    const long2 = toPosition[0];
+    return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
+  }
+
+  animateOlliPosition(timestamp) {
+    if (this.olliPositions.length > 1) {
+      // map the time the position was recorded (in updateOlliPosition) to the
+      // animation timestamp (passed into this function)
+      // the very first time map it to the current animation timestamp
+      // this is the baseline
+      if (! this.olliPositionTimestamps) {
+        this.olliPositionTimestamps = [];
+        this.olliPositionTimestamps.push(timestamp);
+      }
+      // anytime a subsequent position has been recorded (in updateOlliPosition)
+      // we map to an animation timestamp. the value is set to the animation timestamp
+      // for the position recorded right before this one plus the duration between positions
+      // (the time from the previous recorded position to the next recorded position)
+      for(let i=1; i<this.olliPositionTimes.length; i++) {
+        if (this.olliPositionTimestamps.length < (i+1)) {
+          let d = (this.olliPositionTimes[i] - this.olliPositionTimes[i-1]);
+          this.olliPositionTimestamps.push(this.olliPositionTimestamps[i-1] + d);
+        }
+      }
+      // calculate the progress between the first and second stops in our list
+      let progress = (timestamp - this.olliPositionTimestamps[0])/(this.olliPositionTimestamps[1] - this.olliPositionTimestamps[0]);
+      // if the progress is >= 1 that means we have reached our destination (or enough time has elapsed from the last animation)
+      // if that's the case we pop of the first position and then start at the next position
+      if (progress >= 1) {
+        this.olliPositions.splice(0, 1);
+        this.olliPositionTimes.splice(0, 1);
+        this.olliPositionTimestamps.splice(0, 1);
+      }
+      else {
+        // if progress is < 1 then we calculate the position between the two based on the progress
+        let fromPosition = this.olliPositions[0];
+        let toPosition = this.olliPositions[1];
+        let position = fromPosition;
+        if (progress > 0) {
+          position = this.calculatePosition(fromPosition, toPosition, progress);
+        }
+        const data = {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': []
+            }
+          }]
+        };
+        data.features[0].geometry.coordinates = position;
+        // update the map
+        this.map.getSource('olli-bus').setData(data);
+      }
+    }
+    requestAnimationFrame(this.animateOlliPosition.bind(this));
   }
 
   // THIS IS ALL MOCKUP. REPLACE WITH WATSON ASSISTANT YELP SKILL
