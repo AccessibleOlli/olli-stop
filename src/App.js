@@ -21,6 +21,7 @@ import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index';
 import Stops from './data/stops.json';
+import KinTrans from './components/kintrans';
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
@@ -188,9 +189,7 @@ class App extends Component {
             <Clock />
             <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
           </div>
-          <div className="asl-screen">
-            <img src="./img/signing.png" alt="Sign language interpreter" width="100%" />
-          </div>
+          <KinTrans />
           <Info />
           {/* <Chat /> */}
 

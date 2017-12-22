@@ -1,17 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { selectPOI } from '../actions/index'
+import { setKinTransAvatarMessage } from '../actions/index'
+import Unity from 'react-unity-webgl'
+import { SendMessage } from 'react-unity-webgl'
+
+
 
 class KinTrans extends Component {
 
+  componentDidMount() 
+  {
+    //this.setAvatarMessage("i need help");
+  }
+
+  setAvatarMessage(msg) 
+  {
+    this.props.setAvatarMessage(msg);
+  }
+
   render() {
-    
+
+    SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);
+
     return (
-      <div>
+      <div className="kintrans-avatar">
         <Unity
-            src='/kintrans/Build/WebGL.json'
-            loader='/kintrans/Build/UnityLoader.js' />
+            src='./kintrans/Build/KinTransAvatarBuild.json'
+            loader='./kintrans/Build/UnityLoader.js' />
       </div>
     );
   }
@@ -19,14 +35,19 @@ class KinTrans extends Component {
 
 function mapStateToProps(state) {
   return {
-    pois: state.pois
+    kintransAvatarID: state.kintransAvatar.id,
+    kintransAvatarMessage: state.kintransAvatar.message,
+    kintransAvatarTimestamp: state.kintransAvatar.timestamp,
+
+    //DELETE THIS (its for testing, it triggers avatar on click of a stop button)
+    selectedPOIs: state.selectedPOIs //TEST AVATAR BY CLICKING MAP
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    selectPOI: selectPOI
+    setAvatarMessage: setKinTransAvatarMessage
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(POIList);
+export default connect(mapStateToProps, mapDispatchToProps)(KinTrans);

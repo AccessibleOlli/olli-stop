@@ -27,14 +27,18 @@ body {
   border-left: 12px solid #444444;
 } */
 
-.arrival-list, .clock-weather, .asl-screen, .info-win {
+.arrival-list, .clock-weather, .asl-screen, .info-win, .kintrans-avatar {
   grid-column: 1 / 2;
   padding: 24px 12px 0 12px;
 }
 
 .clock-weather {
-  grid-row: 3 / 4;
+  grid-row: 3 / 5;
   padding-bottom: 24px;
+}
+
+.kintrans-avatar {
+  grid-row: 4 /5;
 }
 
 .asl-screen {
