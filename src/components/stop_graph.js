@@ -33,7 +33,7 @@ class StopGraph extends Component {
   }
 
   onStopClick(itm) {
-    if (this.props.destinationStopName == itm.target.name) {
+    if (this.props.destinationStopName === itm.target.name) {
       // disable for now - causing issues
       //this.props.setDestination(null);
     }
@@ -50,7 +50,7 @@ class StopGraph extends Component {
       }
       else {
         let className = "stop-btn-img";
-        if (this.props.destinationStopName == stop.name) {
+        if (this.props.destinationStopName === stop.name) {
           className += " selected";
         }
         input = <input type="image" className={className} src="./img/olli-stop-color.png" alt="stop" name={stop.name} onClick={this.onStopClick.bind(this)} />
