@@ -43,7 +43,7 @@ class StopGraph extends Component {
   }
 
   render() {
-    let stopImageRows = this.stops.map((stop) => {
+    let stopImageRows = this.stops.map((stop, idx) => {
       let input = undefined;
       if (stop.disabled) {
         input = <input type="image" className="stop-btn-img" src="./img/olli-stop.png" alt="stop"  disabled/>;
@@ -56,14 +56,14 @@ class StopGraph extends Component {
         input = <input type="image" className={className} src="./img/olli-stop-color.png" alt="stop" name={stop.name} onClick={this.onStopClick.bind(this)} />
       }
       return (
-        <td className="stop-btn">
+        <td key={idx} className="stop-btn">
           {input}
         </td>
       );
     });
-    let stopLabelRows = this.stops.map((stop) => {
+    let stopLabelRows = this.stops.map((stop, idx) => {
       return (
-        <td className="stop-btn" style={{whiteSpace: 'pre-line'}}>
+        <td key={idx} className="stop-btn" style={{whiteSpace: 'pre-line'}}>
           {stop.label}
         </td>
       );      
