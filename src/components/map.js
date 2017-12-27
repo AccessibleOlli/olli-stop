@@ -4,9 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { setMapReady } from '../actions/index'
-import { mapMessage } from '../actions/index'
-import { setDestination, setPOIs } from '../actions/index'
+import { setMapReady, mapMessage, setDestination, setPOIs } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
@@ -16,6 +14,7 @@ const CENTER_LON = -92.466;
 const CENTER_LAT = 44.0214;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
 const MSG_NEAR_MEDICAL = 'Your destination is near a medical facility. If you need to go to one of these places after, I can give you directions.';
+const INIT_MESSAGE = {__html: "<h2>Welcome. Where would you like to go?</h2><br/><p>Select a stop on the map.</p>"};
 
 let Map = class Map extends React.Component {
   map;
@@ -29,7 +28,7 @@ let Map = class Map extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      stopSelected: false
+      destinationStopName: null
     };
   }
 
@@ -177,7 +176,7 @@ let Map = class Map extends React.Component {
     // here we minimize the lag by waiting until there are two different positions
     // and resetting the time for the first position
     const l = this.olliPositions.length;
-    if (this.totalOlliPositions == 2 && this.olliPositions[0][0] == coordinates[0] && this.olliPositions[0][1] == coordinates[1]) {
+    if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
       this.totalOlliPositions = 1;
       this.olliPositionTimes[0] = new Date().getTime();
     }
@@ -185,7 +184,7 @@ let Map = class Map extends React.Component {
       this.olliPositions.push(coordinates);
       this.olliPositionTimes.push(new Date().getTime());
     }
-    if (this.totalOlliPositions == 2) {
+    if (this.totalOlliPositions === 2) {
       // start animating on the 2nd position recorded
       requestAnimationFrame(this.animateOlliPosition.bind(this));
     }
@@ -352,21 +351,7 @@ let Map = class Map extends React.Component {
     });
   }
 
-  componentDidMount() {
-    this.map = new mapboxgl.Map({
-      container: this.mapContainer,
-      style: 'mapbox://styles/mapbox/streets-v9',
-      center: [CENTER_LON, CENTER_LAT], 
-      zoom: 16
-    });
-
-    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png', 'youarehere.png','yourdest.png'];
-    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun', 'youarehere','yourdest'];
-    for (var idx = 0; idx < imagenames.length; idx++) {
-      this.loadImage(imagenames[idx], imageids[idx]);
-    }
-    
-    this.map.on('click', evt => {
+  handleMapClick(evt) {
       // let bbox = [[evt.point.x-5, evt.point.y-5], [evt.point.x+5, evt.point.y+5]]; // set bbox as 5px rectangle area around clicked point
       // let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-pois']});
       // if (!features.length) {
@@ -386,40 +371,54 @@ let Map = class Map extends React.Component {
       let features = this.map.queryRenderedFeatures(bbox, {layers: ['olli-stops']});
       let dest = this.map.getSource('olli-destination');
 
-      if (dest._data && dest._data.properties && features.length>0) {
-        if (dest._data.properties.name === features[0].properties.name) {
-          // reset the destination stop and leave map in a clean state
-          this.props.mapMessage({__html: "<h2>Welcome. Where would you like to go?</h2><p>Select a stop on the map.</p>"}, []);
-          dest.setData({'type': 'Feature', 'geometry': {'type':'Point', 'coordinates':[0,0]}});
-          return;
-        } else {
-          dest.setData(features[0]);
-        }
+      if (features.length<1) {
+        this.beep(300, 300);
+        var warningpopup = new mapboxgl.Popup({closeButton: false})
+          .setLngLat([CENTER_LON, CENTER_LAT])
+          .setHTML('Please press on a bus stop')
+          .addTo(this.map);
+        return;
       }
 
-      let layerid = dest._data ? 'olli-pois' : 'olli-stops';
-      features = this.map.queryRenderedFeatures(bbox, {layers: [layerid]});
-
-      if (!dest._data || 
-        !dest._data.properties) {
-        if (features.length>0) {
+      // if a destination is already set and we have a clicked feature
+      if (this.props.destinationStopName) {
+        // if clicked stop is same as previous, un-set the destination
+        if (this.props.destinationStopName === features[0].properties.name) {
+          this.props.mapMessage(INIT_MESSAGE, []);
+          this.props.setDestination(null);
+          this.map.setLayoutProperty('olli-destination', 'visibility', 'none');
+          // dest.setData({'type': 'Feature', 'geometry': {'type':'Point', 'coordinates':[0,0]}});
+        } else { // not same as previous
+          this.props.setDestination(features[0].properties.name);
           dest.setData(features[0]);
-          // this.setState({destination: features[0], stopSelected: true});
-          // this.getNearbyPOIs(features[0]);
-        } else {
-          this.beep(300, 300);
-          var warningpopup = new mapboxgl.Popup({closeButton: false})
-            .setLngLat([CENTER_LON, CENTER_LAT])
-            .setHTML('Please press on a bus stop')
-            .addTo(this.map);
+          this.map.setLayoutProperty('olli-destination', 'visibility', 'visible');
         }
+      
+      // if no destination is set
       } else {
-        if (features.length>0) {
-          // there's a stop selected, and the click has found some features from the POIs layer
-          this.props.mapMessage({__html: "<h3>"+features[0].properties.name+"</h3>"});
-        }
+        this.props.setDestination(features[0].properties.name);
+        dest.setData(features[0]);
+        this.map.setLayoutProperty('olli-destination', 'visibility', 'visible');
+        // this.getNearbyPOIs(features[0]);
       }
+
+    }
+
+  componentDidMount() {
+    this.map = new mapboxgl.Map({
+      container: this.mapContainer,
+      style: 'mapbox://styles/mapbox/streets-v9',
+      center: [CENTER_LON, CENTER_LAT], 
+      zoom: 16
     });
+
+    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png', 'youarehere.png','yourdest.png'];
+    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun', 'youarehere','yourdest'];
+    for (var idx = 0; idx < imagenames.length; idx++) {
+      this.loadImage(imagenames[idx], imageids[idx]);
+    }
+    
+    this.map.on('click', this.handleMapClick.bind(this));
 
     this.map.on('load', () => {
       this.map.resize();
@@ -549,7 +548,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     setMapReady: setMapReady, 
     mapMessage: mapMessage, 
-    setPOIs: setPOIs
+    setPOIs: setPOIs,
+    setDestination: setDestination
   }, dispatch);
 }
 
