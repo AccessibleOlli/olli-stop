@@ -47,8 +47,8 @@ class Info extends Component {
       let msgs = [];
 
       // if no destination is set just show a welcome message
-      if ((!this.props.message || !this.props.message.messageHtml) && !this.props.destinationStopName) {
-          let msg = <div><h1>Welcome. Where would you like to go?</h1><h2>Select a stop above the map.</h2></div>;
+      if (!this.props.destinationStopName) {
+          let msg = <div><h1>Welcome. Where would you like to go?</h1><br/><h2>Select a stop above the map.</h2></div>;
           return (
               <div className="info-win"><hr/>{msg}</div>
           );
@@ -59,9 +59,7 @@ class Info extends Component {
       // end directions
       
 
-      if (!this.props.message && this.props.destinationStopName) {
-        msgs.push(<h2 key={msgs.length}>Your destination is {this.props.destinationStopName}</h2>);
-      }
+      msgs.push(<h2 key={msgs.length}>Your destination is {this.props.destinationStopName}</h2>);
 
       let poipills = null;
       let directionsbutton = null;
