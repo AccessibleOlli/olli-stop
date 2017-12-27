@@ -193,8 +193,8 @@ class App extends Component {
           <Info />
           {/* <Chat /> */}
 
-          <StopGraph />
           <Map stop={this.state.stop} />
+          <StopGraph />
 
           <POISNearby />
 

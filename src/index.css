@@ -33,17 +33,17 @@ body {
 }
 
 .clock-weather {
-  grid-row: 3 / 5;
+  grid-row: 3 / 4;
   padding-bottom: 24px;
 }
 
 .kintrans-avatar {
-  grid-row: 4 /5;
-}
-
-.asl-screen {
   grid-row: 4 / 5;
 }
+
+/* .asl-screen {
+  grid-row: 4 / 5;
+} */
 
 .info-win {
   grid-row: 5 / 11;
@@ -59,10 +59,10 @@ body {
   grid-column: 2 / 3;
 }
 .mapboxgl-map {
-  grid-row: 4 / 11;
+  grid-row: 3 / 10;
 }
 .stop-graph {
-  grid-row: 3 / 4;
+  grid-row: 10 / 11;
 }
 
 
