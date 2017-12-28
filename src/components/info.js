@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import axios from 'axios';
+// import axios from 'axios';
 import { selectPOI, deselectPOI, setPOIDirections } from '../actions/index';
-import getDirections from '../util/directions'
-import POIDirections from './poi_directions'
+import getDirections from '../util/directions';
+import POIDirections from './poi_directions';
 
-const THIS_STOP = [-92.467148454828,44.022351687354];
+// const THIS_STOP = [-92.467148454828,44.022351687354];
 
-const mapboxglaccessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
-var mapboxdirections = axios.create({
-    baseURL: 'https://api.mapbox.com/directions/v5/mapbox/driving'
-});
+// const mapboxglaccessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+// var mapboxdirections = axios.create({
+//     baseURL: 'https://api.mapbox.com/directions/v5/mapbox/driving'
+// });
 
 class Info extends Component {
 
@@ -48,7 +48,7 @@ class Info extends Component {
 
       // if no destination is set just show a welcome message
       if (!this.props.destinationStopName) {
-          let msg = <div><h1>Welcome. Where would you like to go?</h1><br/><h2>Select a stop above the map.</h2></div>;
+          let msg = <div><h1>Welcome.<br/>Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
           return (
               <div className="info-win"><hr/>{msg}</div>
           );
@@ -59,13 +59,16 @@ class Info extends Component {
       // end directions
       
 
-      msgs.push(<h2 key={msgs.length}>Your destination is {this.props.destinationStopName}</h2>);
+      msgs.push(<div><h2 key={msgs.length} className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
 
       let poipills = null;
-      let directionsbutton = null;
+      let triggerdirections = null;
       if (this.props.pois) {
         let anypoiselected = false;
-        msgs.push(<p key={msgs.length}>I've found some places you may like to visit near your stop. Click on them to add to your trip</p>);
+        msgs.push(<h2 key={msgs.length}>I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
+        msgs.push(<br key={msgs.length}/>);
+        msgs.push(<h2 className="info-subtitle">Places:</h2>);
+
         poipills = this.props.pois.map((poi, index) => {
           let poistate = "deselected";
           if (poi.selected) {
@@ -75,8 +78,17 @@ class Info extends Component {
           let states = "poi-pill "+poistate;
           return <button key={index} className={states} name={poi.name} onClick={(e)=>this.onPOIClick(poi)}>{poi.name}</button>
         });
-        if (anypoiselected) 
-          directionsbutton = <button key="directionsbutton" className="directionsbutton" onClick={(e)=>this.onDirectionsClick()}>Get trip directions</button>
+        if (anypoiselected) {
+          let waypoints = [<span>{this.props.destinationStopName}</span>];
+          waypoints.push(this.props.pois.map((poi, index) => {
+            if (poi.selected) return (<span> => {poi.name}</span>);
+          }));
+          triggerdirections = <div className="trigger-directions"><h2 className="info-subtitle">Trip:</h2><h3>{waypoints}</h3><button key="directionsbutton" className="directions-button" onClick={(e)=>this.onDirectionsClick()}>Get trip directions >></button></div>;
+        }
+
+      } else {
+        // destination selected, but POIs have not loeaded yet
+        msgs.push(<h2 key={msgs.length} style={{textDecoration:'blink'}}>Searching for relevant additional points of interest...</h2>);
       }
 
       if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {
@@ -93,7 +105,7 @@ class Info extends Component {
             <hr/>
             {msgs}
             {poipills}
-            {directionsbutton}
+            {triggerdirections}
           </div>
         )
       }

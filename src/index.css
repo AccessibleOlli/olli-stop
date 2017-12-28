@@ -1,4 +1,6 @@
 body {
+  font-family: 'ibm-plex-sans', Helvetica Neue, Arial, sans-serif;
+  line-height: 1;
   margin: 1em;
   padding: 0;
   background-color: #fff;
@@ -68,10 +70,12 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
+  margin: 0.5em 0 0.25em 0;
 }
 
 h1 {
-  font-size: 48pt;
+  font-size: 42pt;
+  line-height: 1.25;
 }
 
 .stop-placard, .olli-logo-div, .stop-name-div {
@@ -184,7 +188,15 @@ input.stop-btn-img.selected {
   background-color: #1c304a;
 }
 
-.poi-pill, button.directionsbutton {
+
+h1.destination {
+  margin: 0;
+}
+h2.info-subtitle {
+  color: #046b99;
+}
+
+.poi-pill, button.directions-button {
   color: #ffffff;
   background-color: #444444;
   font-size: 10pt;
@@ -198,18 +210,40 @@ input.stop-btn-img.selected {
   background-color: #046b99;
 }
 
-img.poi-image {
-  height: 184px;
+div.poi-nearby {
+  display: inline-block;
+  position: relative;
   border: 4px solid #444444;
   margin-right: 8px;
+  background-color: #444444;
 }
-img.poi-image.selected {
+div.poi-nearby>.poi-image-title {
+  font-weight: 700;
+  position: absolute;
+  color: #444444;
+  background-color: rgba(255, 255, 255, 0.8);
+  top: 160px;
+  height: 20px;
+  width: calc(100% - 8px);
+  padding: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+div.poi-nearby>img.poi-image {
+  height: 184px;
+}
+div.poi-nearby>img.poi-image.selected {
   border: 6px solid #046b99;
 }
 
-button.directionsbutton {
+div.trigger-directions {
+  margin-top: 12px;
+}
+button.directions-button {
   display: block;
   background-color: #e63022;
   font-size: 18pt;
+  font-weight: 500;
   border-radius: 0px;
 }

@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { setMapReady, mapMessage, setDestination, setPOIs } from '../actions/index'
+import { setMapReady, setDestination, setPOIs } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
 import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
@@ -13,8 +13,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmb
 const CENTER_LON = -92.466;
 const CENTER_LAT = 44.0214;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
-const MSG_NEAR_MEDICAL = 'Your destination is near a medical facility. If you need to go to one of these places after, I can give you directions.';
-const INIT_MESSAGE = {__html: "<h2>Welcome. Where would you like to go?</h2><br/><p>Select a stop on the map.</p>"};
+// const MSG_NEAR_MEDICAL = 'Your destination is near a medical facility. If you need to go to one of these places after, I can give you directions.';
 
 let Map = class Map extends React.Component {
   map;
@@ -100,7 +99,6 @@ let Map = class Map extends React.Component {
   }
 
   findStopFeatureByName(stopname) {
-    var foundstop = false;
     for (let i=0; i<OLLI_STOPS.features.length; i++) {
       let stop = OLLI_STOPS.features[i];
       if (stop.properties.name.toString().toLowerCase() === stopname.toLowerCase()) {
@@ -175,7 +173,7 @@ let Map = class Map extends React.Component {
     // the very first gap dictates the lag for the rest of the session
     // here we minimize the lag by waiting until there are two different positions
     // and resetting the time for the first position
-    const l = this.olliPositions.length;
+    // const l = this.olliPositions.length;
     if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
       this.totalOlliPositions = 1;
       this.olliPositionTimes[0] = new Date().getTime();
@@ -254,13 +252,14 @@ let Map = class Map extends React.Component {
   }
 
   // THIS IS ALL MOCKUP. REPLACE WITH WATSON ASSISTANT YELP SKILL
+  /*
   getNearbyPOIs(stopfeature) {
     // quick hack to give a relevant message to those near a medical center
     if ( ['Mayo Guggenheim', 'Mayo Gonda', 'Peace Plaza'].includes(stopfeature.properties.name)) {
       this.props.mapMessage({__html: "<h2>&#8220;"+MSG_NEAR_MEDICAL+"&#8221;<h2>"}, []);
     }
     this.map.setLayoutProperty('olli-pois', 'visibility', 'visible');
-}
+  }*/
 
   updatePOIs(pois) {
     if (! pois) {
@@ -373,7 +372,7 @@ let Map = class Map extends React.Component {
 
       if (features.length<1) {
         this.beep(300, 300);
-        var warningpopup = new mapboxgl.Popup({closeButton: false})
+        this.warningpopup = new mapboxgl.Popup({closeButton: false})
           .setLngLat([CENTER_LON, CENTER_LAT])
           .setHTML('Please press on a bus stop')
           .addTo(this.map);
@@ -384,7 +383,6 @@ let Map = class Map extends React.Component {
       if (this.props.destinationStopName) {
         // if clicked stop is same as previous, un-set the destination
         if (this.props.destinationStopName === features[0].properties.name) {
-          this.props.mapMessage(INIT_MESSAGE, []);
           this.props.setDestination(null);
           this.map.setLayoutProperty('olli-destination', 'visibility', 'none');
           // dest.setData({'type': 'Feature', 'geometry': {'type':'Point', 'coordinates':[0,0]}});
@@ -547,7 +545,7 @@ let Map = class Map extends React.Component {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     setMapReady: setMapReady, 
-    mapMessage: mapMessage, 
+    // mapMessage: mapMessage, 
     setPOIs: setPOIs,
     setDestination: setDestination
   }, dispatch);
