@@ -59,15 +59,14 @@ class Info extends Component {
       // end directions
       
 
-      msgs.push(<div><h2 key={msgs.length} className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
+      msgs.push(<div key={msgs.length}><h2 className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
 
       let poipills = null;
       let triggerdirections = null;
       if (this.props.pois) {
         let anypoiselected = false;
-        msgs.push(<h2 key={msgs.length}>I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
+        msgs.push(<h2 key={msgs.length} className="info-subtitle">I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
         msgs.push(<br key={msgs.length}/>);
-        msgs.push(<h2 className="info-subtitle">Places:</h2>);
 
         poipills = this.props.pois.map((poi, index) => {
           let poistate = "deselected";
@@ -81,14 +80,15 @@ class Info extends Component {
         if (anypoiselected) {
           let waypoints = [<span>{this.props.destinationStopName}</span>];
           waypoints.push(this.props.pois.map((poi, index) => {
-            if (poi.selected) return (<span> => {poi.name}</span>);
+            if (poi.selected) return (<span>{" => "}{poi.name}</span>);
+            return null;
           }));
           triggerdirections = <div className="trigger-directions"><h2 className="info-subtitle">Trip:</h2><h3>{waypoints}</h3><button key="directionsbutton" className="directions-button" onClick={(e)=>this.onDirectionsClick()}>Get trip directions >></button></div>;
         }
 
       } else {
         // destination selected, but POIs have not loeaded yet
-        msgs.push(<h2 key={msgs.length} style={{textDecoration:'blink'}}>Searching for relevant additional points of interest...</h2>);
+        msgs.push(<h2 key={msgs.length} className="info-subtitle" style={{textDecoration:'blink'}}>Searching for relevant additional points of interest...</h2>);
       }
 
       if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {

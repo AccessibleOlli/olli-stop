@@ -22,7 +22,7 @@ class POIDirections extends Component {
   }
 
   render() {
-    console.log('POI DIRECTIONSSSSSSS')
+    // console.log('POI DIRECTIONSSSSSSS')
     let directions = [];
     if (this.props.poiDirections) {
       directions = this.props.poiDirections.legs.map((leg => {

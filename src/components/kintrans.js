@@ -25,9 +25,10 @@ class KinTrans extends Component {
 
     return (
       <div className="kintrans-avatar">
-        <Unity
+        {/* <Unity
             src='./kintrans/Build/KinTransAvatarBuild.json'
-            loader='./kintrans/Build/UnityLoader.js' />
+            loader='./kintrans/Build/UnityLoader.js' /> */}
+        <img src="./img/signing.png" style={{width:'444px',height:'224px'}} />
       </div>
     );
   }

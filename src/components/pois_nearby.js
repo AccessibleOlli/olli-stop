@@ -22,8 +22,8 @@ class POISNearby extends Component {
       if (poi.selected) poistate = "selected";
       let states = "poi-image "+poistate;
       return (
-        <div className="poi-nearby">
-          <img key={index} className={states} src={poi.image_url} title={poi.name} alt={poi.name} onClick={(e)=>this.onPOIClick(poi)} />
+        <div key={index} className="poi-nearby">
+          <img className={states} src={poi.image_url} title={poi.name} alt={poi.name} onClick={(e)=>this.onPOIClick(poi)} />
           <div className="poi-image-title">{poi.name}</div>
         </div>
       );
