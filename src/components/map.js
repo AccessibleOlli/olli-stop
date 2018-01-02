@@ -1,12 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import mapboxgl from 'mapbox-gl'
 import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady, setDestination, setPOIs } from '../actions/index'
 import OLLI_STOPS from '../data/stops.json'
-import OLLI_ROUTE from '../data/route.json'
 import POIS from '../data/pois.json'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
@@ -18,11 +16,6 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext || window
 let Map = class Map extends React.Component {
   map;
   warningpopup;
-
-  static propTypes = {
-    olliPosition: PropTypes.object,
-    olliRouteVisibility: PropTypes.string.isRequired
-  };
 
   constructor(props) {
     super(props);
@@ -150,6 +143,162 @@ let Map = class Map extends React.Component {
     this.map.setLayoutProperty('olli-route', 'visibility', visibility);
   }
 
+  // Support multiple ollis
+  updateOlliPositions(positions) {
+    for (let position of positions) {
+      let coordinates = [position.coordinates[0], position.coordinates[1]];
+      const data = {
+        'type': 'FeatureCollection',
+        'features': [{
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': coordinates
+          }
+        }]
+      };
+      let layerId = `olli-bus-${position.olliId}`;
+      let layer = this.map.getSource(layerId);
+      if (layer) {
+        layer.setData(data);
+      }
+      else {
+        this.map.addLayer({
+          'id': layerId,
+          'source': {
+            'type': 'geojson',
+            'data': data
+          },
+          'type': 'symbol',
+          'layout': {
+            'icon-image': 'olli',
+            'icon-size': 0.75
+          }
+        });
+      }
+    }
+  }
+
+  // Support multiple ollis
+  updateOlliPositionsb(positions) {
+    let firstPosition = false;
+    let totalPositions = 0;
+    for (let position of positions) {
+      let olliId = position.olliId;
+      let coordinates = [position.coordinates[0], position.coordinates[1]];
+      if (! this.olliPositions) {
+        firstPosition = true;
+        this.olliPositions = {};
+        this.olliPositionTimes = {};
+        this.totalOlliPositions = {};
+      }
+      if (! (olliId in this.olliPositions)) {
+        this.olliPositions[olliId] = [];
+      }
+      if (! (olliId in this.olliPositionTimes)) {
+        this.olliPositionTimes[olliId] = [];
+      }
+      if (! (olliId in this.totalOlliPositions)) {
+        this.totalOlliPositions[olliId] = 1;
+      }
+      else {
+        this.totalOlliPositions[olliId] = this.totalOlliPositions[olliId] + 1;
+      }
+      this.olliPositions[olliId].push(coordinates);
+      this.olliPositionTimes[olliId].push(new Date().getTime());
+      totalPositions = this.totalOlliPositions[olliId]; // use the last one - all should be the same
+    }
+    if (firstPosition) {
+      // start animating on the 2nd position recorded
+      requestAnimationFrame(this.animateOlliPositions.bind(this));
+    }
+  }
+
+  animateOlliPositions(timestamp) {
+    Object.keys(this.olliPositions).forEach((key) => {
+      this.animateOlliPositionsForOlli(key, timestamp);
+    });
+    requestAnimationFrame(this.animateOlliPositions.bind(this));
+  }
+
+  animateOlliPositionsForOlli(olliId, timestamp) {
+    if (this.olliPositions[olliId].length > 1) {
+      // map the time the position was recorded (in updateOlliPosition) to the
+      // animation timestamp (passed into this function)
+      // the very first time map it to the current animation timestamp
+      // this is the baseline
+      if (! this.olliPositionTimestamps) {
+        this.olliPositionTimestamps = {};
+      }
+      if (! (olliId in this.olliPositionTimestamps)) {
+        this.olliPositionTimestamps[olliId] = [];
+        this.olliPositionTimestamps[olliId].push(timestamp);
+      }
+      // anytime a subsequent position has been recorded (in updateOlliPosition)
+      // we map to an animation timestamp. the value is set to the animation timestamp
+      // for the position recorded right before this one plus the duration between positions
+      // (the time from the previous recorded position to the next recorded position)
+      for(let i=1; i<this.olliPositionTimes[olliId].length; i++) {
+        if (this.olliPositionTimestamps[olliId].length < (i+1)) {
+          let d = (this.olliPositionTimes[olliId][i] - this.olliPositionTimes[olliId][i-1]);
+          this.olliPositionTimestamps[olliId].push(this.olliPositionTimestamps[olliId][i-1] + d);
+        }
+      }
+      // calculate the progress between the first and second stops in our list
+      let progress = (timestamp - this.olliPositionTimestamps[olliId][0])/(this.olliPositionTimestamps[olliId][1] - this.olliPositionTimestamps[olliId][0]);
+      // if the progress is >= 1 that means we have reached our destination (or enough time has elapsed from the last animation)
+      // if that's the case we pop of the first position and then start at the next position
+      if (progress >= 1) {
+        this.olliPositions[olliId].splice(0, 1);
+        this.olliPositionTimes[olliId].splice(0, 1);
+        this.olliPositionTimestamps[olliId].splice(0, 1);
+      }
+      else {
+        // if progress is < 1 then we calculate the position between the two based on the progress
+        let fromPosition = this.olliPositions[olliId][0];
+        let toPosition = this.olliPositions[olliId][1];
+        let position = fromPosition;
+        if (progress > 0) {
+          position = this.calculatePosition(fromPosition, toPosition, progress);
+        }
+        const data = {
+          'type': 'FeatureCollection',
+          'features': [{
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': []
+            }
+          }]
+        };
+        data.features[0].geometry.coordinates = position;
+        // update the map
+        let layerId = `olli-bus-${olliId}`;
+        console.log(layerId);
+        console.log(data);
+        let layer = this.map.getSource(layerId);
+        if (layer) {
+          layer.setData(data);
+        }
+        else {
+          this.map.addLayer({
+            'id': layerId,
+            'source': {
+              'type': 'geojson',
+              'data': data
+            },
+            'type': 'symbol',
+            'layout': {
+              'icon-image': 'olli',
+              'icon-size': 0.75
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // Support single olli (REMOVED SOON)
   updateOlliPosition(positionObj) {
     let cs = null;
     if (positionObj.position) {
@@ -167,6 +316,7 @@ let Map = class Map extends React.Component {
     else {
       this.totalOlliPositions++;
     }
+    // NOTE: THIS HACK COMMENTED OUT FOR USE WITH AO_SIM (HACK WORKS WITH PREVIOUS IMPL USING OLLI-SIM)
     // here we ignore duplicate positions for the very 1st position recorded
     // this is a hack because the first two positions we get are when the olli stops
     // and there is a large gap in those positions
@@ -174,14 +324,14 @@ let Map = class Map extends React.Component {
     // here we minimize the lag by waiting until there are two different positions
     // and resetting the time for the first position
     // const l = this.olliPositions.length;
-    if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
-      this.totalOlliPositions = 1;
-      this.olliPositionTimes[0] = new Date().getTime();
-    }
-    else {
+    //if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
+    //  this.totalOlliPositions = 1;
+    //  this.olliPositionTimes[0] = new Date().getTime();
+    //}
+    //else {
       this.olliPositions.push(coordinates);
       this.olliPositionTimes.push(new Date().getTime());
-    }
+    //}
     if (this.totalOlliPositions === 2) {
       // start animating on the 2nd position recorded
       requestAnimationFrame(this.animateOlliPosition.bind(this));
@@ -321,13 +471,19 @@ let Map = class Map extends React.Component {
         return [coord.coordinates[0], coord.coordinates[1]];
       });
       this.updateMapBounds(coordinates);
+      //this.map.getSource('olli-route').setData(nextProps.olliRoute);
       // this.updateOlliRoute(coordinates);
     }
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
     }
+    // single olli (removed soon)
     if (nextProps.olliPosition !== this.props.olliPosition) {
       this.updateOlliPosition(nextProps.olliPosition);
+    }
+    // multiple ollis
+    if (nextProps.olliPositions !== this.props.olliPositions) {
+      this.updateOlliPositions(nextProps.olliPositions);
     }
     if (nextProps.poiCategory !== this.props.poiCategory) {
       this.updatePOICategory(nextProps.poiCategory);
@@ -426,113 +582,127 @@ let Map = class Map extends React.Component {
   }
 
   addBasicMapLayers() {
-      // add route layer
-      this.map.addLayer({
-        'id': 'olli-route',
-        'type': 'line',
-        'source': {
-          'type': 'geojson',
-          'data': OLLI_ROUTE
-        },
-        'layout': {
-          'line-cap': 'round',
-          'line-join': 'round',
-          'visibility': this.props.olliRouteVisibility
-        },
-        'paint': {
-          'line-color': '#0087bd',
-          'line-width': 10,
-          'line-opacity': 0.4
-        }
-      });
-      this.map.addLayer({
-        'id': 'olli-stops',
-        'source': {
-          'type': 'geojson',
-          'data': OLLI_STOPS
-        },
-        'type': 'symbol',
-        'paint': {
-          'text-halo-color': "#fff", //"#0087bd",
-          'text-halo-width': 4, 
-          'text-halo-blur': 1
-        },
-        'layout': {
-          'icon-image': 'olli-stop',
-          'icon-size': 0.35, 
-          'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
-          'text-field': '{name}', 
-          'text-size': 14, 
-          'text-offset': [0, -2]
-        }
-      });
-      this.map.addLayer({
-        'id': 'olli-current-stop',
-        'source': {
-          'type': 'geojson',
-          'data': this.props.stop
-        },
-        'type': 'symbol',
-        'layout': {
-          'icon-image': 'youarehere',
-          'icon-size': 0.35,
-          'icon-anchor': 'top',  
-          'icon-offset': [-212, 0]
-        }
-      });
-      // destination -- set by user click
-      this.map.addLayer({
-        'id': 'olli-destination',
-        'source': {
-          'type': 'geojson',
-          'data': null
-        },
-        'type': 'symbol',
-        'layout': {
-          'icon-image': 'yourdest',
-          'icon-size': 0.35,
-          'icon-anchor': 'top',  
-          'icon-offset': [-212, 0]
-        }
-      });
-      this.map.addLayer({
-        'id': 'olli-bus',
-        'source': {
-          'type': 'geojson',
-          'data': null
-        },
-        'type': 'symbol',
-        'layout': {
-          'icon-image': 'olli',
-          'icon-size': 0.75
-        }
-      });
-      this.map.addLayer({
-        'id': 'olli-pois',
-        'source': {
-          'type': 'geojson',
-          'data': POIS
-        },
-        'type': 'symbol',
-        'paint': {
-          'text-color': '#0087bd',
-          'text-halo-color': "#fff",
-          'text-halo-width': 4, 
-          'text-halo-blur': 1,
-          'icon-halo-color': "#fff",
-          'icon-halo-width': 4, 
-          'icon-halo-blur': 1
-        },
-        'layout': {
-          'visibility': 'none',
-          'icon-image': 'circle-15',
-          'icon-size': 0.5, 
-          'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
-          'text-size': 12, 
-          // 'text-offset': [0, 2],
-          'text-field': '{name}'
-        }
-      });
+    // add route layer
+    let routeGeoJson = this.props.olliRoute;
+    if (routeGeoJson.type !== 'FeatureCollection') {
+      routeGeoJson = {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: routeGeoJson.coordinates
+          }
+        }]
+      };
+    }
+    this.map.addLayer({
+      'id': 'olli-route',
+      'type': 'line',
+      'source': {
+        'type': 'geojson',
+        'data': routeGeoJson
+      },
+      'layout': {
+        'line-cap': 'round',
+        'line-join': 'round',
+        'visibility': this.props.olliRouteVisibility
+      },
+      'paint': {
+        'line-color': '#0087bd',
+        'line-width': 10,
+        'line-opacity': 0.4
+      }
+    });
+    this.map.addLayer({
+      'id': 'olli-stops',
+      'source': {
+        'type': 'geojson',
+        'data': OLLI_STOPS
+      },
+      'type': 'symbol',
+      'paint': {
+        'text-halo-color': "#fff", //"#0087bd",
+        'text-halo-width': 4, 
+        'text-halo-blur': 1
+      },
+      'layout': {
+        'icon-image': 'olli-stop',
+        'icon-size': 0.35, 
+        'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
+        'text-field': '{name}', 
+        'text-size': 14, 
+        'text-offset': [0, -2]
+      }
+    });
+    this.map.addLayer({
+      'id': 'olli-current-stop',
+      'source': {
+        'type': 'geojson',
+        'data': this.props.stop
+      },
+      'type': 'symbol',
+      'layout': {
+        'icon-image': 'youarehere',
+        'icon-size': 0.35,
+        'icon-anchor': 'top',  
+        'icon-offset': [-212, 0]
+      }
+    });
+    // destination -- set by user click
+    this.map.addLayer({
+      'id': 'olli-destination',
+      'source': {
+        'type': 'geojson',
+        'data': null
+      },
+      'type': 'symbol',
+      'layout': {
+        'icon-image': 'yourdest',
+        'icon-size': 0.35,
+        'icon-anchor': 'top',  
+        'icon-offset': [-212, 0]
+      }
+    });
+    // this.map.addLayer({
+    //   'id': 'olli-bus',
+    //   'source': {
+    //     'type': 'geojson',
+    //     'data': null
+    //   },
+    //   'type': 'symbol',
+    //   'layout': {
+    //     'icon-image': 'olli',
+    //     'icon-size': 0.75
+    //   }
+    // });
+    this.map.addLayer({
+      'id': 'olli-pois',
+      'source': {
+        'type': 'geojson',
+        'data': POIS
+      },
+      'type': 'symbol',
+      'paint': {
+        'text-color': '#0087bd',
+        'text-halo-color': "#fff",
+        'text-halo-width': 4, 
+        'text-halo-blur': 1,
+        'icon-halo-color': "#fff",
+        'icon-halo-width': 4, 
+        'icon-halo-blur': 1
+      },
+      'layout': {
+        'visibility': 'none',
+        'icon-image': 'circle-15',
+        'icon-size': 0.5, 
+        'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
+        'text-size': 12, 
+        // 'text-offset': [0, 2],
+        'text-field': '{name}'
+      }
+    });
   }
 
   render() {
@@ -553,7 +723,7 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    olliPosition: state.olliPosition,
+    olliPositions: state.olliPositions,
     olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
     poiCategory: state.poiCategory,

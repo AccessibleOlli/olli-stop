@@ -22,6 +22,7 @@ import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index';
 import Stops from './data/stops.json';
 import KinTrans from './components/kintrans';
+import OLLI_ROUTE from './data/route.json'
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
@@ -43,6 +44,7 @@ class App extends Component {
     this.state = {
       stop: Stops.features[OLLI_STOP_IDX]
     }
+    store.dispatch(setOlliRoute(OLLI_ROUTE));
     if (REMOTE_WS) {
       this.startWebsocket();
     }
@@ -133,39 +135,72 @@ class App extends Component {
       include_docs: true
     })
       .on('change', change => {
-        if (store.getState().mapReady && change && change.doc && change.doc.type) {
-          if (change.doc.type === 'route_info') {
-            store.dispatch(setOlliRoute(change.doc));
-          }
-          else if (change.doc.type === 'trip_start') {
-            store.dispatch(startOlliTrip(change.doc));
-          }
-          else if (change.doc.type === 'trip_end') {
-            store.dispatch(endOlliTrip(change.doc));
-          }
-          else if (change.doc.type === 'geo_position') {
-            if (! store.getState().ollieRoute) {
-              this.db.createIndex({
-                index: {
-                  fields: [{'type': 'desc'},{'ts': 'desc'}]
-                }
-              }).then(() => {
-                return this.db.find({
-                  selector: { "type": "route_info"},
-                  sort: [{"type": "desc"}, {"ts": "desc"}],
-                  limit: 1
-                });
-              }).then((result) => {
-                if (result.docs && result.docs.length > 0) {
-                  store.dispatch(setOlliRoute(result.docs[0]));
-                  store.dispatch(setOlliPosition(change.doc));
-                }
-              }).catch((err) => {
-                console.log(err);
-              });
+        if (store.getState().mapReady && change && change.doc) {
+          if (change.doc._id === 'telemetry_transition') {
+            // ao_sim
+            let ollis = [];
+            while(true) {
+              let i = ollis.length;
+              let property = `olli_${i+1}`;
+              if (change.doc.transport_data.olli_vehicles.hasOwnProperty(property)) {
+                ollis.push(change.doc.transport_data.olli_vehicles[property]);
+              }
+              else {
+                break;
+              }
             }
-            else {
-              store.dispatch(setOlliPosition(change.doc));
+            for(let i=0; i<ollis.length; i++) {
+              let doc = {
+                olliId: `olli_${i+1}`,
+                coordinates: ollis[i].geometry.coordinates,
+                distance_travelled: 0.14278461869690082,
+                distance_remaining: 0.05605209177030407,
+                properties: ollis[i].properties,
+                ts: change.doc.timestamp
+              };
+              if (! store.getState().olliRoute) {
+                console.log('No olli route. Cannot update olli position.');
+              }
+              else {
+                store.dispatch(setOlliPosition(doc));
+              }
+            }
+          }
+          else if (change.doc.type) {
+            // olli-sim
+            if (change.doc.type === 'route_info') {
+              store.dispatch(setOlliRoute(change.doc));
+            }
+            else if (change.doc.type === 'trip_start') {
+              store.dispatch(startOlliTrip(change.doc));
+            }
+            else if (change.doc.type === 'trip_end') {
+              store.dispatch(endOlliTrip(change.doc));
+            }
+            else if (change.doc.type === 'geo_position') {
+              if (! store.getState().olliRoute) {
+                this.db.createIndex({
+                  index: {
+                    fields: [{'type': 'desc'},{'ts': 'desc'}]
+                  }
+                }).then(() => {
+                  return this.db.find({
+                    selector: { "type": "route_info"},
+                    sort: [{"type": "desc"}, {"ts": "desc"}],
+                    limit: 1
+                  });
+                }).then((result) => {
+                  if (result.docs && result.docs.length > 0) {
+                    store.dispatch(setOlliRoute(result.docs[0]));
+                    store.dispatch(setOlliPosition(change.doc));
+                  }
+                }).catch((err) => {
+                  console.log(err);
+                });
+              }
+              else {
+                store.dispatch(setOlliPosition(change.doc));
+              }
             }
           }
         }
