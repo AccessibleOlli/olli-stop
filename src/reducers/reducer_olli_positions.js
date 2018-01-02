@@ -6,7 +6,7 @@ export default function (state = [], action) {
       case SET_OLLI_POSITION:
         let index = -1;
         for (let i=0; i<state.length; i++) {
-          if (state[i].olliId == action.position.olliId) {
+          if (state[i].olliId === action.position.olliId) {
             index = i;
             break;
           }
@@ -20,6 +20,7 @@ export default function (state = [], action) {
           coordinates: action.coordinates,
         });
         state = positions;
+        break;
       default:
         break;
     }
