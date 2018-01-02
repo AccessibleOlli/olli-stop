@@ -29,6 +29,8 @@ PouchDB.plugin(PouchDBFind);
 
 const store = createStore(reducers);
 const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
+const REMOTE_TELEMETRY_DB = process.env['REACT_APP_REMOTE_TELEMETRY_DB'];
+const REMOTE_EVENT_DB = process.env['REACT_APP_REMOTE_EVENT_DB'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
 
@@ -48,8 +50,11 @@ class App extends Component {
     if (REMOTE_WS) {
       this.startWebsocket();
     }
+    else if (REMOTE_TELEMETRY_DB && REMOTE_EVENT_DB) {
+      this.startPouchDBAOSim();
+    }
     else {
-      this.startPouchDB();
+      this.startPouchDBOlliSim();
     }
   }
 
@@ -127,9 +132,62 @@ class App extends Component {
     });
   }
 
-  startPouchDB() {
+  startPouchDBOlliSim() {
     this.db = new PouchDB(REMOTE_DB, {});
-    this.changes = this.db.changes({
+    this.db.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    })
+      .on('change', change => {
+        if (store.getState().mapReady && change && change.doc && change.doc.type) {
+          // olli-sim
+          if (change.doc.type === 'route_info') {
+            store.dispatch(setOlliRoute(change.doc));
+          }
+          else if (change.doc.type === 'trip_start') {
+            store.dispatch(startOlliTrip(change.doc));
+          }
+          else if (change.doc.type === 'trip_end') {
+            store.dispatch(endOlliTrip(change.doc));
+          }
+          else if (change.doc.type === 'geo_position') {
+            if (! store.getState().olliRoute) {
+              this.db.createIndex({
+                index: {
+                  fields: [{'type': 'desc'},{'ts': 'desc'}]
+                }
+              }).then(() => {
+                return this.db.find({
+                  selector: { "type": "route_info"},
+                  sort: [{"type": "desc"}, {"ts": "desc"}],
+                  limit: 1
+                });
+              }).then((result) => {
+                if (result.docs && result.docs.length > 0) {
+                  store.dispatch(setOlliRoute(result.docs[0]));
+                  store.dispatch(setOlliPosition(change.doc));
+                }
+              }).catch((err) => {
+                console.log(err);
+              });
+            }
+            else {
+              store.dispatch(setOlliPosition(change.doc));
+            }
+          }
+        }
+      }).on('complete', info => {
+      }).on('paused', () => {
+      }).on('error', err => {
+        console.log(err);
+    });
+  }
+
+  startPouchDBAOSim() {
+    // telemetry
+    this.db = new PouchDB(REMOTE_TELEMETRY_DB, {});
+    this.db.changes({
       since: 'now',
       live: true,
       include_docs: true
@@ -166,42 +224,30 @@ class App extends Component {
               }
             }
           }
-          else if (change.doc.type) {
-            // olli-sim
-            if (change.doc.type === 'route_info') {
-              store.dispatch(setOlliRoute(change.doc));
-            }
-            else if (change.doc.type === 'trip_start') {
-              store.dispatch(startOlliTrip(change.doc));
-            }
-            else if (change.doc.type === 'trip_end') {
-              store.dispatch(endOlliTrip(change.doc));
-            }
-            else if (change.doc.type === 'geo_position') {
-              if (! store.getState().olliRoute) {
-                this.db.createIndex({
-                  index: {
-                    fields: [{'type': 'desc'},{'ts': 'desc'}]
-                  }
-                }).then(() => {
-                  return this.db.find({
-                    selector: { "type": "route_info"},
-                    sort: [{"type": "desc"}, {"ts": "desc"}],
-                    limit: 1
-                  });
-                }).then((result) => {
-                  if (result.docs && result.docs.length > 0) {
-                    store.dispatch(setOlliRoute(result.docs[0]));
-                    store.dispatch(setOlliPosition(change.doc));
-                  }
-                }).catch((err) => {
-                  console.log(err);
-                });
-              }
-              else {
-                store.dispatch(setOlliPosition(change.doc));
-              }
-            }
+        }
+      }).on('complete', info => {
+      }).on('paused', () => {
+      }).on('error', err => {
+        console.log(err);
+    });
+    // events
+    this.db2 = new PouchDB(REMOTE_EVENT_DB, {});
+    this.db2.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    })
+      .on('change', change => {
+        if (store.getState().mapReady && change && change.doc) {
+          if (change.doc._id.startsWith('Trip Start')) {
+            console.log('Trip Start - TBD');
+            console.log(change.doc);
+            //store.dispatch(stopOlliTrip(change.doc));
+          }
+          else if (change.doc._id.startsWith('Trip Stop')) {
+            console.log('Trip Stop - TBD');
+            console.log(change.doc);
+            //store.dispatch(stopOlliTrip(change.doc));
           }
         }
       }).on('complete', info => {
@@ -209,6 +255,7 @@ class App extends Component {
       }).on('error', err => {
         console.log(err);
     });
+    
   }
 
   render() {
