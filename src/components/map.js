@@ -143,8 +143,16 @@ let Map = class Map extends React.Component {
     this.map.setLayoutProperty('olli-route', 'visibility', visibility);
   }
 
-  // Support multiple ollis
-  updateOlliPositions(positions) {
+  calculatePosition(fromPosition, toPosition, progress) {
+    const lat1 = fromPosition[1];
+    const long1 = fromPosition[0];
+    const lat2 = toPosition[1];
+    const long2 = toPosition[0];
+    return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
+  }
+
+  // Support multiple ollis (without smoothing)
+  updateOlliPositionsAoSimNoSmooth(positions) {
     for (let position of positions) {
       let coordinates = [position.coordinates[0], position.coordinates[1]];
       const data = {
@@ -180,36 +188,27 @@ let Map = class Map extends React.Component {
   }
 
   // Support multiple ollis
-  updateOlliPositionsb(positions) {
+  updateOlliPositionsAOSim(positions) {
     let firstPosition = false;
-    let totalPositions = 0;
+    if (! this.olliPositions) {
+      firstPosition = true;
+      this.olliPositions = {};
+      this.olliPositionTimes = {};
+    }
     for (let position of positions) {
-      let olliId = position.olliId;
-      let coordinates = [position.coordinates[0], position.coordinates[1]];
-      if (! this.olliPositions) {
-        firstPosition = true;
-        this.olliPositions = {};
-        this.olliPositionTimes = {};
-        this.totalOlliPositions = {};
+      if (! position.processed) {
+        position.processed = true;
+        let olliId = position.olliId;
+        let coordinates = [position.coordinates[0], position.coordinates[1]];
+        if (! (olliId in this.olliPositions)) {
+          this.olliPositions[olliId] = [];
+          this.olliPositionTimes[olliId] = [];
+        }
+        this.olliPositions[olliId].push(coordinates);
+        this.olliPositionTimes[olliId].push(new Date().getTime());
       }
-      if (! (olliId in this.olliPositions)) {
-        this.olliPositions[olliId] = [];
-      }
-      if (! (olliId in this.olliPositionTimes)) {
-        this.olliPositionTimes[olliId] = [];
-      }
-      if (! (olliId in this.totalOlliPositions)) {
-        this.totalOlliPositions[olliId] = 1;
-      }
-      else {
-        this.totalOlliPositions[olliId] = this.totalOlliPositions[olliId] + 1;
-      }
-      this.olliPositions[olliId].push(coordinates);
-      this.olliPositionTimes[olliId].push(new Date().getTime());
-      totalPositions = this.totalOlliPositions[olliId]; // use the last one - all should be the same
     }
     if (firstPosition) {
-      // start animating on the 2nd position recorded
       requestAnimationFrame(this.animateOlliPositions.bind(this));
     }
   }
@@ -274,8 +273,6 @@ let Map = class Map extends React.Component {
         data.features[0].geometry.coordinates = position;
         // update the map
         let layerId = `olli-bus-${olliId}`;
-        console.log(layerId);
-        console.log(data);
         let layer = this.map.getSource(layerId);
         if (layer) {
           layer.setData(data);
@@ -298,8 +295,9 @@ let Map = class Map extends React.Component {
     }
   }
 
-  // Support single olli (REMOVED SOON)
-  updateOlliPosition(positionObj) {
+  // Support single olli
+  // USE THIS WITH OLLI-SIM
+  updateOlliPositionForOlliSim(positionObj) {
     let cs = null;
     if (positionObj.position) {
       cs = positionObj.position.coordinates;
@@ -316,7 +314,6 @@ let Map = class Map extends React.Component {
     else {
       this.totalOlliPositions++;
     }
-    // NOTE: THIS HACK COMMENTED OUT FOR USE WITH AO_SIM (HACK WORKS WITH PREVIOUS IMPL USING OLLI-SIM)
     // here we ignore duplicate positions for the very 1st position recorded
     // this is a hack because the first two positions we get are when the olli stops
     // and there is a large gap in those positions
@@ -324,26 +321,18 @@ let Map = class Map extends React.Component {
     // here we minimize the lag by waiting until there are two different positions
     // and resetting the time for the first position
     // const l = this.olliPositions.length;
-    //if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
-    //  this.totalOlliPositions = 1;
-    //  this.olliPositionTimes[0] = new Date().getTime();
-    //}
-    //else {
+    if (this.totalOlliPositions === 2 && this.olliPositions[0][0] === coordinates[0] && this.olliPositions[0][1] === coordinates[1]) {
+      this.totalOlliPositions = 1;
+      this.olliPositionTimes[0] = new Date().getTime();
+    }
+    else {
       this.olliPositions.push(coordinates);
       this.olliPositionTimes.push(new Date().getTime());
-    //}
+    }
     if (this.totalOlliPositions === 2) {
       // start animating on the 2nd position recorded
       requestAnimationFrame(this.animateOlliPosition.bind(this));
     }
-  }
-
-  calculatePosition(fromPosition, toPosition, progress) {
-    const lat1 = fromPosition[1];
-    const long1 = fromPosition[0];
-    const lat2 = toPosition[1];
-    const long2 = toPosition[0];
-    return [lat1 + (lat2 - lat1) * progress, long1 + (long2 - long1) * progress].reverse();
   }
 
   animateOlliPosition(timestamp) {
@@ -395,7 +384,25 @@ let Map = class Map extends React.Component {
         };
         data.features[0].geometry.coordinates = position;
         // update the map
-        this.map.getSource('olli-bus').setData(data);
+        let layerId = 'olli-bus';
+        let layer = this.map.getSource(layerId);
+        if (layer) {
+          layer.setData(data);
+        }
+        else {
+          this.map.addLayer({
+            'id': layerId,
+            'source': {
+              'type': 'geojson',
+              'data': null
+            },
+            'type': 'symbol',
+            'layout': {
+              'icon-image': 'olli',
+              'icon-size': 0.75
+            }
+          });
+        }
       }
     }
     requestAnimationFrame(this.animateOlliPosition.bind(this));
@@ -477,13 +484,13 @@ let Map = class Map extends React.Component {
     if (nextProps.olliRouteVisibility !== this.props.olliRouteVisibility) {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
     }
-    // single olli (removed soon)
+    // olli-sim/single olli support
     if (nextProps.olliPosition !== this.props.olliPosition) {
-      this.updateOlliPosition(nextProps.olliPosition);
+      this.updateOlliPositionOlliSim(nextProps.olliPosition);
     }
-    // multiple ollis
+    // ao_sim/multiple olli support
     if (nextProps.olliPositions !== this.props.olliPositions) {
-      this.updateOlliPositions(nextProps.olliPositions);
+      this.updateOlliPositionsAOSim(nextProps.olliPositions);
     }
     if (nextProps.poiCategory !== this.props.poiCategory) {
       this.updatePOICategory(nextProps.poiCategory);
@@ -665,18 +672,6 @@ let Map = class Map extends React.Component {
         'icon-offset': [-212, 0]
       }
     });
-    // this.map.addLayer({
-    //   'id': 'olli-bus',
-    //   'source': {
-    //     'type': 'geojson',
-    //     'data': null
-    //   },
-    //   'type': 'symbol',
-    //   'layout': {
-    //     'icon-image': 'olli',
-    //     'icon-size': 0.75
-    //   }
-    // });
     this.map.addLayer({
       'id': 'olli-pois',
       'source': {

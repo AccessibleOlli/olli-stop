@@ -4,15 +4,16 @@ export default function (state = [], action) {
   if (action) {
     switch (action.type) {
       case SET_OLLI_POSITION:
-        let matchingPositions = state.filter((position) => {
-          return position.olliId === action.position.olliId;
-        });
-        let positions = undefined;
-        if (matchingPositions.length === 0) {
-          positions = state.slice(0);
+        let index = -1;
+        for (let i=0; i<state.length; i++) {
+          if (state[i].olliId == action.position.olliId) {
+            index = i;
+            break;
+          }
         }
-        else {
-          positions = state.slice();
+        let positions = state.slice(0);
+        if (index >= 0) {
+          positions.splice(index, 1);
         }
         positions.push({
           olliId: action.position.olliId, 
