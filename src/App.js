@@ -24,7 +24,7 @@ import Stops from './data/stops.json';
 import KinTrans from './components/kintrans';
 import OLLI_ROUTE from './data/route.json';
 import WebsocketManager from './util/websocket_manager';
-import handleKintransMessage from './util/kintrans_message_handler';
+import handleKinTransMessage from './util/kintrans_message_handler';
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
@@ -62,7 +62,7 @@ class App extends Component {
     //
     this.websocketMgr = new WebsocketManager('/socket', (msg) => {
       if (msg.type === 'kintrans') {
-        handleKintransMessage(msg.body, store);
+        handleKinTransMessage(msg.body, store);
       }
     });
     this.websocketMgr.startWebsocket();
