@@ -2,34 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setDestination } from '../actions/index'
+import DISPLAY_STOPS from '../data/display_stops.json'
 
 class StopGraph extends Component {
 
   constructor() {
     super();
-    this.stops = [
-      {
-        name: 'Discovery Square',
-        label: 'Discovery\nSquare',
-        disabled: true
-      },
-      {
-        name: 'Mayo Guggenheim',
-        label: 'Mayo\nGuggenheim'
-      },
-      {
-        name: 'Mayo Gonda',
-        label: 'Mayo\nGonda'
-      },
-      {
-        name: 'Peace Plaza',
-        label: 'Peace\nPlaza'
-      },
-      {
-        name: 'Restaurant District',
-        label: 'Restaurant\nDistrict'
-      }
-    ];
   }
 
   onStopClick(itm) {
@@ -43,7 +21,7 @@ class StopGraph extends Component {
   }
 
   render() {
-    let stopImageRows = this.stops.map((stop, idx) => {
+    let stopImageRows = DISPLAY_STOPS.map((stop, idx) => {
       let input = undefined;
       if (stop.disabled) {
         input = <input type="image" className="stop-btn-img" src="./img/olli-stop.png" alt="stop"  disabled/>;
@@ -61,7 +39,7 @@ class StopGraph extends Component {
         </td>
       );
     });
-    let stopLabelRows = this.stops.map((stop, idx) => {
+    let stopLabelRows = DISPLAY_STOPS.map((stop, idx) => {
       return (
         <td key={idx} className="stop-btn" style={{whiteSpace: 'pre-line'}}>
           {stop.label}

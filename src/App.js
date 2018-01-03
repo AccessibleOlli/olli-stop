@@ -22,7 +22,9 @@ import PouchDBFind from 'pouchdb-find';
 import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse } from './actions/index';
 import Stops from './data/stops.json';
 import KinTrans from './components/kintrans';
-import OLLI_ROUTE from './data/route.json'
+import OLLI_ROUTE from './data/route.json';
+import WebsocketManager from './util/websocket_manager';
+import handleKintransMessage from './util/kintrans_message_handler';
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
@@ -57,6 +59,13 @@ class App extends Component {
     else {
       this.startPouchDBOlliSim();
     }
+    //
+    this.websocketMgr = new WebsocketManager('/socket', (msg) => {
+      if (msg.type === 'kintrans') {
+        handleKintransMessage(msg.body, store);
+      }
+    });
+    this.websocketMgr.startWebsocket();
   }
 
   connectWebsocket() {

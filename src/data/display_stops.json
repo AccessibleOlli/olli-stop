@@ -1,0 +1,28 @@
+[
+  {
+    "number": "1",
+    "name": "Discovery Square",
+    "label": "Discovery\nSquare",
+    "disabled": true
+  },
+  {
+    "number": "2",
+    "name": "Mayo Guggenheim",
+    "label": "Mayo\nGuggenheim"
+  },
+  {
+    "number": "3",
+    "name": "Mayo Gonda",
+    "label": "Mayo\nGonda"
+  },
+  {
+    "number": "4",
+    "name": "Peace Plaza",
+    "label": "Peace\nPlaza"
+  },
+  {
+    "number": "5",
+    "name": "Restaurant District",
+    "label": "Restaurant\nDistrict"
+  }
+]
