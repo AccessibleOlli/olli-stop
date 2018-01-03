@@ -15,7 +15,8 @@ export default function (state = null, action) {
             currentStop: null,
             previousStop: action.fromStop,
             nextStop: action.toStop,
-            nextStopProgress: 0.0
+            nextStopProgress: 0.0,
+            distanceRemaining: action.distanceRemaining
           };
         }
         break;
@@ -26,27 +27,21 @@ export default function (state = null, action) {
             currentStop: action.toStop,
             previousStop: action.fromStop,
             nextStop: null,
-            nextStopProgress: 1.0
+            nextStopProgress: 1.0,
+            distanceRemaining: action.distanceRemaining
           };
         }
         break;
       case SET_OLLI_POSITION:
-        if (olliRoute/* && state*/) {
-          let currentStop = undefined;
-          let previousStop = undefined;
-          let nextStop = undefined;
-          if (state) {
-            currentStop = state.currentStop;
-            previousStop = state.previousStop;
-            nextStop = state.nextStop;
-          }
+        if (olliRoute && state) {
           state = {
             position: action.position, 
             coordinates: action.coordinates,
-            currentStop: currentStop,
-            previousStop: previousStop,
-            nextStop: nextStop,
-            nextStopProgress: action.progress
+            currentStop: state.currentStop,
+            previousStop: state.previousStop,
+            nextStop: state.nextStop,
+            nextStopProgress: action.progress,
+            distanceRemaining: action.distanceRemaining
           }
         }
         break;

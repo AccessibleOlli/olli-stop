@@ -41,7 +41,8 @@ export function setOlliPosition(geoPosition) {
     type: SET_OLLI_POSITION,
     position: geoPosition, 
     coordinates: geoPosition.coordinates,
-    progress: geoPosition.distance_travelled / (geoPosition.distance_travelled + geoPosition.distance_remaining)
+    progress: geoPosition.distance_travelled / (geoPosition.distance_travelled + geoPosition.distance_remaining),
+    distanceRemaining: geoPosition.distance_remaining
   };
 }
 
