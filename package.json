@@ -10,10 +10,14 @@
     "pouchdb-find": "^6.3.4",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
+    "react-iframe-comm": "^1.2.2",
+    "react-materialize": "^1.1.2",
+    "react-player": "^0.25.3",
     "react-redux": "^5.0.6",
     "react-scripts": "1.0.14",
     "react-unity-webgl": "^6.3.1",
     "redux": "^3.7.2",
+    "redux-actions": "^2.2.1",
     "watson-speech": "^0.34.1"
   },
   "scripts": {

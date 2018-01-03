@@ -12,6 +12,7 @@ import MapMsgReducer from './reducer_map_msg';
 import setDestinationReducer from './reducer_set_destination';
 import KinTransAvatarMessageReducer from './reducer_kintrans_avatar_message';
 import KinTransInUseReducer from './reducer_kintrans_in_use';
+import displayReducer from './displayReducer';
 
 const rootReducer = combineReducers({
   mapReady: MapReadyReducer,
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   selectedPOIs: POIsSelectedReducer,
   poiDirections: POIDirectionsReducer,
   kintransAvatar: KinTransAvatarMessageReducer, 
-  kinTransInUse: KinTransInUseReducer
+  kinTransInUse: KinTransInUseReducer,
+    display: displayReducer
 });
 
 export default rootReducer;

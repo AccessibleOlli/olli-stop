@@ -25,6 +25,9 @@ import KinTrans from './components/kintrans';
 import OLLI_ROUTE from './data/route.json';
 import WebsocketManager from './util/websocket_manager';
 import handleKinTransMessage from './util/kintrans_message_handler';
+import Monitor from './components/monitor/Monitor';
+
+import { ollieEvent } from "./actions"
 
 require('dotenv').config()
 PouchDB.plugin(PouchDBFind);
@@ -259,6 +262,10 @@ class App extends Component {
             // console.log(change.doc);
             //store.dispatch(stopOlliTrip(change.doc));
           }
+          else if( change.doc.event === 'display' )
+          {
+              store.dispatch(ollieEvent(change.doc));
+          }
         }
       }).on('complete', info => {
       }).on('paused', () => {
@@ -324,6 +331,7 @@ class App extends Component {
 
           <POISNearby />
 
+          <Monitor />
         </div>
 
       </Provider>

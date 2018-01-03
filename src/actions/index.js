@@ -1,3 +1,5 @@
+import { createAction } from 'redux-actions';
+
 export const SET_MAP_READY = 'SET_MAP_READY';
 export const SET_OLLI_POSITION = 'SET_OLLI_POSITION';
 export const SET_OLLI_ROUTE = 'SET_OLLI_ROUTE';
@@ -14,6 +16,18 @@ export const DESTINATION_NAME = 'DESTINATION_NAME';
 export const KINTRANS_USE = 'KINTRANS_USE';
 export const KINTRANS_AVATAR_MESSAGE = 'KINTRANS_AVATAR_MESSAGE';
 
+
+export const ollieEvent = createAction( "OLLIE_EVENT" )
+export const deleteMessage = createAction( 'DELETE_MESSAGE')
+
+export const createOllieEvent = (event) => {
+    return (dispatch) => {
+        if(event.payload.device.split(',').includes(process.env.REACT_APP_MONITOR))
+        {
+            dispatch(ollieEvent(event))
+        }
+    }
+}
 
 export function setMapReady(ready) {
   return {
