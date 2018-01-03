@@ -11,6 +11,7 @@ export const DESELECT_POI = 'DESELECT_POI';
 export const SET_POI_DIRECTIONS = 'SET_POI_DIRECTIONS';
 export const MAP_MSG = 'MAP_MSG';
 export const DESTINATION_NAME = 'DESTINATION_NAME';
+export const KINTRANS_USE = 'KINTRANS_USE';
 export const KINTRANS_AVATAR_MESSAGE = 'KINTRANS_AVATAR_MESSAGE';
 
 
@@ -116,5 +117,12 @@ export function setKinTransAvatarMessage(msg) {
   return {
     type: KINTRANS_AVATAR_MESSAGE,
     kintransAvatarMessage: msg
+  }
+}
+
+export function setKinTransInUse(tf) {
+  return {
+    type: KINTRANS_USE, 
+    kinTransInUse: tf
   }
 }

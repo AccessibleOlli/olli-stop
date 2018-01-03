@@ -22,13 +22,16 @@ class KinTrans extends Component {
   render() {
 
     SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);
-
+    if (!this.props.kinTransInUse) {
+      return (<div className="kintrans-avatar"></div>);
+    }
+    
     return (
       <div className="kintrans-avatar">
-        {/* <Unity
+        <Unity
             src='./kintrans/Build/KinTransAvatarBuild.json'
-            loader='./kintrans/Build/UnityLoader.js' /> */}
-        <img src="./img/signing.png" style={{width:'444px',height:'224px'}} />
+            loader='./kintrans/Build/UnityLoader.js' />
+        {/* <img src="./img/signing.png" style={{width:'444px',height:'224px'}} /> */}
       </div>
     );
   }
@@ -39,7 +42,7 @@ function mapStateToProps(state) {
     kintransAvatarID: state.kintransAvatar.id,
     kintransAvatarMessage: state.kintransAvatar.message,
     kintransAvatarTimestamp: state.kintransAvatar.timestamp,
-
+    kinTransInUse: state.kinTransInUse, 
     //DELETE THIS (its for testing, it triggers avatar on click of a stop button)
     selectedPOIs: state.selectedPOIs //TEST AVATAR BY CLICKING MAP
   };

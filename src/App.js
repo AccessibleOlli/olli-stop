@@ -19,7 +19,7 @@ import Weather from './components/weather';
 // import Credits from './components/credits';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip } from './actions/index';
+import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse } from './actions/index';
 import Stops from './data/stops.json';
 import KinTrans from './components/kintrans';
 import OLLI_ROUTE from './data/route.json'
@@ -31,6 +31,7 @@ const store = createStore(reducers);
 const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
 const REMOTE_TELEMETRY_DB = process.env['REACT_APP_REMOTE_TELEMETRY_DB'];
 const REMOTE_EVENT_DB = process.env['REACT_APP_REMOTE_EVENT_DB'];
+const REMOTE_PERSONA_DB = process.env['REACT_APP_REMOTE_PERSONA_DB'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
 const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
 
@@ -240,14 +241,48 @@ class App extends Component {
       .on('change', change => {
         if (store.getState().mapReady && change && change.doc) {
           if (change.doc._id.startsWith('Trip Start')) {
-            console.log('Trip Start - TBD');
-            console.log(change.doc);
+            // console.log('Trip Start - TBD');
+            // console.log(change.doc);
             //store.dispatch(stopOlliTrip(change.doc));
           }
           else if (change.doc._id.startsWith('Trip Stop')) {
-            console.log('Trip Stop - TBD');
-            console.log(change.doc);
+            // console.log('Trip Stop - TBD');
+            // console.log(change.doc);
             //store.dispatch(stopOlliTrip(change.doc));
+          }
+        }
+      }).on('complete', info => {
+      }).on('paused', () => {
+      }).on('error', err => {
+        console.log(err);
+    });
+    // persona transitions
+    this.db3 = new PouchDB(REMOTE_PERSONA_DB, {});
+    this.db3.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    })
+      .on('change', change => {
+        if (store.getState().mapReady && change && change.doc) {
+          if (change.doc.transition === 'olli_stop_entry') {
+            console.log(change.doc.persona+' enters olli stop');
+            console.log(change.doc);
+            // if Brent, show ASL
+            if (change.doc.persona.startsWith('Brent')) {
+              store.dispatch(setKinTransInUse(true));
+            }
+            // if Katherine, lower the screen
+            if (change.doc.persona.startsWith('Katherine')) {
+              // TODO show spacer element above stop name
+            }
+          } else if (change.doc.transition === 'olli_stop_end_exit]') {
+            if (change.doc.persona === 'Brent') {
+              store.dispatch(setKinTransInUse(false));
+            }
+            if (change.doc.persona === 'Katherine') {
+              // TODO hide spacer element above stop name
+            }
           }
         }
       }).on('complete', info => {
