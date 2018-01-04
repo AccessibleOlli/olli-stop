@@ -26,6 +26,7 @@ import OLLI_ROUTE from './data/route.json';
 import WebsocketManager from './util/websocket_manager';
 import handleKinTransMessage from './util/kintrans_message_handler';
 import Monitor from './components/monitor/Monitor';
+import Main from './main';
 
 import { ollieEvent } from "./actions"
 
@@ -49,10 +50,6 @@ class App extends Component {
 
   constructor() {
     super();
-    this.state = {
-      stop: Stops.features[OLLI_STOP_IDX], 
-      patrons: false
-    }
     store.dispatch(setOlliRoute(OLLI_ROUTE));
     if (REMOTE_WS) {
       this.startWebsocket();
@@ -285,7 +282,7 @@ class App extends Component {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
             store.dispatch(updatePersonas(change.doc.persona, true));
-            this.setState({patrons: true});
+            //this.setState({patrons: true});
             // if Brent, show ASL
             if (change.doc.persona.startsWith('Brent')) {
               store.dispatch(setKinTransInUse(true));
@@ -294,9 +291,9 @@ class App extends Component {
             if (change.doc.persona.startsWith('Katherine')) {
               // TODO show spacer element above stop name
             }
-          } else if (change.doc.transition === 'olli_stop_end_exit]') {
-            if (store.getState().personas.length < 2) // only 1 patron left who we're getting ready to remove them
-              this.setState({patrons:false});
+          } else if (change.doc.transition === 'olli_stop_end_exit') {
+            //if (store.getState().personas.length < 2) // only 1 patron left who we're getting ready to remove them
+              //this.setState({patrons:false});
             store.dispatch(updatePersonas(change.doc.persona, false));
             if (change.doc.persona === 'Brent') {
               store.dispatch(setKinTransInUse(false));
@@ -336,42 +333,9 @@ class App extends Component {
   }
 
   render() {
-    let st = store.getState();
-
-    if (!this.state.patrons) {
-      return (
-        <Provider store={store}>  
-          <div className="cssgrid">
-            <OlliLogo />
-            <StopHeader stop={this.state.stop} />
-            <Map stop={this.state.stop} fullscreen={!st.kinTransInUse} />
-            <Monitor />
-          </div>  
-        </Provider>
-      );
-    }
-
     return (
-      <Provider store={store}>
-
-        <div className="cssgrid">
-          <OlliLogo />
-          <StopHeader stop={this.state.stop} />
-          <div className="clock-weather">
-            <Clock />
-            <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
-          </div>
-          <KinTrans />
-          <Info />
-
-          <Map stop={this.state.stop} fullscreen={!st.kinTransInUse} />
-          <StopGraph />
-
-          <POISNearby />
-
-          <Monitor />
-        </div>
-
+      <Provider store={store}>  
+        <Main />
       </Provider>
     );
   }

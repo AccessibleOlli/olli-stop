@@ -30,14 +30,14 @@
   },
   "homepage": "https://accessibleolli.github.io/olli-stop",
   "proxy": {
-    "/api": {
-      "target": "https://olli-stop-backend.mybluemix.net",
-      "changeOrigin": true
-    },
     "/socket": {
       "target": "ws://olli-stop-backend.mybluemix.net",
       "changeOrigin": true,
       "ws": true
+    },
+    "/": {
+      "target": "https://olli-stop-backend.mybluemix.net",
+      "changeOrigin": true
     }
   },
   "devDependencies": {

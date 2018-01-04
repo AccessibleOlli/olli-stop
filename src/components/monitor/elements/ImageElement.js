@@ -20,7 +20,8 @@ class ImageElement extends Component {
             display = "block"
         }
 
-        let src = 'http://localhost:' + process.env.REACT_APP_PORT;
+        //let src = 'http://localhost:' + process.env.REACT_APP_PORT;
+        let src = '';
 
         if(file)
         {

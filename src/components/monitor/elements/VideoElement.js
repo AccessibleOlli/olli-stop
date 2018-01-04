@@ -148,9 +148,10 @@ class VideoWindow extends Component
             left = 0
         }
 
-        let url = 'http://localhost:' + process.env.REACT_APP_PORT + "/" + src
+        //let url = 'http://localhost:' + process.env.REACT_APP_PORT + "/" + src
+        let url = src;
 
-        console.log('VIDEO URL: ' + url)
+        //console.log('VIDEO URL: ' + url)
 
         return (
             <div style={{ top, left, position: 'absolute', display }}>

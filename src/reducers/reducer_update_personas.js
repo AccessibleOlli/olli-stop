@@ -1,6 +1,7 @@
 import { UPDATE_PERSONAS } from '../actions/index'
 
 export default function (state = [], action) {
+  console.log(action);
   if (action) {
     switch (action.type) {
       case UPDATE_PERSONAS:
@@ -10,13 +11,18 @@ export default function (state = [], action) {
             newstate.push(state[i]);
           }
         }
-        return [
-          ...newstate, 
-          {
-            "name": action.personas.name, 
-            isInside: action.personas.isInside
-          }
-        ]
+        newstate.push({
+          name: action.personas.name, 
+          isInside: action.personas.isInside
+        });
+        return newstate;
+        // return [
+        //   ...newstate, 
+        //   {
+        //     name: action.personas.name, 
+        //     isInside: action.personas.isInside
+        //   }
+        // ]
       default:
         break;
     }
