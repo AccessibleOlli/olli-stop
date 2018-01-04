@@ -15,7 +15,7 @@ export const MAP_MSG = 'MAP_MSG';
 export const DESTINATION_NAME = 'DESTINATION_NAME';
 export const KINTRANS_USE = 'KINTRANS_USE';
 export const KINTRANS_AVATAR_MESSAGE = 'KINTRANS_AVATAR_MESSAGE';
-
+export const UPDATE_PERSONAS = 'UPDATE_PERSONAS';
 
 export const ollieEvent = createAction( "OLLIE_EVENT" )
 export const deleteMessage = createAction( 'DELETE_MESSAGE')
@@ -139,5 +139,15 @@ export function setKinTransInUse(tf) {
   return {
     type: KINTRANS_USE, 
     kinTransInUse: tf
+  }
+}
+
+export function updatePersonas(name, isInside) {
+  return {
+    type: UPDATE_PERSONAS, 
+    personas: {
+      name: name, 
+      isInside: isInside
+    }
   }
 }

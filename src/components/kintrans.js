@@ -20,11 +20,7 @@ class KinTrans extends Component {
   }
 
   render() {
-
-    SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);
-    if (!this.props.kinTransInUse) {
-      return (<div className="kintrans-avatar"></div>);
-    }
+    SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);    
     
     return (
       <div className="kintrans-avatar">

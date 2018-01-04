@@ -19,7 +19,7 @@ import Weather from './components/weather';
 // import Credits from './components/credits';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse } from './actions/index';
+import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse, updatePersonas } from './actions/index';
 import Stops from './data/stops.json';
 import KinTrans from './components/kintrans';
 import OLLI_ROUTE from './data/route.json';
@@ -50,7 +50,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      stop: Stops.features[OLLI_STOP_IDX]
+      stop: Stops.features[OLLI_STOP_IDX], 
+      patrons: false
     }
     store.dispatch(setOlliRoute(OLLI_ROUTE));
     if (REMOTE_WS) {
@@ -283,7 +284,8 @@ class App extends Component {
         if (store.getState().mapReady && change && change.doc) {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
-            console.log(change.doc);
+            store.dispatch(updatePersonas(change.doc.persona, true));
+            this.setState({patrons: true});
             // if Brent, show ASL
             if (change.doc.persona.startsWith('Brent')) {
               store.dispatch(setKinTransInUse(true));
@@ -293,6 +295,9 @@ class App extends Component {
               // TODO show spacer element above stop name
             }
           } else if (change.doc.transition === 'olli_stop_end_exit]') {
+            if (store.getState().personas.length < 2) // only 1 patron left who we're getting ready to remove them
+              this.setState({patrons:false});
+            store.dispatch(updatePersonas(change.doc.persona, false));
             if (change.doc.persona === 'Brent') {
               store.dispatch(setKinTransInUse(false));
             }
@@ -307,15 +312,49 @@ class App extends Component {
         console.log(err);
     });
     
+    // using this for testing messages
+    this.db4 = new PouchDB("http://127.0.0.1:5984/a_dummy_trigger", {});
+    this.db4.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    })
+      .on('change', change => {
+        // console.log(store.getState());
+        // console.log(change.doc)
+        if (store.getState().mapReady && change && change.doc) {
+          console.log("dummy change");
+          store.dispatch(updatePersonas("Brent", true));
+          store.dispatch(setKinTransInUse(!this.state.patrons));
+          this.setState({patrons:!this.state.patrons});
+        }
+      }).on('complete', info => {
+      }).on('paused', () => {
+      }).on('error', err => {
+        console.log(err);
+    });
   }
 
   render() {
+    let st = store.getState();
+
+    if (!this.state.patrons) {
+      return (
+        <Provider store={store}>  
+          <div className="cssgrid">
+            <OlliLogo />
+            <StopHeader stop={this.state.stop} />
+            <Map stop={this.state.stop} fullscreen={!st.kinTransInUse} />
+            <Monitor />
+          </div>  
+        </Provider>
+      );
+    }
+
     return (
       <Provider store={store}>
 
         <div className="cssgrid">
-
-          {/* <div className="stop-placard"></div> */}
           <OlliLogo />
           <StopHeader stop={this.state.stop} />
           <div className="clock-weather">
@@ -324,9 +363,8 @@ class App extends Component {
           </div>
           <KinTrans />
           <Info />
-          {/* <Chat /> */}
 
-          <Map stop={this.state.stop} />
+          <Map stop={this.state.stop} fullscreen={!st.kinTransInUse} />
           <StopGraph />
 
           <POISNearby />

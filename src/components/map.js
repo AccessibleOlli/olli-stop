@@ -701,8 +701,11 @@ let Map = class Map extends React.Component {
   }
 
   render() {
+    let mapsize = "normal";
+    if (this.props.fullscreen) mapsize = "full";
+
     return (
-      <div ref={el => this.mapContainer = el} />
+      <div ref={el => this.mapContainer = el} className={"mapboxgl-map-"+mapsize} />
     );
   }
 }

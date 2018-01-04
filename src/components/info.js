@@ -47,8 +47,13 @@ class Info extends Component {
       let msgs = [];
 
       // if no destination is set just show a welcome message
+      let welcome = "Welcome";
       if (!this.props.destinationStopName) {
-          let msg = <div><h1>Welcome.<br/>Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
+        if (this.props.personas && this.props.personas.length > 0 && this.props.personas[0].name) {
+          welcome += ", " + this.props.personas[0].name;
+        }
+        welcome += ".";
+        let msg = <div><h1>{welcome}<br/>Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
           return (
               <div className="info-win"><hr/>{msg}</div>
           );
@@ -123,6 +128,7 @@ function mapDispatchToProps(dispatch) {
   function mapStateToProps(state) {
     return {
       destinationStopName: state.destinationStopName,
+      personas: state.personas,
       message: state.mapMsg, 
       pois: state.pois,
       selectedPOIs: state.selectedPOIs,
