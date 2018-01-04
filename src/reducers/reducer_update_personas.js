@@ -4,14 +4,14 @@ export default function (state = [], action) {
   if (action) {
     switch (action.type) {
       case UPDATE_PERSONAS:
-        for(let i=1;i<state.length;i++) {
-          if (state[i].name === action.personas.name) {
-            state[i].isInside = action.personas.isInside;
-            return state;
+        let newstate = [];
+        for(let i=0;i<state.length;i++) {
+          if (state[i].name !== action.personas.name) {
+            newstate.push(state[i]);
           }
         }
         return [
-          ...state, 
+          ...newstate, 
           {
             "name": action.personas.name, 
             isInside: action.personas.isInside
