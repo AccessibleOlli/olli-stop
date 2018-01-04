@@ -31,12 +31,12 @@
   "homepage": "https://accessibleolli.github.io/olli-stop",
   "proxy": {
     "/socket": {
-      "target": "ws://localhost:3001",
+      "target": "ws://olli-stop-backend.mybluemix.net",
       "changeOrigin": true,
       "ws": true
     },
     "/": {
-      "target": "http://localhost:3001",
+      "target": "https://olli-stop-backend.mybluemix.net",
       "changeOrigin": true
     }
   },

@@ -278,8 +278,6 @@ class App extends Component {
       include_docs: true
     })
       .on('change', change => {
-        console.log('CHANGE!!!');
-        console.log(change);
         if (store.getState().mapReady && change && change.doc) {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
