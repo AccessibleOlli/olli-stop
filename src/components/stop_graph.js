@@ -6,10 +6,6 @@ import DISPLAY_STOPS from '../data/display_stops.json'
 
 class StopGraph extends Component {
 
-  constructor() {
-    super();
-  }
-
   onStopClick(itm) {
     if (this.props.destinationStopName === itm.target.name) {
       // disable for now - causing issues
