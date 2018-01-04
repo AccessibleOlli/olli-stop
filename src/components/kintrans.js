@@ -19,9 +19,20 @@ class KinTrans extends Component {
     this.props.setAvatarMessage(msg);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
+      let message = 'Hello Welcome to Olli!';
+      message = 'i need help';
+      SendMessage('OlliCommunication', 'startSimulationMessage', message);
+      setTimeout(() => {
+        SendMessage('OlliCommunication', 'startSimulationMessage', message);
+      }, 2000)
+      
+    }
+  }
+
   render() {
-    SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);    
-    
+    //SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);    
     return (
       <div className="kintrans-avatar">
         <Unity
@@ -35,12 +46,13 @@ class KinTrans extends Component {
 
 function mapStateToProps(state) {
   return {
+    destinationStopName: state.destinationStopName,
     kintransAvatarID: state.kintransAvatar.id,
     kintransAvatarMessage: state.kintransAvatar.message,
     kintransAvatarTimestamp: state.kintransAvatar.timestamp,
     kinTransInUse: state.kinTransInUse, 
     //DELETE THIS (its for testing, it triggers avatar on click of a stop button)
-    selectedPOIs: state.selectedPOIs //TEST AVATAR BY CLICKING MAP
+    activePersona: state.activePersona //TEST AVATAR BY CLICKING MAP
   };
 }
 

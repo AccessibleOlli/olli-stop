@@ -44,13 +44,28 @@ class Info extends Component {
     // }
 
     render() {
+      let cognitivePersona = this.props.activePersonaTypes.cognitive;
+      let cognitivePersonaOnly = (
+        this.props.activePersonaTypes.cognitive &&
+        ! this.props.activePersonaTypes.deaf &&
+        ! this.props.activePersonaTypes.blind &&
+        ! this.props.activePersonaTypes.wheelchair
+      );
+      
+      if (cognitivePersona) {
+        // REFACTOR:TODO: Increase text size if a cognitive persona is present
+      }
+      if (cognitivePersonaOnly) {
+        // REFACTOR:TODO: 
+      }
+
       let msgs = [];
 
       // if no destination is set just show a welcome message
       let welcome = "Welcome";
       if (!this.props.destinationStopName) {
-        if (this.props.personas && this.props.personas.length > 0 && this.props.personas[0].name) {
-          welcome += ", " + this.props.personas[0].name;
+        if (this.props.activePersona) {
+          welcome += ", " + this.props.activePersona.name;
         }
         welcome += ".";
         let msg = <div><h1>{welcome}<br/>Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
@@ -58,11 +73,6 @@ class Info extends Component {
               <div className="info-win"><hr/>{msg}</div>
           );
       }
-
-      // if we're showing directions, only show that and nothing else
-      // MARK this is for you...
-      // end directions
-      
 
       msgs.push(<div key={msgs.length}><h2 className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
 
@@ -128,7 +138,8 @@ function mapDispatchToProps(dispatch) {
   function mapStateToProps(state) {
     return {
       destinationStopName: state.destinationStopName,
-      personas: state.personas,
+      activePersona: state.activePersona,
+      activePersonaTypes: state.activePersonaTypes,
       message: state.mapMsg, 
       pois: state.pois,
       selectedPOIs: state.selectedPOIs,

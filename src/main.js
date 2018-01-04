@@ -1,50 +1,50 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
-import reducers from './reducers';
+import { setDestination } from './actions/index';
 import Clock from './components/clock';
-// import Talk from './components/talk';
-import Map from './components/map';
-// import Progress from './components/progress';
 import Info from './components/info';
-// import Arrival from './components/arrival';
+import KinTrans from './components/kintrans';
+import Map from './components/map';
 import OlliLogo from './components/olli_logo';
+import POISNearby from './components/pois_nearby';
 import StopHeader from './components/stop_header';
 import StopGraph from './components/stop_graph';
-import POISNearby from './components/pois_nearby';
-// import Talk from './components/talk';
-// import Chat from './components/chat';
 import Weather from './components/weather';
-// import Credits from './components/credits';
 import Stops from './data/stops.json';
-import KinTrans from './components/kintrans';
-import Monitor from './components/monitor/Monitor';
+
+// import Monitor from './components/monitor/Monitor';
 
 const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
+const OLLI_BLIND_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_BLIND_STOP_IDX'], 10) || 0;
+const OLLI_BLIND_STOP_DELAY = parseInt(process.env['REACT_APP_OLLI_BLIND_STOP_DELAY'], 10) || 2000;
 const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
+// REACT_APP_WEATHER_URL should be in the format similar to: http://host.domain.com/weather/{lat}/{lon}
+// {lat} and {lon} will be replaced with actual latitude and longitude later by the Weather component
 const WEATHER_URL = process.env['REACT_APP_WEATHER_URL'] || (REMOTE_WS ? REMOTE_WS.replace('ws', 'http') + '/weather/{lat}/{lon}' : '')
 const WEATHER_REFRESH_MIN = 10
 
+
 class Main extends Component {
 
-  constructor() {
-    super();
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
+      if (nextProps.activePersona.blind) {
+        let welcome = "Welcome";
+        welcome += ", " + nextProps.activePersona.name;
+        welcome += ". To go to Mayo Gonda say one.";
+        console.log('AUDIO: ' + welcome);
+        setTimeout(() => {
+          console.log(Stops.features[OLLI_BLIND_STOP_IDX]);
+          this.props.setDestination(Stops.features[OLLI_BLIND_STOP_IDX].properties.name);
+        }, OLLI_BLIND_STOP_DELAY);
+      }
+    }
   }
 
   render() {
-    console.log(this.props.personas);
     let stop = Stops.features[OLLI_STOP_IDX];
-    let patrons = false;
-    if (this.props.personas) {
-      for (let persona of this.props.personas) {
-        if (persona.isInside) {
-          patrons = true;
-          break;
-        }
-      }
-    }
-    console.log(patrons);
-    if (!patrons) {
+    if (!this.props.activePersona) {
       return (
           <div className="cssgrid">
             <OlliLogo />
@@ -55,22 +55,46 @@ class Main extends Component {
       );
     }
     else {
-      return (
-        <div className="cssgrid">
-          <OlliLogo />
-          <StopHeader stop={stop} />
-          <div className="clock-weather">
-            <Clock />
-            <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
-          </div>
-          <KinTrans />
-          <Info />
-          <Map stop={stop} fullscreen={false} />
-          <StopGraph />
-          <POISNearby />
-          {/* <Monitor /> */}
-        </div>
+      let cognitivePersonaOnly = (
+        this.props.activePersonaTypes.cognitive &&
+        ! this.props.activePersonaTypes.deaf &&
+        ! this.props.activePersonaTypes.blind &&
+        ! this.props.activePersonaTypes.wheelchair
       );
+      if (cognitivePersonaOnly) {
+        return (
+          <div className="cssgrid">
+            <OlliLogo />
+            <StopHeader stop={stop} />
+            <div className="clock-weather">
+              <Clock />
+              <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
+            </div>
+            <KinTrans />
+            <Info />
+            <Map stop={stop} fullscreen={false} />
+            {/* <Monitor /> */}
+          </div>
+        );
+      }
+      else {
+        return (
+          <div className="cssgrid">
+            <OlliLogo />
+            <StopHeader stop={stop} />
+            <div className="clock-weather">
+              <Clock />
+              <Weather serviceurl={WEATHER_URL} refreshrate={WEATHER_REFRESH_MIN} />
+            </div>
+            <KinTrans />
+            <Info />
+            <Map stop={stop} fullscreen={false} />
+            <StopGraph />
+            <POISNearby />
+            {/* <Monitor /> */}
+          </div>
+        );
+      }
     }
   }
 }
@@ -78,13 +102,14 @@ class Main extends Component {
 function mapStateToProps(state) {
   return {
     kinTransInUse: state.kinTransInUse,
-    personas: state.personas
+    activePersona: state.activePersona,
+    activePersonaTypes: state.activePersonaTypes
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    //
+    setDestination: setDestination
   }, dispatch);
 }
 

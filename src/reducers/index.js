@@ -12,7 +12,8 @@ import MapMsgReducer from './reducer_map_msg';
 import setDestinationReducer from './reducer_set_destination';
 import KinTransAvatarMessageReducer from './reducer_kintrans_avatar_message';
 import KinTransInUseReducer from './reducer_kintrans_in_use';
-import UpdatePersonasReducer from './reducer_update_personas';
+import ActivePersonaReducer from './reducer_active_persona';
+import ActivePersonaTypesReducer from './reducer_active_persona_types';
 import displayReducer from './displayReducer';
 
 const rootReducer = combineReducers({
@@ -29,7 +30,8 @@ const rootReducer = combineReducers({
   poiDirections: POIDirectionsReducer,
   kintransAvatar: KinTransAvatarMessageReducer, 
   kinTransInUse: KinTransInUseReducer,
-  personas: UpdatePersonasReducer,
+  activePersona: ActivePersonaReducer,
+  activePersonaTypes: ActivePersonaTypesReducer,
   display: displayReducer
 });
 

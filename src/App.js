@@ -3,29 +3,12 @@ import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 import reducers from './reducers';
-import Clock from './components/clock';
-// import Talk from './components/talk';
-import Map from './components/map';
-// import Progress from './components/progress';
-import Info from './components/info';
-// import Arrival from './components/arrival';
-import OlliLogo from './components/olli_logo';
-import StopHeader from './components/stop_header';
-import StopGraph from './components/stop_graph';
-import POISNearby from './components/pois_nearby';
-// import Talk from './components/talk';
-// import Chat from './components/chat';
-import Weather from './components/weather';
-// import Credits from './components/credits';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse, updatePersonas } from './actions/index';
-import Stops from './data/stops.json';
-import KinTrans from './components/kintrans';
+import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransInUse, addPersona, removePersona, setDestination } from './actions/index';
 import OLLI_ROUTE from './data/route.json';
 import WebsocketManager from './util/websocket_manager';
 import handleKinTransMessage from './util/kintrans_message_handler';
-import Monitor from './components/monitor/Monitor';
 import Main from './main';
 
 import { ollieEvent } from "./actions"
@@ -39,12 +22,6 @@ const REMOTE_TELEMETRY_DB = process.env['REACT_APP_REMOTE_TELEMETRY_DB'];
 const REMOTE_EVENT_DB = process.env['REACT_APP_REMOTE_EVENT_DB'];
 const REMOTE_PERSONA_DB = process.env['REACT_APP_REMOTE_PERSONA_DB'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
-const OLLI_STOP_IDX = parseInt(process.env['REACT_APP_OLLI_STOP_IDX'], 10) || 0;
-
-// REACT_APP_WEATHER_URL should be in the format similar to: http://host.domain.com/weather/{lat}/{lon}
-// {lat} and {lon} will be replaced with actual latitude and longitude later by the Weather component
-const WEATHER_URL = process.env['REACT_APP_WEATHER_URL'] || (REMOTE_WS ? REMOTE_WS.replace('ws', 'http') + '/weather/{lat}/{lon}' : '')
-const WEATHER_REFRESH_MIN = 10
 
 class App extends Component {
 
@@ -281,20 +258,29 @@ class App extends Component {
         if (store.getState().mapReady && change && change.doc) {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
-            store.dispatch(updatePersonas(change.doc.persona, true));
-            //this.setState({patrons: true});
-            // if Brent, show ASL
+            let persona = {
+              name: change.doc.persona
+            };
             if (change.doc.persona.startsWith('Brent')) {
-              store.dispatch(setKinTransInUse(true));
+              persona.deaf = true;
             }
-            // if Katherine, lower the screen
-            if (change.doc.persona.startsWith('Katherine')) {
-              // TODO show spacer element above stop name
+            else if (change.doc.persona.startsWith('Erich')) {
+              persona.blind = true;
             }
+            else if (change.doc.persona.startsWith('Grace')) {
+              persona.cognitive = true;
+            }
+            else if (change.doc.persona.startsWith('Kathryn')) {
+              persona.wheelchair = true;
+            }
+            store.dispatch(addPersona(persona));
           } else if (change.doc.transition === 'olli_stop_end_exit') {
+            let persona = {
+              name: change.doc.persona
+            };
             //if (store.getState().personas.length < 2) // only 1 patron left who we're getting ready to remove them
               //this.setState({patrons:false});
-            store.dispatch(updatePersonas(change.doc.persona, false));
+            store.dispatch(removePersona(persona));
             if (change.doc.persona === 'Brent') {
               store.dispatch(setKinTransInUse(false));
             }
@@ -302,28 +288,6 @@ class App extends Component {
               // TODO hide spacer element above stop name
             }
           }
-        }
-      }).on('complete', info => {
-      }).on('paused', () => {
-      }).on('error', err => {
-        console.log(err);
-    });
-    
-    // using this for testing messages
-    this.db4 = new PouchDB("http://127.0.0.1:5984/a_dummy_trigger", {});
-    this.db4.changes({
-      since: 'now',
-      live: true,
-      include_docs: true
-    })
-      .on('change', change => {
-        // console.log(store.getState());
-        // console.log(change.doc)
-        if (store.getState().mapReady && change && change.doc) {
-          console.log("dummy change");
-          store.dispatch(updatePersonas("Brent", true));
-          store.dispatch(setKinTransInUse(!this.state.patrons));
-          this.setState({patrons:!this.state.patrons});
         }
       }).on('complete', info => {
       }).on('paused', () => {
