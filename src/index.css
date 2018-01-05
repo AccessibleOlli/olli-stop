@@ -278,3 +278,12 @@ button.directions-button {
   font-weight: 500;
   border-radius: 0px;
 }
+
+button.text-directions-button {
+  color: #ffffff;
+  display: block;
+  background-color: #e63022;
+  font-size: 18pt;
+  font-weight: 500;
+  border-radius: 0px;
+}

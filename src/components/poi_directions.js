@@ -73,10 +73,10 @@ class POIDirections extends Component {
     }
     return (
       <div>
-        <table>
+        <table style={{width: '100%'}}>
           <tr>
-            <td>Directions provided by mapbox</td>
-            <td><button onClick={(e) => this.text()}>Send to Phone</button></td>
+          <td><button className="text-directions-button" onClick={(e) => this.text()}>Send to Phone</button></td>
+          <td style={{textAlign: 'right'}}>Directions provided by <img src="/images/mapbox-logo-black.png" style={{height: '20px', verticalAlign: 'middle'}} /></td>  
           </tr>
         </table>
         <div className="directions-control directions-control-directions">

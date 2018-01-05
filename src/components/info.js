@@ -16,7 +16,6 @@ class Info extends Component {
   }
 
   onDirectionsClick() {
-    console.log('onDirectionsClick');
     getDirections(this.props.selectedPOIs)
       .then((directions) => {
         console.log(directions);

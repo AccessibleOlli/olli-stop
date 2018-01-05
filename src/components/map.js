@@ -55,28 +55,6 @@ let Map = class Map extends React.Component {
       });
   }
   
-  // converse(text) {
-  //   console.log('User/Button: ' + text);
-  //   var data = {
-  //     text: text,
-  //     skipTTS: true
-  //   };
-  //   return axios({
-  //     method: 'POST',
-  //     url: '/api/conversation/converse',
-  //     data: data
-  //   })
-  //     .then((converationResponse) => {
-  //       let pois = [];
-  //       if (converationResponse.data.card) {
-  //         pois = converationResponse.data.card.content;
-  //       }
-  //       return pois;
-  //     }).catch(err => {
-  //       console.log(err);
-  //     });
-  // }
-
   initPOIs(pois) {
     if (pois) {
       pois.forEach((poi) => {
