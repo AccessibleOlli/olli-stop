@@ -96,7 +96,7 @@ body {
   background-color: #046b99;
 }
 
-. .info-win {
+.info-win {
   /* shouldn't need this but kintrans does weird things... */
   margin-top: 48px;
 }
