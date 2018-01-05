@@ -12,7 +12,8 @@ Follow the instructions to install olli-stop-backend before proceeding.
 1. Install [Node](https://nodejs.org)
 2. Clone this repo
   - *change to directory where you want to install*
-  - `git clone git@github.com:AccessibleOlli/olli-stop.git` or `git clone https://github.com/AccessibleOlli/olli-stop`
+  - `git clone git@github.com:AccessibleOlli/olli-stop.git`
+  - OR `git clone https://github.com/AccessibleOlli/olli-stop`
 3. Install node modules
   - `cd olli-stop`
   - `npm install`
