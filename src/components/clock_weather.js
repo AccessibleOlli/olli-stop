@@ -8,7 +8,7 @@ const REMOTE_WS = process.env['REACT_APP_REMOTE_WS'];
 // REACT_APP_WEATHER_URL should be in the format similar to: http://host.domain.com/weather/{lat}/{lon}
 // {lat} and {lon} will be replaced with actual latitude and longitude later by the Weather component
 const WEATHER_URL = process.env['REACT_APP_WEATHER_URL'] || (REMOTE_WS ? REMOTE_WS.replace('ws', 'http') + '/weather/{lat}/{lon}' : '')
-const WEATHER_REFRESH_MIN = 10
+const WEATHER_REFRESH_MIN = 30
 
 class ClockWeather extends Component {
 

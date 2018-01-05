@@ -28,16 +28,18 @@ class App extends Component {
   constructor() {
     super();
     store.dispatch(setOlliRoute(OLLI_ROUTE));
-    if (REMOTE_WS) {
-      this.startWebsocket();
-    }
-    else if (REMOTE_TELEMETRY_DB && REMOTE_EVENT_DB) {
+    if (REMOTE_TELEMETRY_DB && REMOTE_EVENT_DB) {
       this.startPouchDBAOSim();
     }
     else {
       this.startPouchDBOlliSim();
     }
-    //
+
+    // if there's no CES REMOTE_TELEMETRY_DB setting fall back to use IBM cloud-based telemetry service
+    if (REMOTE_WS && !REMOTE_TELEMETRY_DB) {
+      this.startWebsocket();
+    }
+
     this.websocketMgr = new WebsocketManager('/socket', (msg) => {
       if (msg.type === 'kintrans') {
         handleKinTransMessage(msg.body, store);
@@ -255,6 +257,7 @@ class App extends Component {
       include_docs: true
     })
       .on('change', change => {
+        console.log("GOT CHANGE");
         if (store.getState().mapReady && change && change.doc) {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
