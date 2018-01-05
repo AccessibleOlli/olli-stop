@@ -28,36 +28,47 @@ class Main extends Component {
     this.db = new PouchDB(REMOTE_EVENT_DB, {});
   }
 
+  playAudio(text, type) {
+    let doc = {
+      _id: `${type}:${uuidV4()}`,
+      event: type,
+      payload: {
+        type: 'audio',
+        text: text,
+        audio_zone: 'olli-stop',
+        accept: 'audio/mp3',
+        tag: type,
+        local: `${type}.m4a`,
+        audio_params: {
+          text: text,
+          accept: 'audio/mp3'
+        },
+        'filename': `${type}.mp3`
+      }    
+    };
+    this.db.put(doc)
+      .then((response) => {
+        console.log(response);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
       if (nextProps.activePersona.blind) {
-        let welcome = "Welcome";
-        welcome += ", " + nextProps.activePersona.name;
-        welcome += ". To go to Mayo Gonda say one.";
-        console.log('AUDIO: ' + welcome);
-        let doc = {
-          _id: `audio_persona_welcome:${uuidV4()}`,
-          event: 'audio_persona_welcome',
-          payload: {
-            type: 'audio',
-            text: welcome,
-            audio_zone: 'olli-stop',
-            accept: 'audio/mp3',
-            tag: 'audio_persona_welcome',
-            local: '',
-            parameters: ''
-          }
-        };
-        this.db.put(doc)
-          .then((response) => {
-            console.log(response);
-          }).catch((err) => {
-            console.log(err);
-          });
-        console.log(doc);
+        let text = "Welcome";
+        text += ", " + nextProps.activePersona.name;
+        text += ". Say the stop number for your destination.";
+        let type = 'audio_olli_stop_welcome';
+        this.playAudio(text, type);
         setTimeout(() => {
+          let stopName = Stops.features[OLLI_BLIND_STOP_IDX].properties.name;
+          let text = `You selected ${stopName}. Enjoy your trip on Olli.`;
+          let type = 'audio_olli_stop_destination';
+          this.playAudio(text, type);
           console.log(Stops.features[OLLI_BLIND_STOP_IDX]);
-          this.props.setDestination(Stops.features[OLLI_BLIND_STOP_IDX].properties.name);
+          this.props.setDestination(stopName);
         }, OLLI_BLIND_STOP_DELAY);
       }
     }
