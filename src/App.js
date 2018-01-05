@@ -262,7 +262,8 @@ class App extends Component {
           if (change.doc.transition === 'olli_stop_entry') {
             console.log(change.doc.persona+' enters olli stop');
             let persona = {
-              name: change.doc.persona
+              name: change.doc.persona,
+              preferences: change.doc.preferences
             };
             if (change.doc.persona.startsWith('Brent')) {
               persona.deaf = true;

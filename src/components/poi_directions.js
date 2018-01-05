@@ -3,10 +3,29 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import axios from 'axios';
 
+let TEXT_PERSONA_IF_SET = process.env['REACT_APP_TEXT_PERSONA_IF_SET'];
+if (TEXT_PERSONA_IF_SET && TEXT_PERSONA_IF_SET.toLowerCase() === 'false') {
+  TEXT_PERSONA_IF_SET = false;
+}
+const TEXT_PHONE_NUMBER = process.env['REACT_APP_TEXT_PHONE_NUMBER']; 
+
 class POIDirections extends Component {
 
   text() {
-    let phone = '+16172991557';
+    let phone = TEXT_PHONE_NUMBER;
+    if (TEXT_PERSONA_IF_SET && this.props.activePersona.preferences && this.props.activePersona.preferences.mobile_phone) {
+      phone = this.props.activePersona.preferences.mobile_phone;
+    }
+    if (! phone) {
+      return;
+    }
+    phone = phone.replace(/\(/g, '').replace(/\)/g, '').replace(/\-/g, '');
+    if (! phone.startsWith('+')) {
+      if (! phone.startsWith('1')) {
+        phone = '1' + phone;
+      }
+      phone = '+' + phone;
+    }
     let directions = [];
     if (this.props.poiDirections) {
       directions = this.props.poiDirections.legs.map((leg => {
@@ -93,6 +112,7 @@ class POIDirections extends Component {
 
 function mapStateToProps(state) {
   return {
+    activePersona: state.activePersona,
     poiDirections: state.poiDirections
   };
 }

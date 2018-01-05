@@ -32,6 +32,8 @@ REACT_APP_REMOTE_TELEMETRY_DB=http://admin:admin@127.0.0.1:5984/telemetry_transi
 REACT_APP_REMOTE_EVENT_DB=http://admin:admin@127.0.0.1:5984/rule_event_transitions
 REACT_APP_REMOTE_PERSONA_DB=http://admin:admin@127.0.0.1:5984/persona_transitions
 REACT_APP_REMOTE_WS=wss://weather_service_proxy.mybluemix.net
+REACT_APP_TEXT_PERSONA_IF_SET=true
+REACT_APP_TEXT_PHONE_NUMBER=xxx-xxx-xxxx
 ```
 
 5. Change the CouchDB database urls to point to your CouchDB instance (with the appropriate credentials)
