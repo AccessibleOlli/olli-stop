@@ -28,17 +28,13 @@ body {
   grid-column: 1 / auto;
 }
 
-.stop-name-div {
+.stop-name-div, .clock-weather {
   grid-column: 2 / auto;
 }
 
-/* .arrival-list, .clock-weather, .asl-screen, .info-win, .pois-nearby {
-  border-left: 12px solid #444444;
-} */
-
-.clock-weather, .asl-screen, .info-win, .kintrans-avatar {
+.info-win, .kintrans-avatar {
   grid-column: 1 / auto;
-  padding: 24px 12px 0 12px;
+  /* padding: 24px 12px 0 12px; */
 }
 .clock-weather-hidden, .pois-nearby-hidden, .info-win-hidden, .kintrans-avatar-hidden, .stop-graph-hidden, .clock-weather-hidden {
   display: none;
@@ -46,27 +42,26 @@ body {
 
 .clock-weather {
   grid-row: 2 / auto;
-  padding-bottom: 24px;
+  /* padding-bottom: 24px; */
 }
 
 .kintrans-avatar {
-  grid-row: 3 / auto;
-  /* height: 235px; */
+  grid-row: 2 / 4;
 }
 
 .info-win {
-  grid-row: 4 / 7;
+  grid-row: 4 / 8;
   /* min-height: 624px; */
 }
 
 .pois-nearby {
   grid-column: 1 / 3;
-  grid-row: 7 / auto;
+  grid-row: 8 / auto;
 }
 
 .mapboxgl-map-full {
   grid-column: 1 / 3;
-  grid-row: 2 / 8;
+  grid-row: 2 / 9;
 }
 
 .mapboxgl-map-normal, .stop-graph {
@@ -74,21 +69,37 @@ body {
 }
 
 .mapboxgl-map-normal {
-  grid-row: 2 / 6;
+  grid-row: 3 / 7;
 }
 
 .mapboxgl-map {
   min-height: 100%;
+}
+
+.stop-graph {
+  grid-row: 7 / auto;
+}
+
+#mapWrapper1, .clock-weather, .stop-graph {
   border-left: 6px solid #046b99;
   border-right: 6px solid #046b99;
   border-bottom: 6px solid #046b99;
 }
 
-
-.stop-graph {
-  grid-row: 6 / auto;
+.info-win, .pois-nearby {
+  margin-top: 8px;
+  margin-left: 8px;
 }
 
+.olli-logo-div, .stop-name-div {
+  color: white;
+  background-color: #046b99;
+}
+
+. .info-win {
+  /* shouldn't need this but kintrans does weird things... */
+  margin-top: 48px;
+}
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
@@ -99,13 +110,21 @@ h1 {
   font-size: 42pt;
   line-height: 1.25;
 }
-
-.olli-logo-div, .stop-name-div {
-  color: white;
-  background-color: #046b99;
-}
 h1.stop-name {
   line-height: 364px;
+}
+h1.destination {
+  margin: 0;
+}
+h2 {
+  text-align: left;
+  color: #046b99;
+}
+.kintrans-avatar h2 {
+  color: #ffffff;
+  background-color: #444444;
+  margin: 0;
+  line-height: 1.75em;
 }
 
 .weather img {
@@ -199,15 +218,6 @@ td.stop-btn {
 }
 input.stop-btn-img.selected {
   background-color: #1c304a;
-}
-
-
-h1.destination {
-  margin: 0;
-}
-h2 {
-  text-align: left;
-  color: #046b99;
 }
 
 .poi-pill, button.directions-button {

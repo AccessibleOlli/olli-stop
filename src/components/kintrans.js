@@ -36,6 +36,7 @@ class KinTrans extends Component {
             src='./kintrans/Build/KinTransAvatarBuild.json'
             loader='./kintrans/Build/UnityLoader.js' />
         {/* <img src="./img/signing.png" style={{width:'444px',height:'224px'}} /> */}
+        <h2>Messages go here</h2>
       </div>
     );
   }
