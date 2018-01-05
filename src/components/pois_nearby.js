@@ -13,7 +13,7 @@ class POISNearby extends Component {
   
   render() {
     if (!this.props.pois) {
-      return (<div className = "pois-nearby-empty"></div>);
+      return (<div className = "pois-nearby-hidden"></div>);
     }
     
     let poipics = null;
