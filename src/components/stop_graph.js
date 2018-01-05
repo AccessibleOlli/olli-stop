@@ -56,6 +56,7 @@ class StopGraph extends Component {
     }
     return (
       <div className={className}>
+        <h2>Click a stop to set your destination</h2>
         <table id="stop-btn-table" style={{backgroundImage: 'url(img/stop-dot.png)', backgroundRepeat: 'repeat-x'}}>
           <tbody>
             <tr>

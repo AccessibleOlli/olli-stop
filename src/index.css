@@ -205,7 +205,8 @@ input.stop-btn-img.selected {
 h1.destination {
   margin: 0;
 }
-h2.info-subtitle {
+h2 {
+  text-align: left;
   color: #046b99;
 }
 
