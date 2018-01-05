@@ -36,8 +36,7 @@ REACT_APP_REMOTE_PERSONA_DB=http://admin:admin@127.0.0.1:5984/persona_transition
 
 ## Running
 
-1. Ensure you are running [olli-stop-backend](https://github.com/AccessibleOlli/olli-stop-backend)
-2. Make sure your proxy setting is configured properly to point to olli-stop-backend. It should look something like this:
+1. Make sure your proxy setting in `package.json` is configured properly to point to olli-stop-backend. It should look something like this:
 
 ```
 "proxy": {
@@ -53,4 +52,5 @@ REACT_APP_REMOTE_PERSONA_DB=http://admin:admin@127.0.0.1:5984/persona_transition
 }
 ```
 
+2. Ensure you are running [olli-stop-backend](https://github.com/AccessibleOlli/olli-stop-backend)
 3. `npm start`
