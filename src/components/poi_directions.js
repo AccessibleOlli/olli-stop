@@ -6,19 +6,36 @@ import axios from 'axios';
 class POIDirections extends Component {
 
   text() {
-    axios({
-      method: 'POST',
-      url: '/api/text',
-      data: {
-        phoneNumber: '+16172991557',
-        text: "TESTING 123"
+    let phone = '+16172991557';
+    let directions = [];
+    if (this.props.poiDirections) {
+      directions = this.props.poiDirections.legs.map((leg => {
+        let steps = leg.steps.map((step) => {
+          let iconClassName = "directions-icon";
+          if (step.modifier) {
+            iconClassName += " directions-icon-" + step.modifier;
+          }
+          return `* ${step.instruction} ${step.distance}m`;
+        });
+        return `DESTINATION: ${leg.poi.name}\n` + steps.join('\n');
+      }));
+    }
+    if (directions.length > 0) {
+      let text = directions.join('\n\n');
+      axios({
+        method: 'POST',
+        url: '/api/text',
+        data: {
+          phoneNumber: phone,
+          text: text
+        }
+      })
+        .then((response) => {
+          console.log(response);
+        }).catch(err => {
+          console.log(err);
+        });
       }
-    })
-      .then((response) => {
-        console.log(response);
-      }).catch(err => {
-        console.log(err);
-      });
   }
 
   render() {
@@ -31,12 +48,12 @@ class POIDirections extends Component {
             iconClassName += " directions-icon-" + step.modifier;
           }
           return (
-            <li class="mapbox-directions-step">
+            <li className="mapbox-directions-step">
               <span className={iconClassName}></span>
-              <div class="mapbox-directions-step-maneuver">
+              <div className="mapbox-directions-step-maneuver">
                 {step.instruction}
               </div>
-              <div class="mapbox-directions-step-distance">
+              <div className="mapbox-directions-step-distance">
                 {step.distance}m
               </div>
             </li>
@@ -44,10 +61,10 @@ class POIDirections extends Component {
         });
         return (
           <div>
-            <div class="mapbox-directions-component mapbox-directions-route-summary mapbox-directions-multiple">
+            <div className="mapbox-directions-component mapbox-directions-route-summary mapbox-directions-multiple">
               <h1>{leg.poi.name}</h1>
             </div>
-            <ol class="mapbox-directions-steps">
+            <ol className="mapbox-directions-steps">
               {steps}
             </ol>
           </div>
@@ -55,13 +72,20 @@ class POIDirections extends Component {
       }))
     }
     return (
-      <div class="directions-control directions-control-directions">
-        <div class="mapbox-directions-instructions">
-          <div class="mapbox-directions-instructions-wrapper">
-            {directions}
+      <div>
+        <table>
+          <tr>
+            <td>Directions provided by mapbox</td>
+            <td><button onClick={(e) => this.text()}>Send to Phone</button></td>
+          </tr>
+        </table>
+        <div className="directions-control directions-control-directions">
+          <div className="mapbox-directions-instructions">
+            <div className="mapbox-directions-instructions-wrapper">
+              {directions}
+            </div>
           </div>
         </div>
-        <button onClick={(e) => this.text()}>TEXT</button>
       </div>
     );
   }

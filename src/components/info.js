@@ -104,9 +104,9 @@ class Info extends Component {
         return <button key={index} className={states} name={poi.name} onClick={(e) => this.onPOIClick(poi)}>{poi.name}</button>
       });
       if (anypoiselected) {
-        let waypoints = [<span>{this.props.destinationStopName}</span>];
+        let waypoints = [<span key={this.props.destinationStopName}>{this.props.destinationStopName}</span>];
         waypoints.push(this.props.pois.map((poi, index) => {
-          if (poi.selected) return (<span>{" => "}{poi.name}</span>);
+          if (poi.selected) return (<span key={poi.id}>{" => "}{poi.name}</span>);
           return null;
         }));
         triggerdirections = <div className="trigger-directions"><h2 className="info-subtitle">Trip:</h2><h3>{waypoints}</h3><button key="directionsbutton" className="directions-button" onClick={(e) => this.onDirectionsClick()}>Get trip directions >></button></div>;
