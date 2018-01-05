@@ -17,7 +17,10 @@ Follow the instructions to install olli-stop-backend before proceeding.
 3. Install node modules
   - `cd olli-stop`
   - `npm install`
-4. Copy the `.env.template` file to `.env` (`cp .env.template .env`). The file should look similar to the following:
+4. Copy the `.env.template` file to `.env`
+  - `cp .env.template .env`
+  
+The file should look similar to the following:
 
 ```
 REACT_APP_OLLI_STOP_IDX=3
