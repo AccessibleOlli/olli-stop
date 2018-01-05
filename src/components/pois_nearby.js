@@ -29,8 +29,20 @@ class POISNearby extends Component {
       );
     });
 
+    let className = 'pois-nearby-hidden';
+    if (this.props.activePersona) {
+      let cognitivePersonaOnly = (
+        this.props.activePersonaTypes.cognitive &&
+        ! this.props.activePersonaTypes.deaf &&
+        ! this.props.activePersonaTypes.blind &&
+        ! this.props.activePersonaTypes.wheelchair
+      );
+      if (! cognitivePersonaOnly) {
+        className = 'pois-nearby';
+      }
+    }
     return (
-      <div className = "pois-nearby">
+      <div className={className}>
         <h2>POIs near my destination</h2>
         <div className="poi-images">
           <div>{poipics}</div>
@@ -49,6 +61,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    activePersona: state.activePersona,
+    activePersonaTypes: state.activePersonaTypes,
     pois: state.pois
   };
 }

@@ -15,136 +15,138 @@ import POIDirections from './poi_directions';
 
 class Info extends Component {
 
-    constructor() {
-        super();
-        this.state = {
-            loadingdirections: false,
-            directions: []
-        }
+  constructor() {
+    super();
+    this.state = {
+      loadingdirections: false,
+      directions: []
+    }
+  }
+
+  onDirectionsClick() {
+    console.log('onDirectionsClick');
+    getDirections(this.props.selectedPOIs)
+      .then((directions) => {
+        console.log(directions);
+        this.props.setPOIDirections(directions);
+      });
+  }
+
+  onPOIClick(poiclicked) {
+    if (poiclicked.selected)
+      this.props.deselectPOI(poiclicked);
+    else
+      this.props.selectPOI(poiclicked);
+  }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //     return !this.loadingdirections;
+  // }
+
+  render() {
+    let cognitivePersona = this.props.activePersonaTypes.cognitive;
+    let cognitivePersonaOnly = (
+      this.props.activePersonaTypes.cognitive &&
+      !this.props.activePersonaTypes.deaf &&
+      !this.props.activePersonaTypes.blind &&
+      !this.props.activePersonaTypes.wheelchair
+    );
+
+    if (cognitivePersona) {
+      // REFACTOR:TODO: Increase text size if a cognitive persona is present
+    }
+    if (cognitivePersonaOnly) {
+      // REFACTOR:TODO: Change the number of pills, etc
     }
 
-    onDirectionsClick() {
-      console.log('onDirectionsClick');
-      getDirections(this.props.selectedPOIs)
-        .then((directions) => {
-          console.log(directions);
-          this.props.setPOIDirections(directions);
-        });
-    }
+    let className = this.props.activePersona ? 'info-win' : 'info-win-hidden';
 
-    onPOIClick(poiclicked) {
-      if (poiclicked.selected) 
-        this.props.deselectPOI(poiclicked);
-      else 
-        this.props.selectPOI(poiclicked);
-    }
+    let msgs = [];
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     return !this.loadingdirections;
-    // }
-
-    render() {
-      let cognitivePersona = this.props.activePersonaTypes.cognitive;
-      let cognitivePersonaOnly = (
-        this.props.activePersonaTypes.cognitive &&
-        ! this.props.activePersonaTypes.deaf &&
-        ! this.props.activePersonaTypes.blind &&
-        ! this.props.activePersonaTypes.wheelchair
+    // if no destination is set just show a welcome message
+    let welcome = "Welcome";
+    if (!this.props.destinationStopName) {
+      if (this.props.activePersona) {
+        welcome += ", " + this.props.activePersona.name;
+      }
+      welcome += ".";
+      let msg = <div><h1>{welcome}<br />Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
+      return (
+        <div className={className}><hr />{msg}</div>
       );
-      
-      if (cognitivePersona) {
-        // REFACTOR:TODO: Increase text size if a cognitive persona is present
-      }
-      if (cognitivePersonaOnly) {
-        // REFACTOR:TODO: 
-      }
-
-      let msgs = [];
-
-      // if no destination is set just show a welcome message
-      let welcome = "Welcome";
-      if (!this.props.destinationStopName) {
-        if (this.props.activePersona) {
-          welcome += ", " + this.props.activePersona.name;
-        }
-        welcome += ".";
-        let msg = <div><h1>{welcome}<br/>Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
-          return (
-              <div className="info-win"><hr/>{msg}</div>
-          );
-      }
-
-      msgs.push(<div key={msgs.length}><h2 className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
-
-      let poipills = null;
-      let triggerdirections = null;
-      if (this.props.pois) {
-        let anypoiselected = false;
-        msgs.push(<h2 key={msgs.length} className="info-subtitle">I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
-        msgs.push(<br key={msgs.length}/>);
-
-        poipills = this.props.pois.map((poi, index) => {
-          let poistate = "deselected";
-          if (poi.selected) {
-            poistate = "selected";
-            anypoiselected = true;
-          }
-          let states = "poi-pill "+poistate;
-          return <button key={index} className={states} name={poi.name} onClick={(e)=>this.onPOIClick(poi)}>{poi.name}</button>
-        });
-        if (anypoiselected) {
-          let waypoints = [<span>{this.props.destinationStopName}</span>];
-          waypoints.push(this.props.pois.map((poi, index) => {
-            if (poi.selected) return (<span>{" => "}{poi.name}</span>);
-            return null;
-          }));
-          triggerdirections = <div className="trigger-directions"><h2 className="info-subtitle">Trip:</h2><h3>{waypoints}</h3><button key="directionsbutton" className="directions-button" onClick={(e)=>this.onDirectionsClick()}>Get trip directions >></button></div>;
-        }
-
-      } else {
-        // destination selected, but POIs have not loeaded yet
-        msgs.push(<h2 key={msgs.length} className="info-subtitle" style={{textDecoration:'blink'}}>Searching for relevant additional points of interest...</h2>);
-      }
-
-      if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {
-        return (
-          <div className="info-win">
-            <hr/>
-            <POIDirections />
-          </div>
-        )
-      }
-      else {
-        return (
-          <div className="info-win">
-            <hr/>
-            {msgs}
-            {poipills}
-            {triggerdirections}
-          </div>
-        )
-      }
     }
+
+    msgs.push(<div key={msgs.length}><h2 className="info-subtitle">Destination:</h2><h1 className="destination">{this.props.destinationStopName}</h1></div>);
+
+    let poipills = null;
+    let triggerdirections = null;
+    if (this.props.pois) {
+      let anypoiselected = false;
+      msgs.push(<h2 key={msgs.length} className="info-subtitle">I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
+      msgs.push(<br key={msgs.length} />);
+
+      poipills = this.props.pois.map((poi, index) => {
+        let poistate = "deselected";
+        if (poi.selected) {
+          poistate = "selected";
+          anypoiselected = true;
+        }
+        let states = "poi-pill " + poistate;
+        return <button key={index} className={states} name={poi.name} onClick={(e) => this.onPOIClick(poi)}>{poi.name}</button>
+      });
+      if (anypoiselected) {
+        let waypoints = [<span>{this.props.destinationStopName}</span>];
+        waypoints.push(this.props.pois.map((poi, index) => {
+          if (poi.selected) return (<span>{" => "}{poi.name}</span>);
+          return null;
+        }));
+        triggerdirections = <div className="trigger-directions"><h2 className="info-subtitle">Trip:</h2><h3>{waypoints}</h3><button key="directionsbutton" className="directions-button" onClick={(e) => this.onDirectionsClick()}>Get trip directions >></button></div>;
+      }
+
+    } else {
+      // destination selected, but POIs have not loeaded yet
+      msgs.push(<h2 key={msgs.length} className="info-subtitle" style={{ textDecoration: 'blink' }}>Searching for relevant additional points of interest...</h2>);
+    }
+
+    if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {
+      return (
+        <div className={className}>
+          <hr />
+          <POIDirections />
+        </div>
+      )
+    }
+    else {
+      return (
+        <div className={className}>
+          <hr />
+          {msgs}
+          {poipills}
+          {triggerdirections}
+        </div>
+      )
+    }
+  }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({
-      selectPOI: selectPOI,
-      deselectPOI: deselectPOI,
-      setPOIDirections: setPOIDirections
-    }, dispatch);
-  }
-  
-  function mapStateToProps(state) {
-    return {
-      destinationStopName: state.destinationStopName,
-      activePersona: state.activePersona,
-      activePersonaTypes: state.activePersonaTypes,
-      message: state.mapMsg, 
-      pois: state.pois,
-      selectedPOIs: state.selectedPOIs,
-      poiDirections: state.poiDirections
-    };
-  }
-  
+  return bindActionCreators({
+    selectPOI: selectPOI,
+    deselectPOI: deselectPOI,
+    setPOIDirections: setPOIDirections
+  }, dispatch);
+}
+
+function mapStateToProps(state) {
+  return {
+    destinationStopName: state.destinationStopName,
+    activePersona: state.activePersona,
+    activePersonaTypes: state.activePersonaTypes,
+    message: state.mapMsg,
+    pois: state.pois,
+    selectedPOIs: state.selectedPOIs,
+    poiDirections: state.poiDirections
+  };
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(Info);

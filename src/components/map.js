@@ -473,6 +473,15 @@ let Map = class Map extends React.Component {
 }
 
   componentWillReceiveProps(nextProps) {
+    if (nextProps.activePersona !== this.props.activePersona) {
+      let resizeMap = (
+        (this.props.activePersona && ! nextProps.activePersona) ||
+        (! this.props.activePersona && nextProps.activePersona)
+      );
+      if (resizeMap) {
+        setTimeout(() => {this.map.resize()}, 1);
+      }
+    }
     if (nextProps.olliRoute !== this.props.olliRoute) {
       const coordinates = nextProps.olliRoute.coordinates.map(coord => {
         return [coord.coordinates[0], coord.coordinates[1]];
@@ -567,7 +576,7 @@ let Map = class Map extends React.Component {
 
   componentDidMount() {
     this.map = new mapboxgl.Map({
-      container: this.mapContainer,
+      container: "mapContainer",
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [CENTER_LON, CENTER_LAT], 
       zoom: 16
@@ -701,11 +710,8 @@ let Map = class Map extends React.Component {
   }
 
   render() {
-    let mapsize = "normal";
-    if (this.props.fullscreen) mapsize = "full";
-
     return (
-      <div ref={el => this.mapContainer = el} className={"mapboxgl-map-"+mapsize} />
+      <div id="mapContainer" />
     );
   }
 }
@@ -721,6 +727,7 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    activePersona: state.activePersona,
     olliPositions: state.olliPositions,
     olliRoute: state.olliRoute,
     olliRouteVisibility: state.olliRouteVisibility,
