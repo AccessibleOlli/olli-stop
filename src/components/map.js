@@ -4,6 +4,7 @@ import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady, setDestination, setPOIs } from '../actions/index'
+import POISearch from '../util/poi_search'
 import OLLI_STOPS from '../data/stops.json'
 import POIS from '../data/pois.json'
 
@@ -19,6 +20,7 @@ let Map = class Map extends React.Component {
 
   constructor(props) {
     super(props);
+    this.poiSearch = new POISearch();
     this.state = {
       destinationStopName: null
     };
@@ -44,29 +46,36 @@ let Map = class Map extends React.Component {
 
     oscillator.start();
     setTimeout(function(){oscillator.stop()}, (duration ? duration : 500));
-};
+  };
 
   converse(text) {
-    console.log('User/Button: ' + text);
-    var data = {
-      text: text,
-      skipTTS: true
-    };
-    return axios({
-      method: 'POST',
-      url: '/api/conversation/converse',
-      data: data
-    })
-      .then((converationResponse) => {
-        let pois = [];
-        if (converationResponse.data.card) {
-          pois = converationResponse.data.card.content;
-        }
-        return pois;
-      }).catch(err => {
+    return this.poiSearch.searchPOIs(text)
+      .catch(err => {
         console.log(err);
       });
   }
+  
+  // converse(text) {
+  //   console.log('User/Button: ' + text);
+  //   var data = {
+  //     text: text,
+  //     skipTTS: true
+  //   };
+  //   return axios({
+  //     method: 'POST',
+  //     url: '/api/conversation/converse',
+  //     data: data
+  //   })
+  //     .then((converationResponse) => {
+  //       let pois = [];
+  //       if (converationResponse.data.card) {
+  //         pois = converationResponse.data.card.content;
+  //       }
+  //       return pois;
+  //     }).catch(err => {
+  //       console.log(err);
+  //     });
+  // }
 
   initPOIs(pois) {
     if (pois) {

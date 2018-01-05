@@ -23,6 +23,7 @@ Follow the instructions to install olli-stop-backend before proceeding.
 The file should look similar to the following:
 
 ```
+PORT=44001
 REACT_APP_OLLI_STOP_IDX=3
 REACT_APP_OLLI_BLIND_STOP_IDX=0
 REACT_APP_OLLI_BLIND_STOP_DELAY=1000
@@ -52,4 +53,4 @@ REACT_APP_REMOTE_PERSONA_DB=http://admin:admin@127.0.0.1:5984/persona_transition
 }
 ```
 
-3. `PORT=44001 npm start`
+3. `npm start`
