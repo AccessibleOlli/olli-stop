@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-// import axios from 'axios';
 import { selectPOI, deselectPOI, setPOIDirections } from '../actions/index';
 import getDirections from '../util/directions';
 import POIDirections from './poi_directions';
-
-// const THIS_STOP = [-92.467148454828,44.022351687354];
-
-// const mapboxglaccessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
-// var mapboxdirections = axios.create({
-//     baseURL: 'https://api.mapbox.com/directions/v5/mapbox/driving'
-// });
 
 class Info extends Component {
 
@@ -52,12 +44,25 @@ class Info extends Component {
       !this.props.activePersonaTypes.wheelchair
     );
 
+    let info_subtitle_class = "info-subtitle";
+    let select_stop_msg = "Select a stop on the map";
+    let select_stop_list = "";
+
     if (cognitivePersona) {
       // REFACTOR:TODO: Increase text size if a cognitive persona is present
+      info_subtitle_class += " info-subtitle-larger";
+    }
+    if (!cognitivePersona) {
+      select_stop_msg += " or the stop icons below the map";
     }
     if (cognitivePersonaOnly) {
       // REFACTOR:TODO: Change the number of pills, etc
     }
+    if (this.props.activePersonaTypes.deaf) {
+      select_stop_msg += " or sign a stop number: ";
+      select_stop_list = <span>[1] Mayo Gonda<br/>[2] Peace Plaza<br/>[3] Restaurant District<br/>[5] Mayo Guggenheim</span>
+    }
+
 
     let className = this.props.activePersona ? 'info-win' : 'info-win-hidden';
 
@@ -70,7 +75,11 @@ class Info extends Component {
         welcome += ", " + this.props.activePersona.name;
       }
       welcome += ".";
-      let msg = <div><h1>{welcome}<br />Where would you like to go?</h1><h2 className="info-subtitle">Select a stop on or below the map.</h2></div>;
+      let msg = <div>
+        <h1>{welcome}<br />Where would you like to go?</h1>
+        <h2 className={info_subtitle_class}>{select_stop_msg}</h2>
+        <p className="info-stop-list">{select_stop_list}</p>
+      </div>;
       return (
         <div className={className}><hr />{msg}</div>
       );
