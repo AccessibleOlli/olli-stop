@@ -41,9 +41,10 @@ class Main extends Component {
           payload: {
             type: 'audio',
             text: welcome,
+            audio_zone: 'olli-stop',
             accept: 'audio/mp3',
             tag: 'audio_persona_welcome',
-            local: 'welcome_olli.m4a',
+            local: '',
             parameters: ''
           }
         };

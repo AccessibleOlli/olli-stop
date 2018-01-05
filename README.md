@@ -24,6 +24,7 @@ The file should look similar to the following:
 
 ```
 PORT=44001
+BROWSER=startChrome.js
 REACT_APP_OLLI_STOP_IDX=3
 REACT_APP_OLLI_BLIND_STOP_IDX=0
 REACT_APP_OLLI_BLIND_STOP_DELAY=1000
