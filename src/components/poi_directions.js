@@ -10,8 +10,8 @@ class POIDirections extends Component {
       method: 'POST',
       url: '/api/text',
       data: {
-        phoneNumber: '+15127793970',
-        text: this.props.poiDirections.directions.join('\n')
+        phoneNumber: '+16172991557',
+        text: "TESTING 123"
       }
     })
       .then((response) => {
@@ -22,7 +22,6 @@ class POIDirections extends Component {
   }
 
   render() {
-    // console.log('POI DIRECTIONSSSSSSS')
     let directions = [];
     if (this.props.poiDirections) {
       directions = this.props.poiDirections.legs.map((leg => {
@@ -62,6 +61,7 @@ class POIDirections extends Component {
             {directions}
           </div>
         </div>
+        <button onClick={(e) => this.text()}>TEXT</button>
       </div>
     );
   }

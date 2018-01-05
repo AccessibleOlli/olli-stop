@@ -24,17 +24,14 @@ class KinTrans extends Component {
       let message = 'Hello Welcome to Olli!';
       message = 'i need help';
       SendMessage('OlliCommunication', 'startSimulationMessage', message);
-      setTimeout(() => {
-        SendMessage('OlliCommunication', 'startSimulationMessage', message);
-      }, 2000)
-      
     }
   }
 
   render() {
-    //SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage);    
+    //SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage); 
+    let className = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';   
     return (
-      <div className="kintrans-avatar">
+      <div className={className}>
         <Unity
             src='./kintrans/Build/KinTransAvatarBuild.json'
             loader='./kintrans/Build/UnityLoader.js' />
@@ -46,13 +43,12 @@ class KinTrans extends Component {
 
 function mapStateToProps(state) {
   return {
+    activePersona: state.activePersona,
     destinationStopName: state.destinationStopName,
     kintransAvatarID: state.kintransAvatar.id,
     kintransAvatarMessage: state.kintransAvatar.message,
     kintransAvatarTimestamp: state.kintransAvatar.timestamp,
-    kinTransInUse: state.kinTransInUse, 
-    //DELETE THIS (its for testing, it triggers avatar on click of a stop button)
-    activePersona: state.activePersona //TEST AVATAR BY CLICKING MAP
+    kinTransInUse: state.kinTransInUse
   };
 }
 

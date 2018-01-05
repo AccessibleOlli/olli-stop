@@ -40,10 +40,22 @@ class StopGraph extends Component {
         <td key={idx} className="stop-btn" style={{whiteSpace: 'pre-line'}}>
           {stop.label}
         </td>
-      );      
+      );
     });
+    let className = 'stop-graph-hidden';
+    if (this.props.activePersona) {
+      let cognitivePersonaOnly = (
+        this.props.activePersonaTypes.cognitive &&
+        ! this.props.activePersonaTypes.deaf &&
+        ! this.props.activePersonaTypes.blind &&
+        ! this.props.activePersonaTypes.wheelchair
+      );
+      if (! cognitivePersonaOnly) {
+        className = 'stop-graph';
+      }
+    }
     return (
-      <div className="stop-graph">
+      <div className={className}>
         <table id="stop-btn-table" style={{backgroundImage: 'url(img/stop-dot.png)', backgroundRepeat: 'repeat-x'}}>
           <tbody>
             <tr>
@@ -62,6 +74,8 @@ class StopGraph extends Component {
 
 function mapStateToProps(state) {
   return {
+    activePersona: state.activePersona,
+    activePersonaTypes: state.activePersonaTypes,
     destinationStopName: state.destinationStopName
   };
 }

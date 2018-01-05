@@ -1,3 +1,9 @@
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'ibm-plex-sans', Helvetica Neue, Arial, sans-serif;
   line-height: 1;
@@ -40,14 +46,30 @@ body {
   padding-bottom: 24px;
 }
 
+.clock-weather-hidden {
+  display: none;
+}
+
 .kintrans-avatar {
   grid-row: 4 / 5;
   height: 235px;
 }
 
+.kintrans-avatar-hidden {
+  display: none;
+}
+
+/* .asl-screen {
+  grid-row: 4 / 5;
+} */
+
 .info-win {
   grid-row: 5 / 11;
   min-height: 624px;
+}
+
+.info-win-hidden {
+  display: none;
 }
 
 .pois-nearby {
@@ -55,18 +77,29 @@ body {
   grid-row: 11 / 12;
 }
 
+.pois-nearby-hidden {
+  display: none;
+}
+
 .mapboxgl-map-full {
   grid-column: 1 / 5;
   grid-row: 3 / 10;
 }
+
 .mapboxgl-map-normal, .stop-graph {
   grid-column: 3 / 5;
 }
+
 .mapboxgl-map-normal {
   grid-row: 3 / 10;
 }
+
 .stop-graph {
   grid-row: 10 / 11;
+}
+
+.stop-graph-hidden {
+  display: none;
 }
 
 

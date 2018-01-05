@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "dotenv": "^4.0.0",
-    "mapbox-gl": "^0.41.0",
+    "mapbox-gl": "^0.43.0",
     "pouchdb": "^6.3.4",
     "pouchdb-find": "^6.3.4",
     "react": "^16.0.0",
@@ -31,12 +31,12 @@
   "homepage": "https://accessibleolli.github.io/olli-stop",
   "proxy": {
     "/socket": {
-      "target": "ws://localhost:3001",
+      "target": "ws://olli-stop-backend.mybluemix.net",
       "changeOrigin": true,
       "ws": true
     },
     "/": {
-      "target": "http://localhost:3001",
+      "target": "https://olli-stop-backend.mybluemix.net",
       "changeOrigin": true
     }
   },
