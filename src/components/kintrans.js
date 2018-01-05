@@ -4,39 +4,100 @@ import { bindActionCreators } from 'redux';
 import { setKinTransAvatarMessage } from '../actions/index'
 import Unity from 'react-unity-webgl'
 import { SendMessage } from 'react-unity-webgl'
+import DISPLAY_STOPS from '../data/display_stops.json'
 
-
+const WAIT_TIME_AFTER_WELCOME = 3000;
+const WAIT_TIME_AFTER_STOP = 5000;
 
 class KinTrans extends Component {
 
-  componentDidMount() 
-  {
-    //this.setAvatarMessage("i need help");
+  constructor() {
+    super();
+    this.unityLoaded = false;
+    this.unityLoading = false;
+    this.state = {
+      currentKinTransMessage: '',
+      currentText: ''
+    };
   }
 
-  setAvatarMessage(msg) 
-  {
-    this.props.setAvatarMessage(msg);
+  onUnityProgress(progression) {
+    if (! this.unityLoaded && ! this.unityLoading) {
+      if (progression === 1) {
+        this.unityLoading = true;
+        setTimeout( () => {
+          this.unityLoaded = true;
+          if (this.state.currentKinTransMessage.length > 0) {
+            this.setAvatarMessage(this.state.currentKinTransMessage, this.state.currentText);
+          }
+        }, 2000);
+      }
+    }
+  }
+
+  setAvatarMessage(kintransMessage, text) {
+    this.setState({currentKinTransMessage: kintransMessage});
+    this.setState({currentText: text});
+    if (this.unityLoaded) {
+      try {
+        SendMessage('OlliCommunication', 'startSimulationMessage', kintransMessage);
+      }
+      catch(e) {
+        console.log(e);
+      }
+    }
+  }
+
+  getWelcomeKinTransMessage() {
+    //return 'Welcome to Olli.....';
+    return 'i need help';
+  }
+
+  getWelcomeTextMessage() {
+    return 'Welcome to Olli';
+  }
+
+  getStopKinTransMessage(index) {
+    let stop = DISPLAY_STOPS[index];
+    // return XXX
+    return 'i need help';
+  }
+
+  getStopTextMessage(index) {
+    let stop = DISPLAY_STOPS[index];
+    return `Sign ${stop.number} for ${stop.name}`
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
-      let message = 'Hello Welcome to Olli!';
-      message = 'i need help';
-      SendMessage('OlliCommunication', 'startSimulationMessage', message);
+      let text = this.getWelcomeTextMessage();
+      this.setAvatarMessage(this.getWelcomeKinTransMessage(), this.getWelcomeTextMessage());
+      const setStopMessage = (index) => {
+        this.setAvatarMessage(this.getStopKinTransMessage(index), this.getStopTextMessage(index));
+        if (index < 4) {
+          setTimeout(() => {
+            setStopMessage(index + 1);
+          }, WAIT_TIME_AFTER_STOP)
+        }
+      }
+      setTimeout(() => {
+        setStopMessage(1);
+      }, WAIT_TIME_AFTER_WELCOME);
     }
   }
 
   render() {
     //SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage); 
-    let className = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';   
+    let className = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';
+    let text = this.unityLoaded ? this.state.currentText : '';   
     return (
       <div className={className}>
-        <Unity
-            src='./kintrans/Build/KinTransAvatarBuild.json'
-            loader='./kintrans/Build/UnityLoader.js' />
-        {/* <img src="./img/signing.png" style={{width:'444px',height:'224px'}} /> */}
-        <h2>Messages go here</h2>
+          <Unity
+              src='./kintrans/Build/KinTransAvatarBuild.json'
+              loader='./kintrans/Build/UnityLoader.js'
+              onProgress={(e) => {this.onUnityProgress(e)} }
+          />
+        <h2>{text}</h2>
       </div>
     );
   }
