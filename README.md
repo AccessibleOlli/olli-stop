@@ -30,6 +30,7 @@ REACT_APP_OLLI_BLIND_STOP_DELAY=1000
 REACT_APP_REMOTE_TELEMETRY_DB=http://admin:admin@127.0.0.1:5984/telemetry_transitions
 REACT_APP_REMOTE_EVENT_DB=http://admin:admin@127.0.0.1:5984/rule_event_transitions
 REACT_APP_REMOTE_PERSONA_DB=http://admin:admin@127.0.0.1:5984/persona_transitions
+REACT_APP_REMOTE_WS=wss://weather_service_proxy.mybluemix.net
 ```
 
 5. Change the CouchDB database urls to point to your CouchDB instance (with the appropriate credentials)
