@@ -99,11 +99,6 @@ body {
   background-color: #046b99;
 }
 
-.info-win {
-  /* shouldn't need this but kintrans does weird things... */
-  margin-top: 48px;
-}
-
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   margin: 0.5em 0 0.25em 0;
@@ -123,9 +118,14 @@ h2 {
   text-align: left;
   color: #046b99;
 }
-.kintrans-avatar h2 {
-  color: #ffffff;
+
+.kintrans-avatar-text {
   background-color: #444444;
+  height: 48px;
+}
+
+.kintrans-avatar-text h2 {
+  color: #ffffff;
   margin: 0;
   line-height: 1.75em;
 }
