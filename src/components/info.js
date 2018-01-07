@@ -59,7 +59,8 @@ class Info extends Component {
     }
     if (this.props.activePersonaTypes.deaf) {
       select_stop_msg += " or sign a stop number: ";
-      select_stop_list = <span>[1] Mayo Gonda<br/>[2] Peace Plaza<br/>[3] Restaurant District<br/>[5] Mayo Guggenheim</span>
+      // select_stop_list = <span>[1] Mayo Gonda<br/>[2] Peace Plaza<br/>[3] Restaurant District<br/>[5] Mayo Guggenheim</span>
+      select_stop_list = <div><h2>[1] Mayo Gonda</h2><h2>[2] Peace Plaza</h2><h2>[3] Restaurant District</h2><h2>[5] Mayo Guggenheim</h2></div>
     }
 
 
@@ -80,7 +81,7 @@ class Info extends Component {
         <p className="info-stop-list">{select_stop_list}</p>
       </div>;
       return (
-        <div className={className}><hr />{msg}</div>
+        <div className={className}>{msg}</div>
       );
     }
 
@@ -119,7 +120,6 @@ class Info extends Component {
     if (this.props.poiDirections && this.props.poiDirections.legs.length > 0) {
       return (
         <div className={className}>
-          <hr />
           <POIDirections />
         </div>
       )
@@ -127,7 +127,6 @@ class Info extends Component {
     else {
       return (
         <div className={className}>
-          <hr />
           {msgs}
           {poipills}
           {triggerdirections}

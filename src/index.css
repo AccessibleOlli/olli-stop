@@ -32,7 +32,7 @@ body {
   grid-column: 2 / auto;
 }
 
-.info-win, .kintrans-avatar {
+.info-win, .kintrans {
   grid-column: 1 / auto;
   /* padding: 24px 12px 0 12px; */
 }
@@ -45,7 +45,7 @@ body {
   /* padding-bottom: 24px; */
 }
 
-.kintrans-avatar {
+.kintrans {
   grid-row: 2 / 4;
 }
 
@@ -284,6 +284,18 @@ button.text-directions-button {
   display: block;
   background-color: #e63022;
   font-size: 18pt;
-  font-weight: 500;
+  font-weight: 300;
   border-radius: 0px;
+  padding: 8px;
+}
+
+.mapbox-logo {
+  height: 30px;
+  vertical-align: text-top;
+}
+
+.directions {
+  padding-right: 8px;
+  white-space: nowrap;
+  overflow-x: scroll;
 }

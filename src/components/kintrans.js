@@ -91,7 +91,7 @@ class KinTrans extends Component {
     let className = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';
     let text = this.unityLoaded ? this.state.currentText : '';   
     return (
-      <div>
+      <div className="kintrans">
         <div className={className}>
           <Unity
               src='./kintrans/Build/KinTransAvatarBuild.json'
