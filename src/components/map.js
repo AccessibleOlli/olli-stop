@@ -569,8 +569,8 @@ let Map = class Map extends React.Component {
       zoom: 16
     });
 
-    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png', 'youarehere.png','yourdest.png'];
-    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun', 'youarehere','yourdest'];
+    let imagenames = ['olli-icon-svg.png', 'olli-stop-color.png', 'noun_1012350_cc.png', 'noun_854071_cc.png', 'noun_1015675_cc.png', 'youarehere.png','yourdest.png','poi_marker.png'];
+    let imageids = ['olli', 'olli-stop', 'restaurant-noun', 'medical-noun', 'museum-noun', 'youarehere','yourdest', 'poi-marker'];
     for (var idx = 0; idx < imagenames.length; idx++) {
       this.loadImage(imagenames[idx], imageids[idx]);
     }
@@ -676,7 +676,7 @@ let Map = class Map extends React.Component {
       },
       'type': 'symbol',
       'paint': {
-        'text-color': '#0087bd',
+        'text-color': '#444444',
         'text-halo-color': "#fff",
         'text-halo-width': 4, 
         'text-halo-blur': 1,
@@ -686,11 +686,11 @@ let Map = class Map extends React.Component {
       },
       'layout': {
         'visibility': 'none',
-        'icon-image': 'circle-15',
+        'icon-image': 'poi-marker',
         'icon-size': 0.5, 
         'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
         'text-size': 12, 
-        // 'text-offset': [0, 2],
+        'text-offset': [0, 2],
         'text-field': '{name}'
       }
     });
