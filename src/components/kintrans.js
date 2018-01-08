@@ -8,6 +8,7 @@ import { setTimeout } from 'core-js/library/web/timers';
 
 const WAIT_TIME_AFTER_WELCOME = 8000;
 const CLEAR_WELCOME_MESSAGE_TIME = 10000;
+const CLEAR_DIRECTIONS_MESSAGE_TIME = 10000;
 
 class KinTrans extends Component {
 
@@ -64,9 +65,16 @@ class KinTrans extends Component {
     return 'Please select your destination by signing a stop number'
   }
 
+  getTextDirectionsKinTransMessage() {
+    return 'directions phone';
+  }
+
+  getTextDirectionsTextMessage() {
+    return 'Would you like directions sent to your phone?'
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
-      let text = this.getWelcomeTextMessage();
       this.setAvatarMessage(this.getWelcomeKinTransMessage(), this.getWelcomeTextMessage());
       setTimeout(() => {
         this.setAvatarMessage(this.getSelectStopKinTransMessage(), this.getSelectStopTextMessage());
@@ -75,20 +83,28 @@ class KinTrans extends Component {
         }, CLEAR_WELCOME_MESSAGE_TIME);
       }, WAIT_TIME_AFTER_WELCOME);
     }
+    if (nextProps.poiDirections !== this.props.poiDirections) {
+      if (nextProps.poiDirections && nextProps.poiDirections.legs.length > 0) {
+        this.setAvatarMessage(this.getTextDirectionsKinTransMessage(), this.getTextDirectionsTextMessage());
+        setTimeout(() => {
+          this.setState({currentText: ''});
+        }, CLEAR_DIRECTIONS_MESSAGE_TIME);
+      }
+    }
   }
 
   render() {
-    //SendMessage("OlliCommunication", "startSimulationMessage", this.props.kintransAvatarMessage); 
     let className = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';
-    let text = this.unityLoaded ? this.state.currentText : '';   
+    // let text = this.unityLoaded ? this.state.currentText : '';   
+    let text = this.state.currentText;
     return (
       <div className="kintrans">
         <div className={className}>
-          <Unity
+          {/* <Unity
               src='./kintrans/Build/KinTrans Avatar Build.json'
               loader='./kintrans/Build/UnityLoader.js'
               onProgress={(e) => {this.onUnityProgress(e)} }
-          />
+          /> */}
         </div>
         <div className="kintrans-avatar-text">
           <h2>{text}</h2>
@@ -101,11 +117,7 @@ class KinTrans extends Component {
 function mapStateToProps(state) {
   return {
     activePersona: state.activePersona,
-    destinationStopName: state.destinationStopName,
-    kintransAvatarID: state.kintransAvatar.id,
-    kintransAvatarMessage: state.kintransAvatar.message,
-    kintransAvatarTimestamp: state.kintransAvatar.timestamp,
-    kinTransInUse: state.kinTransInUse
+    poiDirections: state.poiDirections
   };
 }
 

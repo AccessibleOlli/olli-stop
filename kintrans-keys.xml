@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <string>yes no</string>
+  <string>where go</string>
+  <string>next stop</string>
+  <string>olli arrive</string>
+  <string>disembark</string>
+  <string>cultural options</string>
+  <string>sign number</string>
+  <string>thank you</string>
+  <string>welcome</string>
+  <string>directions phone</string>
+  <string>near clinic</string>
+</ArrayOfString>

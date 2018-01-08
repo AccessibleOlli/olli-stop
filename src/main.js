@@ -67,7 +67,6 @@ class Main extends Component {
           let text = `You selected ${stopName}. Enjoy your trip on Olli.`;
           let type = 'audio_olli_stop_destination';
           this.playAudio(text, type);
-          console.log(Stops.features[OLLI_BLIND_STOP_IDX]);
           this.props.setDestination(stopName);
         }, OLLI_BLIND_STOP_DELAY);
       }
