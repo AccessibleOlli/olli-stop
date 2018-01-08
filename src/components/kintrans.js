@@ -101,7 +101,7 @@ class KinTrans extends Component {
       <div className="kintrans">
         <div className={className}>
           <Unity
-              src='./kintrans/Build/KinTrans Avatar Build.json'
+              src='./kintrans/Build/olli.json'
               loader='./kintrans/Build/UnityLoader.js'
               onProgress={(e) => {this.onUnityProgress(e)} }
           />
