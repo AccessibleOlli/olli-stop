@@ -4,8 +4,10 @@ import { bindActionCreators } from 'redux';
 import { setKinTransAvatarMessage } from '../actions/index'
 import Unity from 'react-unity-webgl'
 import { SendMessage } from 'react-unity-webgl'
+import { setTimeout } from 'core-js/library/web/timers';
 
 const WAIT_TIME_AFTER_WELCOME = 8000;
+const CLEAR_WELCOME_MESSAGE_TIME = 10000;
 
 class KinTrans extends Component {
 
@@ -67,7 +69,10 @@ class KinTrans extends Component {
       let text = this.getWelcomeTextMessage();
       this.setAvatarMessage(this.getWelcomeKinTransMessage(), this.getWelcomeTextMessage());
       setTimeout(() => {
-        this.setAvatarMessage(this.getSelectStopKinTransMessage(), this.getSelectStopTextMessage()); 
+        this.setAvatarMessage(this.getSelectStopKinTransMessage(), this.getSelectStopTextMessage());
+        setTimeout(() => {
+          this.setState({currentText: ''});
+        }, CLEAR_WELCOME_MESSAGE_TIME);
       }, WAIT_TIME_AFTER_WELCOME);
     }
   }

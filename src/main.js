@@ -75,8 +75,6 @@ class Main extends Component {
   }
 
   render() {
-    console.log(this.props.activePersona);
-    console.log(this.props.activePersonaTypes);
     let stop = Stops.features[OLLI_STOP_IDX];
     return (
       <div className="cssgrid">
