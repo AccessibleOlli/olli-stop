@@ -83,7 +83,7 @@ class Main extends Component {
         <KinTrans />
         <Info />
         <MapWrapper stop={stop} />
-        <StopGraph />
+        {/* <StopGraph /> */}
         <POISNearby />
         {/* <Monitor /> */}
       </div>
