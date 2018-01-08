@@ -4,10 +4,8 @@ import { bindActionCreators } from 'redux';
 import { setKinTransAvatarMessage } from '../actions/index'
 import Unity from 'react-unity-webgl'
 import { SendMessage } from 'react-unity-webgl'
-import DISPLAY_STOPS from '../data/display_stops.json'
 
-const WAIT_TIME_AFTER_WELCOME = 3000;
-const WAIT_TIME_AFTER_STOP = 5000;
+const WAIT_TIME_AFTER_WELCOME = 8000;
 
 class KinTrans extends Component {
 
@@ -49,39 +47,27 @@ class KinTrans extends Component {
   }
 
   getWelcomeKinTransMessage() {
-    //return 'Welcome to Olli.....';
     return 'i need help';
   }
 
   getWelcomeTextMessage() {
-    return 'Welcome to Olli';
+    return 'Hello, Welcome to Olli!';
   }
 
-  getStopKinTransMessage(index) {
-    let stop = DISPLAY_STOPS[index];
-    // return XXX
-    return 'i need help';
+  getSelectStopKinTransMessage() {
+    return 'sign number';
   }
 
-  getStopTextMessage(index) {
-    let stop = DISPLAY_STOPS[index];
-    return `Sign ${stop.number} for ${stop.name}`
+  getSelectStopTextMessage() {
+    return 'Please select your destination by signing a stop number'
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
       let text = this.getWelcomeTextMessage();
       this.setAvatarMessage(this.getWelcomeKinTransMessage(), this.getWelcomeTextMessage());
-      const setStopMessage = (index) => {
-        this.setAvatarMessage(this.getStopKinTransMessage(index), this.getStopTextMessage(index));
-        if (index < 4) {
-          setTimeout(() => {
-            setStopMessage(index + 1);
-          }, WAIT_TIME_AFTER_STOP)
-        }
-      }
       setTimeout(() => {
-        setStopMessage(1);
+        this.setAvatarMessage(this.getSelectStopKinTransMessage(), this.getSelectStopTextMessage()); 
       }, WAIT_TIME_AFTER_WELCOME);
     }
   }
@@ -94,7 +80,7 @@ class KinTrans extends Component {
       <div className="kintrans">
         <div className={className}>
           <Unity
-              src='./kintrans/Build/KinTransAvatarBuild.json'
+              src='./kintrans/Build/KinTrans Avatar Build.json'
               loader='./kintrans/Build/UnityLoader.js'
               onProgress={(e) => {this.onUnityProgress(e)} }
           />
