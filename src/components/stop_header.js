@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Reset from './reset'
 
 export default class StopHeader extends Component {
 
@@ -9,7 +10,8 @@ export default class StopHeader extends Component {
     }
     return (
       <div className="stop-name-div">
-      <h1 className="stop-name">{stopName}</h1>
+        <Reset />
+        <h1 className="stop-name">{stopName}</h1>
     </div>
 );
   }

@@ -309,3 +309,14 @@ button.text-directions-button>img {
   white-space: nowrap;
   overflow-x: scroll;
 }
+
+.reset-button {
+  font-size: 24pt;
+  color: #444444;
+  background-color: #046b99;
+  position: absolute;
+  top: 48px;
+  right: 48px;
+  border: 1px solid #444444;
+  border-radius: 4px;
+}

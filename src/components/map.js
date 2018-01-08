@@ -88,14 +88,18 @@ let Map = class Map extends React.Component {
     return false;
   }
 
+  clearDestination() {
+    this.map.setLayoutProperty('olli-destination', 'visibility', 'none');
+    this.props.setPOIs(null);
+  }
+
   setNewDestination(stopname) {
     let stop = this.findStopFeatureByName(stopname);
     if (stop) {
       let dest = this.map.getSource('olli-destination');
       // if same as before, toggle it off
       if (dest._data && dest._data.properties.name === stop.properties.name) {
-        dest.setData(null);
-        this.props.setPOIs(null);
+        this.clearDestination();
       }
       // set destination
       this.map.getSource('olli-destination').setData(stop);
@@ -490,6 +494,9 @@ let Map = class Map extends React.Component {
     }
     if (nextProps.poiCategory !== this.props.poiCategory) {
       this.updatePOICategory(nextProps.poiCategory);
+    }
+    if (nextProps.destinationStopName == null) {
+      this.clearDestination();
     }
     if (nextProps.destinationStopName && nextProps.destinationStopName !== this.props.destinationStopName) {
         this.setNewDestination(nextProps.destinationStopName);
