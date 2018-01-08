@@ -1,0 +1,8 @@
+{
+  "name": "sms_directions",
+  "event": "sms",
+  "payload": {
+    "phone": "512-779-3970",
+    "text": "Here are directions to XXX:\nTake a left on..."
+  }
+}

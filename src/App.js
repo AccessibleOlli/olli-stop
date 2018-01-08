@@ -9,6 +9,7 @@ import { setOlliRoute, setOlliPosition, startOlliTrip, endOlliTrip, setKinTransI
 import OLLI_ROUTE from './data/route.json';
 import WebsocketManager from './util/websocket_manager';
 import handleKinTransMessage from './util/kintrans_message_handler';
+import sendSMS from './util/sms';
 import Main from './main';
 
 import { ollieEvent } from "./actions"
@@ -238,6 +239,17 @@ class App extends Component {
             // console.log('Trip Stop - TBD');
             // console.log(change.doc);
             //store.dispatch(stopOlliTrip(change.doc));
+          }
+          else if( change.doc.event === 'sms' )
+          {
+            if (change.doc.payload && change.doc.payload.phone && change.doc.payload.text) {
+              sendSMS(change.doc.payload.phone, change.doc.payload.text)
+                .then((response) => {
+                  console.log(response);
+                }).catch(err => {
+                  console.log(err);
+                });
+            } 
           }
           else if( change.doc.event === 'display' )
           {

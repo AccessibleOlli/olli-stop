@@ -11,7 +11,7 @@ export default function handleKinTransMessage(message, store) {
       break;
     }
   }
-  if (! messageProcessd) {
+  if (! messageProcessed) {
     if (text == 'yes') {
       // mw:TBD - text directions
     }

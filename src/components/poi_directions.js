@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import axios from 'axios';
+import sendSMS from '../util/sms'
 
 let TEXT_PERSONA_IF_SET = process.env['REACT_APP_TEXT_PERSONA_IF_SET'];
 if (TEXT_PERSONA_IF_SET && TEXT_PERSONA_IF_SET.toLowerCase() === 'false') {
@@ -19,13 +19,6 @@ class POIDirections extends Component {
     if (! phone) {
       return;
     }
-    phone = phone.replace(/\(/g, '').replace(/\)/g, '').replace(/\-/g, '');
-    if (! phone.startsWith('+')) {
-      if (! phone.startsWith('1')) {
-        phone = '1' + phone;
-      }
-      phone = '+' + phone;
-    }
     let directions = [];
     if (this.props.poiDirections) {
       directions = this.props.poiDirections.legs.map((leg => {
@@ -41,14 +34,7 @@ class POIDirections extends Component {
     }
     if (directions.length > 0) {
       let text = directions.join('\n\n');
-      axios({
-        method: 'POST',
-        url: '/api/text',
-        data: {
-          phoneNumber: phone,
-          text: text
-        }
-      })
+      sendSMS(phone, text)
         .then((response) => {
           console.log(response);
         }).catch(err => {
