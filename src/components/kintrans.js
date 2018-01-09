@@ -97,7 +97,7 @@ class KinTrans extends Component {
   render() {
     let className = this.props.activePersona ? 'kintrans' : 'kintrans-hidden';
     let className2 = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';
-    // let text = this.unityLoaded ? this.state.currentText : '';   
+    // let text = this.unityLoaded ? this.state.currentText : 'Loading Avatar';   
     let text = this.state.currentText;
     return (
       <div className={className}>
@@ -109,7 +109,7 @@ class KinTrans extends Component {
           />
         </div>
         <div className="kintrans-avatar-text">
-          <h2>{text}</h2>
+          <h3>{text}</h3>
         </div>
       </div>
     );
