@@ -3,6 +3,8 @@ import sendDirectionsSMS from '../util/sms_directions';
 import DISPLAY_STOPS from '../data/display_stops.json';
 
 export default function handleKinTransMessage(message, store) {
+  console.log('handleKinTransMessage');
+  console.log(message);
   let text = message.message.toLowerCase();
   let messageProcessed = false;
   for (let stop of DISPLAY_STOPS) {
