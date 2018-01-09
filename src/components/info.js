@@ -94,7 +94,12 @@ class Info extends Component {
       msgs.push(<h2 key={msgs.length} className="info-subtitle">I've found some places you may want to visit near your stop. Select some to add to your trip.</h2>);
       msgs.push(<br key={msgs.length} />);
 
-      poipills = this.props.pois.map((poi, index) => {
+      let shortpois = [];
+      for (let j = 0; j < this.props.pois.length; j++) {
+        if (j<5)
+        shortpois.push(this.props.pois[j]);
+      }
+      poipills = shortpois.map((poi, index) => {
         let poistate = "deselected";
         if (poi.selected) {
           poistate = "selected";
