@@ -4,7 +4,7 @@
       "type": "Feature",
       "properties": {
         "name": "Mayo Gonda",
-        "description": "Mayo Clinic main patient building",
+        "description": "Mayo Clinic main patient building. It rises 305 feet (93 m) in 21 floors, and was completed in 2001. The Gonda building was the largest building project in the Mayo Clinic’s history, the Leslie & Susan Gonda Building was constructed in three phases to a height of 21 stories. Located at the heart of the campus, Gonda is the centerpiece of Mayo’s integrated practice.",
         "poi": [
           "Mayo Clinic specialties (cardiology, gastroenterology, neurology, etc.",
           "May Clinic Gift Shop", "Mayo Clinic Center for Innovation",
@@ -18,7 +18,10 @@
           "Most doctors offices, exam rooms, and some testing areas, are located in Gonda and Mayo Buildings",
           "Overall Mayos extended downtown campus comprises about 30 buildings and 5 parking ramps"
         ],
-        "what3words": "mercy.grants.ducks"
+        "what3words": "mercy.grants.ducks",
+        "stop_id": "stop_1",
+        "simulation_offset": 211, 
+        "delta_time": 106000
       },
       "geometry": {
         "type": "Point",
@@ -45,7 +48,10 @@
           "Host for SociallCE - Rochesters Winter Ice Bar",
           "In the heart of downtown"
         ],
-        "what3words": "fails.aspect.estate"
+        "what3words": "fails.aspect.estate",
+        "stop_id": "stop_2",
+        "simulation_offset": 427, 
+        "delta_time": 214000
       },
       "geometry": {
         "type": "Point",
@@ -80,7 +86,10 @@
           "Jefe Rojos Restaurant",
           "University of Minnesota"
         ],
-        "what3words": "hero.maybe.risks"
+        "what3words": "hero.maybe.risks",
+        "stop_id": "stop_3",
+        "simulation_offset": 570, 
+        "delta_time": 285500
       },
       "geometry": {
         "type": "Point",
@@ -102,7 +111,10 @@
           "Celebrates science on display and enables practitioners and educators to live and work alongside researchers and entrepreneurs",
           "16 block sub-district built in collaboration with Mayo Clinic"
         ],
-        "what3words": "school.fence.shut"
+        "what3words": "school.fence.shut",
+        "stop_id": "stop_4",
+        "simulation_offset": 19, 
+        "delta_time": 10000
       },
       "geometry": {
         "type": "Point",
@@ -132,7 +144,10 @@
           "Established the first hospital-based blood bank in the US",
           "Developed the first G-suit, a flight suit outfitted with air-filled bladders and a system of valves to protect pilots during high-speed maneuvers by increasing blood flow to the brain"
         ],
-        "what3words": "newly.kept.rests"
+        "what3words": "newly.kept.rests",
+        "stop_id": "stop_5",
+        "simulation_offset": 68, 
+        "delta_time": 34500
       },
       "geometry": {
         "type": "Point",
