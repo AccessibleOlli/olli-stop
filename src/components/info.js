@@ -78,7 +78,7 @@ class Info extends Component {
       let msg = <div>
         <h1>{welcome}<br />Where would you like to go?</h1>
         <h2 className={info_subtitle_class}>{select_stop_msg}</h2>
-        <p className="info-stop-list">{select_stop_list}</p>
+        <div className="info-stop-list">{select_stop_list}</div>
       </div>;
       return (
         <div className={className}>{msg}</div>
