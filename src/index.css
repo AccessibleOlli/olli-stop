@@ -95,7 +95,7 @@ body {
 }
 .info-win {
   /* kintrans is messing with this so this is a hack */
-  margin-top: 96px;
+  margin-top: 48px;
 }
 
 .olli-logo-div, .stop-name-div {

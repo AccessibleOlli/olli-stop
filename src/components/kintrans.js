@@ -41,6 +41,7 @@ class KinTrans extends Component {
     this.setState({currentText: text});
     if (this.unityLoaded) {
       try {
+        console.log("Sending kintrans message: "+kintransMessage);
         SendMessage('OlliCommunication', 'startSimulationMessage', kintransMessage);
       }
       catch(e) {
@@ -49,12 +50,8 @@ class KinTrans extends Component {
     }
   }
 
-  getWelcomeKinTransMessage() {
-    return 'i need help';
-  }
-
   getWelcomeTextMessage() {
-    return 'Hello, Welcome to Olli!';
+    return 'welcome'; //'Hello, Welcome to Olli!';
   }
 
   getSelectStopKinTransMessage() {
@@ -62,20 +59,28 @@ class KinTrans extends Component {
   }
 
   getSelectStopTextMessage() {
-    return 'Please select your destination by signing a stop number'
+    return 'where go'; //'Please select your destination by signing a stop number'
   }
 
   getTextDirectionsKinTransMessage() {
-    return 'directions phone';
+    return 'directions phone'; //'Would you like directions sent to your phone?'
   }
 
   getTextDirectionsTextMessage() {
-    return 'Would you like directions sent to your phone?'
+    return 'directions phone'; //'Would you like directions sent to your phone?' 
+  }
+
+  getArrivingMessage() {
+    return 'olli arrive'; //Olli is arriving
+  }
+
+  getStopMessage() {
+    return 'disembark'; // Olli	will	be	stopped	as	long	as	you	need to	disembark.
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.activePersona && nextProps.activePersona !== this.props.activePersona) {
-      this.setAvatarMessage(this.getWelcomeKinTransMessage(), this.getWelcomeTextMessage());
+      this.setAvatarMessage(this.getWelcomeTextMessage(), this.getWelcomeTextMessage());
       setTimeout(() => {
         this.setAvatarMessage(this.getSelectStopKinTransMessage(), this.getSelectStopTextMessage());
         setTimeout(() => {
