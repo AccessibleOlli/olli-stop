@@ -101,7 +101,7 @@ class Main extends Component {
           <div className="mapboxgl-map-normal">
             <Map stop={this.props.stop} />
           </div>
-          <StopGraph />
+          {/* <StopGraph /> */}
         </div>
         <POISNearby />
         {/* <Monitor /> */}
