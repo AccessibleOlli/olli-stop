@@ -1,46 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import sendSMS from '../util/sms'
-
-let TEXT_PERSONA_IF_SET = process.env['REACT_APP_TEXT_PERSONA_IF_SET'];
-if (TEXT_PERSONA_IF_SET && TEXT_PERSONA_IF_SET.toLowerCase() === 'false') {
-  TEXT_PERSONA_IF_SET = false;
-}
-const TEXT_PHONE_NUMBER = process.env['REACT_APP_TEXT_PHONE_NUMBER']; 
+import sendDirectionsSMS from '../util/sms_directions';
 
 class POIDirections extends Component {
 
   text() {
-    let phone = TEXT_PHONE_NUMBER;
-    if (TEXT_PERSONA_IF_SET && this.props.activePersona.preferences && this.props.activePersona.preferences.mobile_phone) {
-      phone = this.props.activePersona.preferences.mobile_phone;
-    }
-    if (! phone) {
-      return;
-    }
-    let directions = [];
-    if (this.props.poiDirections) {
-      directions = this.props.poiDirections.legs.map((leg => {
-        let steps = leg.steps.map((step) => {
-          let iconClassName = "directions-icon";
-          if (step.modifier) {
-            iconClassName += " directions-icon-" + step.modifier;
-          }
-          return `* ${step.instruction} ${step.distance}m`;
-        });
-        return `DESTINATION: ${leg.poi.name}\n` + steps.join('\n');
-      }));
-    }
-    if (directions.length > 0) {
-      let text = directions.join('\n\n');
-      sendSMS(phone, text)
-        .then((response) => {
-          console.log(response);
-        }).catch(err => {
-          console.log(err);
-        });
-      }
+    sendDirectionsSMS(this.props.poiDirections, this.props.activePersona);
   }
 
   render() {
