@@ -8,7 +8,7 @@ import { setTimeout } from 'core-js/library/web/timers';
 
 const WAIT_TIME_AFTER_WELCOME = 8000;
 const CLEAR_WELCOME_MESSAGE_TIME = 10000;
-const CLEAR_DIRECTIONS_MESSAGE_TIME = 10000;
+const CLEAR_DIRECTIONS_MESSAGE_TIME = 20000;
 
 class KinTrans extends Component {
 
