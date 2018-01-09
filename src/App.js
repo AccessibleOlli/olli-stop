@@ -290,7 +290,7 @@ class App extends Component {
               persona.wheelchair = true;
             }
             store.dispatch(addPersona(persona));
-          } else if (change.doc.transition === 'olli_stop_end_exit') {
+          } else if (change.doc.transition === 'olli_stop_end_exit' || change.doc.transition === 'olli_stop_side_exit') {
             let persona = {
               name: change.doc.persona
             };
