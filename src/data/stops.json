@@ -17,7 +17,8 @@
           "305 feet tall", "21 stories tall",
           "Most doctors offices, exam rooms, and some testing areas, are located in Gonda and Mayo Buildings",
           "Overall Mayos extended downtown campus comprises about 30 buildings and 5 parking ramps"
-        ]
+        ],
+        "what3words": "mercy.grants.ducks"
       },
       "geometry": {
         "type": "Point",
@@ -43,7 +44,8 @@
           "Location of Thursdays on First and 3rd Summer Market and Music Festival",
           "Host for SociallCE - Rochesters Winter Ice Bar",
           "In the heart of downtown"
-        ]
+        ],
+        "what3words": "fails.aspect.estate"
       },
       "geometry": {
         "type": "Point",
@@ -77,7 +79,8 @@
           "Grand Rounds Brew Pub",
           "Jefe Rojos Restaurant",
           "University of Minnesota"
-        ]
+        ],
+        "what3words": "hero.maybe.risks"
       },
       "geometry": {
         "type": "Point",
@@ -98,7 +101,8 @@
           "Invites positive collisions among Mayo doctors, researchers and entrepreneurs",
           "Celebrates science on display and enables practitioners and educators to live and work alongside researchers and entrepreneurs",
           "16 block sub-district built in collaboration with Mayo Clinic"
-        ]
+        ],
+        "what3words": "school.fence.shut"
       },
       "geometry": {
         "type": "Point",
@@ -127,7 +131,8 @@
           "Demonstrated that police cars equipped with Automated external defibrillators (AEDs) improve survival outcomes from cardiac arrest, leding to AEDs as standard issue in police cars",
           "Established the first hospital-based blood bank in the US",
           "Developed the first G-suit, a flight suit outfitted with air-filled bladders and a system of valves to protect pilots during high-speed maneuvers by increasing blood flow to the brain"
-        ]
+        ],
+        "what3words": "newly.kept.rests"
       },
       "geometry": {
         "type": "Point",
