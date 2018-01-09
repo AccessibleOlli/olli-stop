@@ -263,7 +263,7 @@ button.text-directions-button {
   background-color: #e63022;
   font-size: 18pt;
   font-weight: 300;
-  border-radius: 0px;
+  border-radius: 8px;
   padding: 8px;
 }
 button.text-directions-button>img {
