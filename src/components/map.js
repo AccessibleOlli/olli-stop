@@ -585,9 +585,9 @@ let Map = class Map extends React.Component {
     this.map.on('click', this.handleMapClick.bind(this));
 
     this.map.on('load', () => {
-      this.map.resize();
       this.addBasicMapLayers();
       this.props.setMapReady(true);
+      this.map.resize();
     });
   }
 

@@ -6,7 +6,7 @@ import PouchDB from 'pouchdb';
 import ClockWeather from './components/clock_weather';
 import Info from './components/info';
 import KinTrans from './components/kintrans';
-import MapWrapper from './components/map_wrapper';
+import Map from './components/map';
 import OlliLogo from './components/olli_logo';
 import POISNearby from './components/pois_nearby';
 import StopHeader from './components/stop_header';
@@ -75,15 +75,34 @@ class Main extends Component {
 
   render() {
     let stop = Stops.features[OLLI_STOP_IDX];
+
+    if (!this.props.activePersona) {
+      return (
+        <div className="cssgrid">
+          <OlliLogo />
+          <StopHeader stop={stop} />
+          <div className="mapboxgl-map-full">
+            <Map stop={this.props.stop} />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="cssgrid">
         <OlliLogo />
         <StopHeader stop={stop} />
-        <ClockWeather />
-        <KinTrans />
-        <Info />
-        <MapWrapper stop={stop} />
-        {/* <StopGraph /> */}
+        <div id="col1">
+          <KinTrans />
+          <Info />
+        </div>
+        <div id="col2">
+          <ClockWeather />
+          <div className="mapboxgl-map-normal">
+            <Map stop={this.props.stop} />
+          </div>
+          <StopGraph />
+        </div>
         <POISNearby />
         {/* <Monitor /> */}
       </div>
