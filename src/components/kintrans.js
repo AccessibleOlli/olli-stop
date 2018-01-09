@@ -51,7 +51,11 @@ class KinTrans extends Component {
   }
 
   getWelcomeTextMessage() {
-    return 'welcome'; //'Hello, Welcome to Olli!';
+    return 'Hello, Welcome to Olli!';
+  }
+
+  getWelcomeKinTransMessage() {
+    return 'welcome';
   }
 
   getSelectStopKinTransMessage() {
@@ -59,23 +63,15 @@ class KinTrans extends Component {
   }
 
   getSelectStopTextMessage() {
-    return 'where go'; //'Please select your destination by signing a stop number'
+    return 'Please select your destination by signing a stop number';
   }
 
   getTextDirectionsKinTransMessage() {
-    return 'directions phone'; //'Would you like directions sent to your phone?'
+    return 'directions phone';
   }
 
   getTextDirectionsTextMessage() {
-    return 'directions phone'; //'Would you like directions sent to your phone?' 
-  }
-
-  getArrivingMessage() {
-    return 'olli arrive'; //Olli is arriving
-  }
-
-  getStopMessage() {
-    return 'disembark'; // Olli	will	be	stopped	as	long	as	you	need to	disembark.
+    return 'Would you like directions sent to your phone?' 
   }
 
   componentWillReceiveProps(nextProps) {
