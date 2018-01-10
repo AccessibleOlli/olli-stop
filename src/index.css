@@ -15,7 +15,7 @@ body {
 .cssgrid {
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-template-rows: 96px 128px 960px [nearby-pois-start] 128px;
+  grid-template-rows: 96px 128px 960px [nearby-pois-start] 128px 1fr;
   /* grid-auto-columns: minmax(100px, auto); */
   background-color: #ffffff;
 }
@@ -45,7 +45,14 @@ body {
 
 .pois-nearby {
   grid-column: 1 / 3;
-  grid-row: 4 / auto;
+  grid-row: 4 / 5;
+}
+
+#bottom-blank {
+  grid-column: 1 / 3;
+  grid-row: 5 / 6;
+  height: 100%;
+  background-color: #444444;
 }
 
 .mapboxgl-map-full {
