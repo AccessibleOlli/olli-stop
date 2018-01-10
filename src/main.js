@@ -62,13 +62,13 @@ class Main extends Component {
         text += ". Say the stop number for your destination.";
         let type = 'audio_olli_stop_welcome';
         this.playAudio(text, type);
-        setTimeout(() => {
-          let stopName = Stops.features[OLLI_BLIND_STOP_IDX].properties.name;
-          let text = `You selected ${stopName}. Enjoy your trip on Olli.`;
-          let type = 'audio_olli_stop_destination';
-          this.playAudio(text, type);
-          this.props.setDestination(stopName);
-        }, OLLI_BLIND_STOP_DELAY);
+        // setTimeout(() => {
+        //   let stopName = Stops.features[OLLI_BLIND_STOP_IDX].properties.name;
+        //   let text = `You selected ${stopName}. Enjoy your trip on Olli.`;
+        //   let type = 'audio_olli_stop_destination';
+        //   this.playAudio(text, type);
+        //   this.props.setDestination(stopName);
+        // }, OLLI_BLIND_STOP_DELAY);
       }
     }
   }
