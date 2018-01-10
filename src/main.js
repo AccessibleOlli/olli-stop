@@ -105,7 +105,7 @@ class Main extends Component {
           {/* <StopGraph /> */}
         </div>
         <POISNearby />
-        <div id="bottom-blank" />
+        <div id="bottom-blank" style={{backgroundColor: "#FFFFFF"}} />
         {/* <Monitor /> */}
       </div>
     );
