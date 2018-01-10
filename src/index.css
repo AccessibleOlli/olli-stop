@@ -59,6 +59,10 @@ body {
   min-height: 800px;
 }
 
+#col1, #col2 {
+  background-color: #ffffff;
+}
+
 .clock-weather, .stop-graph, .mapboxgl-map-normal {
   border-left: 6px solid #046b99;
   border-right: 6px solid #046b99;
