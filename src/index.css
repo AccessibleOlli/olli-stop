@@ -122,6 +122,7 @@ h2 {
 .clock-weather {
   padding-left: 8px;
   padding-bottom: 16px;
+  border-top: 6px solid #046b99;
 }
 
 .weather img {
