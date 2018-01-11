@@ -101,7 +101,7 @@ class KinTrans extends Component {
     let text = this.state.currentText;
     return (
       <div className={className}>
-        <div className2={className}>
+        <div className={className2}>
           <Unity
               src='./kintrans/Build/olli.json'
               loader='./kintrans/Build/UnityLoader.js'
