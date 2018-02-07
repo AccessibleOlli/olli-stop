@@ -23,6 +23,10 @@ const REMOTE_TELEMETRY_DB = process.env['REACT_APP_REMOTE_TELEMETRY_DB'];
 const REMOTE_EVENT_DB = process.env['REACT_APP_REMOTE_EVENT_DB'];
 const REMOTE_PERSONA_DB = process.env['REACT_APP_REMOTE_PERSONA_DB'];
 const REMOTE_DB = process.env['REACT_APP_REMOTE_DB'] || 'https://0fdf5a9b-8632-4315-b020-91e60e1bbd2b-bluemix.cloudant.com/ollilocation';
+let DISABLE_KINTRANS = process.env['REACT_APP_DISABLE_KINTRANS'];
+if (DISABLE_KINTRANS && DISABLE_KINTRANS.toLowerCase() === 'false') {
+  DISABLE_KINTRANS = false;
+}
 
 class App extends Component {
 
@@ -41,12 +45,14 @@ class App extends Component {
       this.startWebsocket();
     }
 
-    this.websocketMgr = new WebsocketManager('/socket', (msg) => {
-      if (msg.type === 'kintrans') {
-        handleKinTransMessage(msg.body, store);
-      }
-    });
-    this.websocketMgr.startWebsocket();
+    if (! DISABLE_KINTRANS) {
+      this.websocketMgr = new WebsocketManager('/socket', (msg) => {
+        if (msg.type === 'kintrans') {
+          handleKinTransMessage(msg.body, store);
+        }
+      });
+      this.websocketMgr.startWebsocket();
+    }
   }
 
   connectWebsocket() {

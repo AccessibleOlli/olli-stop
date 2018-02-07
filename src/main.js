@@ -25,7 +25,9 @@ class Main extends Component {
 
   constructor() {
     super();
-    this.db = new PouchDB(REMOTE_EVENT_DB, {});
+    if (REMOTE_EVENT_DB) {
+      this.db = new PouchDB(REMOTE_EVENT_DB, {});
+    }
   }
 
   playAudio(text, type) {
