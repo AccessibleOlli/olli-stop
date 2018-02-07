@@ -1,6 +1,6 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl'
-import axios from 'axios';
+// import axios from 'axios';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { setMapReady, setDestination, setPOIs } from '../actions/index'
@@ -285,9 +285,8 @@ let Map = class Map extends React.Component {
             'layout': {
               'icon-image': 'olli',
               'icon-size': 0.75,
-              'text-field': 'olli_1',
               'text-font': ["Open Sans Semibold","Open Sans Regular","Arial Unicode MS Regular"],
-              'text-field': `${olliId}`, 
+              'text-field': `${olliId}`,
               'text-size': 12, 
               'text-offset': [0, 3]
             }
@@ -604,6 +603,7 @@ let Map = class Map extends React.Component {
 
   addBasicMapLayers() {
     // add route layer
+    console.log("in addBasicMapLayers")
     let routeGeoJson = this.props.olliRoute;
     if (routeGeoJson.type !== 'FeatureCollection') {
       routeGeoJson = {
@@ -636,6 +636,7 @@ let Map = class Map extends React.Component {
         'line-opacity': 0.4
       }
     });
+
     this.map.addLayer({
       'id': 'olli-stops-w3w',
       'source': {

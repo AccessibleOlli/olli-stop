@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
-import { setDestination } from './actions/index';
+import { setDestination, setKinTransInUse, addPersona } from './actions/index';
 import PouchDB from 'pouchdb';
 import ClockWeather from './components/clock_weather';
 import Info from './components/info';
@@ -10,7 +10,7 @@ import Map from './components/map';
 import OlliLogo from './components/olli_logo';
 import POISNearby from './components/pois_nearby';
 import StopHeader from './components/stop_header';
-import StopGraph from './components/stop_graph';
+// import StopGraph from './components/stop_graph';
 import Stops from './data/stops.json';
 import uuidV4 from 'uuid/v4';
 
@@ -73,12 +73,26 @@ class Main extends Component {
     }
   }
 
+  doEntry() {
+    let persona = {
+      "name": "Katherine",
+      "preferences": {
+        "mobile_phone" : "507-234-2234",
+        "cuisine" : "Italian"
+      },
+      "cognitive": true
+    };
+    this.props.addPersona(persona);
+    this.props.setKinTransInUse(false);
+  }
+
   render() {
     let stop = Stops.features[OLLI_STOP_IDX];
 
     if (!this.props.activePersona) {
       return (
         <div className="cssgrid">
+        <button key="enterbutton" className="enter-button" onClick={(e) => this.doEntry()}>Enter</button>
           <OlliLogo />
           <StopHeader stop={stop} />
           <div className="mapboxgl-map-full">
@@ -122,7 +136,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    setDestination: setDestination
+    setDestination: setDestination, 
+    setKinTransInUse: setKinTransInUse, 
+    addPersona: addPersona
   }, dispatch);
 }
 

@@ -307,3 +307,9 @@ button.text-directions-button>img {
   border: 1px solid #444444;
   border-radius: 4px;
 }
+
+.enter-button {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
