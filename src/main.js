@@ -10,6 +10,7 @@ import Map from './components/map';
 import OlliLogo from './components/olli_logo';
 import POISNearby from './components/pois_nearby';
 import StopHeader from './components/stop_header';
+import Talk from './components/talk';
 // import StopGraph from './components/stop_graph';
 import Stops from './data/stops.json';
 import uuidV4 from 'uuid/v4';
@@ -110,6 +111,7 @@ class Main extends Component {
         <OlliLogo />
         <StopHeader stop={stop} />
         <div id="col1">
+          <Talk />
           <KinTrans />
           <Info />
         </div>
