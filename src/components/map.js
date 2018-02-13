@@ -186,7 +186,11 @@ let Map = class Map extends React.Component {
       this.olliPositions = {};
       this.olliPositionTimes = {};
     }
+    let i = 0;
     for (let position of positions) {
+      if (! position.olliId) {
+        position.olliId = 'olli ' + (++i);
+      }
       if (! position.processed) {
         position.processed = true;
         let olliId = position.olliId;
@@ -495,9 +499,9 @@ let Map = class Map extends React.Component {
       this.updateOlliRouteVisibility(nextProps.olliRouteVisibility);
     }
     // olli-sim/single olli support
-    if (nextProps.olliPosition !== this.props.olliPosition) {
-      this.updateOlliPositionOlliSim(nextProps.olliPosition);
-    }
+    // if (nextProps.olliPosition !== this.props.olliPosition) {
+    //   this.updateOlliPositionOlliSim(nextProps.olliPosition);
+    // }
     // ao_sim/multiple olli support
     if (nextProps.olliPositions !== this.props.olliPositions) {
       this.updateOlliPositionsAOSim(nextProps.olliPositions);
@@ -605,8 +609,14 @@ let Map = class Map extends React.Component {
 
   addBasicMapLayers() {
     // add route layer
-    console.log("in addBasicMapLayers")
     let routeGeoJson = this.props.olliRoute;
+    let coordinates = routeGeoJson.coordinates;
+    if (routeGeoJson.type === "route_info") {
+      console.log('Route from olli-sim.');
+      coordinates = routeGeoJson.coordinates.map(c => {
+        return [c.coordinates[0], c.coordinates[1]]
+      });
+    }
     if (routeGeoJson.type !== 'FeatureCollection') {
       routeGeoJson = {
         type: 'FeatureCollection',
@@ -615,7 +625,7 @@ let Map = class Map extends React.Component {
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: routeGeoJson.coordinates
+            coordinates: coordinates
           }
         }]
       };
@@ -638,7 +648,6 @@ let Map = class Map extends React.Component {
         'line-opacity': 0.4
       }
     });
-
     this.map.addLayer({
       'id': 'olli-stops-w3w',
       'source': {
@@ -684,11 +693,12 @@ let Map = class Map extends React.Component {
         'text-offset': [0, -2]
       }
     });
+    let stopGeoJson = this.props.stop ? this.props.stop : null;
     this.map.addLayer({
       'id': 'olli-current-stop',
       'source': {
         'type': 'geojson',
-        'data': this.props.stop
+        'data': stopGeoJson
       },
       'type': 'symbol',
       'layout': {

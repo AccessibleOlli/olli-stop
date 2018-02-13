@@ -9,6 +9,10 @@ import { setTimeout } from 'core-js/library/web/timers';
 const WAIT_TIME_AFTER_WELCOME = 8000;
 const CLEAR_WELCOME_MESSAGE_TIME = 10000;
 const CLEAR_DIRECTIONS_MESSAGE_TIME = 20000;
+let DISABLE_KINTRANS = process.env['REACT_APP_DISABLE_KINTRANS'];
+if (DISABLE_KINTRANS && DISABLE_KINTRANS.toLowerCase() === 'false') {
+  DISABLE_KINTRANS = false;
+}
 
 class KinTrans extends Component {
 
@@ -95,6 +99,9 @@ class KinTrans extends Component {
   }
 
   render() {
+    if (DISABLE_KINTRANS) {
+      return <div></div>;
+    }
     let className = this.props.activePersona ? 'kintrans' : 'kintrans-hidden';
     let className2 = this.props.activePersona ? 'kintrans-avatar' : 'kintrans-avatar-hidden';
     // let text = this.unityLoaded ? this.state.currentText : 'Loading Avatar';   
