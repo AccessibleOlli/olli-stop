@@ -595,6 +595,8 @@ let Map = class Map extends React.Component {
     this.map.on('click', this.handleMapClick.bind(this));
 
     this.map.on('load', () => {
+      this.map.dragRotate.disable();// disable map rotation using right click + drag
+      this.map.touchZoomRotate.disableRotation();// disable map rotation using touch rotation gesture
       this.addBasicMapLayers();
       this.props.setMapReady(true);
       this.map.resize();

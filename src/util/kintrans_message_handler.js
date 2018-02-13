@@ -5,7 +5,7 @@ import DISPLAY_STOPS from '../data/display_stops.json';
 export default function handleKinTransMessage(message, store) {
   console.log('handleKinTransMessage');
   console.log(message);
-  let text = message.message.toLowerCase();
+  let text = message.response.toLowerCase();
   let messageProcessed = false;
   for (let stop of DISPLAY_STOPS) {
     if (stop.number === text) {
@@ -19,6 +19,7 @@ export default function handleKinTransMessage(message, store) {
   if (! messageProcessed) {
     if (text == 'yes') {
       if (store.getState().poiDirections && store.getState().activePersona) {
+        // user signed yes and directions are showing and someone is in the stop
         sendDirectionsSMS(store.getState().poiDirections, store.getState().activePersona);
       }
       messageProcessed = true;

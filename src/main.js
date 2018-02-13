@@ -92,7 +92,7 @@ class Main extends Component {
     if (!this.props.activePersona) {
       return (
         <div className="cssgrid">
-        <button key="enterbutton" className="enter-button" onClick={(e) => this.doEntry()}>Enter</button>
+        <button id="enterbutton" className="reset-button" onClick={(e) => this.doEntry()}>Enter</button>
           <OlliLogo />
           <StopHeader stop={stop} />
           <div className="mapboxgl-map-full">
