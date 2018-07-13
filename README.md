@@ -38,9 +38,10 @@ REACT_APP_TEXT_PHONE_NUMBER=xxx-xxx-xxxx
 
 5. Change the CouchDB database urls to point to your CouchDB instance (with the appropriate credentials)
 
+
 ## Running
 
-1. Make sure your proxy setting in `package.json` is configured properly to point to olli-stop-backend. It should look something like this:
+1. Make sure your proxy settings in `package.json` are configured properly to point to olli-stop-backend. It should look something like this:
 
 ```
 "proxy": {
@@ -56,5 +57,22 @@ REACT_APP_TEXT_PHONE_NUMBER=xxx-xxx-xxxx
 }
 ```
 
-2. Ensure you are running [olli-stop-backend](https://github.com/AccessibleOlli/olli-stop-backend)
+2. Ensure you are running [olli-stop-backend](https://github.com/AccessibleOlli/olli-stop-backend) if you want the weather component and sending directions to phone to work.
 3. `npm start`
+
+### Simulate bus movement events with [ao_sim](https://github.com/pdykes/ao_sim)
+
+1. create `telemetry_transitions` database in CouchDB/Cloudant
+1. `git clone git@github.com:pdykes/ao_sim.git`
+2. `cd ao_sim/telemetry`
+3. `export NODE_CONFIG_DIR=../config`
+4. `node telemetry.js`
+5. _in another terminal window_
+	6. `cd ao_sim/cmdline`
+	7. `export NODE_CONFIG_DIR=../config`
+	8. `node ao.js --control telemetry --operation enable`
+
+
+### Simulate bus movement events with [olli_sim](https://github.com/AccessibleOlli/olli-sim)
+
+TODO
