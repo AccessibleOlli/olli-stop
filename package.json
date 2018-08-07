@@ -8,15 +8,15 @@
     "dotenv": "^4.0.0",
     "hoek": "^5.0.3",
     "mapbox-gl": "^0.43.0",
-    "pouchdb": "^6.4.3",
-    "pouchdb-find": "^6.4.3",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "pouchdb": "^7.0.0",
+    "pouchdb-find": "^7.0.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "react-iframe-comm": "^1.2.2",
-    "react-materialize": "^1.1.2",
+    "react-materialize": "^2.3.3",
     "react-player": "^0.25.3",
     "react-redux": "^5.0.6",
-    "react-scripts": "1.0.14",
+    "react-scripts": "^1.1.4",
     "react-unity-webgl": "^6.4.4",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
@@ -43,6 +43,6 @@
     }
   },
   "devDependencies": {
-    "gh-pages": "^1.1.0"
+    "gh-pages": "^1.2.0"
   }
 }
